@@ -47,13 +47,14 @@ export default function NutritionScreen() {
   const [selectedWeekStart, setSelectedWeekStart] = useState(() => {
     const today = new Date();
     const day = today.getDay();
-    const diff = today.getDate() - day; // Start at Sunday of current week
-    const sunday = new Date(today.setDate(diff));
-    return sunday;
+    const diff = today.getDate() - day - 21; // Start 3 weeks before today
+    const startSunday = new Date(today.setDate(diff));
+    return startSunday;
   });
 
   // Constants for snapping
   const DAY_ITEM_WIDTH = 60; // 48px circle + 12px margin-right
+  const WEEK_WIDTH = DAY_ITEM_WIDTH * 7; // Width of one full week
   const SCREEN_WIDTH = Dimensions.get("window").width;
   const PADDING_HORIZONTAL = 16; // px-4 = 16px
 
@@ -136,11 +137,14 @@ export default function NutritionScreen() {
 
   const getWeekDates = () => {
     const dates = [];
-    // Show only 7 days (Sunday to Saturday)
-    for (let day = 0; day < 7; day++) {
-      const date = new Date(selectedWeekStart);
-      date.setDate(selectedWeekStart.getDate() + day);
-      dates.push(date);
+    // Show 12 weeks total (can scroll through multiple weeks)
+    const numWeeks = 12;
+    for (let week = 0; week < numWeeks; week++) {
+      for (let day = 0; day < 7; day++) {
+        const date = new Date(selectedWeekStart);
+        date.setDate(selectedWeekStart.getDate() + (week * 7) + day);
+        dates.push(date);
+      }
     }
     return dates;
   };
@@ -256,30 +260,23 @@ export default function NutritionScreen() {
     });
   };
 
-  // Scroll to current day when tab is focused
+  // Scroll to current week when tab is focused
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused && scrollViewRef.current) {
       const today = new Date();
-      const day = today.getDay();
-      const diff = today.getDate() - day;
-      const sunday = new Date();
-      sunday.setDate(diff);
       
-      // Update to show the current week
-      setSelectedWeekStart(sunday);
+      // Calculate which week contains today
+      // We start 3 weeks before today, so today is in week index 3
+      const currentWeekIndex = 3;
+      const scrollToX = currentWeekIndex * WEEK_WIDTH;
       
-      // Scroll to today after a delay
-      if (scrollViewRef.current) {
-        const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
-        const scrollToX = todayDayOfWeek * DAY_ITEM_WIDTH;
-        
-        setTimeout(() => {
-          scrollViewRef.current?.scrollTo({
-            x: scrollToX,
-            animated: true,
-          });
-        }, 100);
-      }
+      // Delay to ensure ScrollView is mounted
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({
+          x: scrollToX,
+          animated: true,
+        });
+      }, 100);
     }
   }, [isFocused]);
 
@@ -326,26 +323,14 @@ export default function NutritionScreen() {
         </View>
 
         {/* Week Calendar - Horizontal Scroll */}
-        <View className="mb-3 flex-row items-center">
-          {/* Previous Week Button */}
-          <Pressable
-            onPress={() => navigateWeek("prev")}
-            className="pl-3 pr-2 py-2"
-          >
-            <Ionicons 
-              name="chevron-back" 
-              size={24} 
-              color={isDark ? "#9ca3af" : "#6b7280"}
-            />
-          </Pressable>
-          
+        <View className="mb-3">
           <ScrollView
             ref={scrollViewRef}
             horizontal
             showsHorizontalScrollIndicator={false}
-            className="flex-1"
-            contentContainerStyle={{ paddingHorizontal: 8 }}
-            snapToInterval={DAY_ITEM_WIDTH}
+            className="px-4"
+            contentContainerStyle={{ paddingRight: 16 }}
+            snapToInterval={WEEK_WIDTH}
             decelerationRate="fast"
             snapToAlignment="start"
           >
@@ -441,18 +426,6 @@ export default function NutritionScreen() {
               );
             })}
           </ScrollView>
-          
-          {/* Next Week Button */}
-          <Pressable
-            onPress={() => navigateWeek("next")}
-            className="pr-3 pl-2 py-2"
-          >
-            <Ionicons 
-              name="chevron-forward" 
-              size={24} 
-              color={isDark ? "#9ca3af" : "#6b7280"}
-            />
-          </Pressable>
         </View>
 
         {/* Calorie Counter Card */}
