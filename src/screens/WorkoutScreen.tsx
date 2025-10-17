@@ -81,7 +81,7 @@ export default function WorkoutScreen() {
       setWorkoutName("");
       setExercises([]);
       setIsCreateModalVisible(false);
-      setActiveView("home");
+      setActiveView(null);
     }
   };
 
