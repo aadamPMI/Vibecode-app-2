@@ -89,7 +89,7 @@ export default function SettingsScreen() {
   // If a section is open, show its detail view
   if (activeSection) {
     return (
-      <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+      <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
@@ -292,7 +292,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-gray-700" : "bg-gray-100"
                   )}
                 >
                   <Text
@@ -317,7 +317,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-gray-700" : "bg-gray-100"
                   )}
                 >
                   <Text
@@ -347,7 +347,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-gray-700" : "bg-gray-100"
                   )}
                 >
                   <Text
@@ -410,7 +410,7 @@ export default function SettingsScreen() {
                           selectedGoal === goal.key
                             ? "bg-blue-500"
                             : isDark
-                            ? "bg-gray-800"
+                            ? "bg-gray-700"
                             : "bg-gray-100"
                         )}
                       >
@@ -568,7 +568,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-gray-700" : "bg-gray-100"
                   )}
                 >
                   <View className="flex-row justify-between items-center mb-4">
@@ -602,7 +602,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-gray-700" : "bg-gray-100"
                   )}
                 >
                   <View className="flex-row justify-between items-center mb-4">
@@ -636,7 +636,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-gray-700" : "bg-gray-100"
                   )}
                 >
                   <View className="flex-row justify-between items-center mb-4">
@@ -676,7 +676,7 @@ export default function SettingsScreen() {
 
   // Main Settings Menu
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="px-4 pt-4 pb-4">

@@ -211,7 +211,7 @@ export default function NutritionScreen() {
   };
 
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="px-4 pt-4 pb-4">
@@ -292,7 +292,7 @@ export default function NutritionScreen() {
                           : metGoal
                           ? "bg-green-500"
                           : isDark
-                          ? "bg-gray-800"
+                          ? "bg-gray-700"
                           : "bg-gray-100"
                       )}
                       style={{
@@ -370,7 +370,7 @@ export default function NutritionScreen() {
           <View
             className={cn(
               "h-4 rounded-full overflow-hidden",
-              isDark ? "bg-gray-800" : "bg-gray-200"
+              isDark ? "bg-gray-700" : "bg-gray-200"
             )}
             style={{
               shadowColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
@@ -720,7 +720,7 @@ export default function NutritionScreen() {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
           <View className="flex-1 px-6">
             {/* Header */}
             <View className="pt-6 pb-4">
@@ -894,7 +894,7 @@ export default function NutritionScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-gray-50")}>
+          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-gray-50")}>
             <View className="px-4 pt-4 pb-2 border-b border-gray-200">
               <View className="flex-row justify-between items-center">
                 <Text
@@ -1022,7 +1022,7 @@ export default function NutritionScreen() {
                             selectedMeal === meal
                               ? "bg-blue-500"
                               : isDark
-                              ? "bg-gray-800"
+                              ? "bg-gray-700"
                               : "bg-white"
                           )}
                         >
@@ -1151,7 +1151,7 @@ export default function NutritionScreen() {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
           <View className="px-4 pt-4 pb-2 border-b border-gray-200">
             <View className="flex-row justify-between items-center">
               <Text
@@ -1215,7 +1215,7 @@ export default function NutritionScreen() {
                           key={item.id}
                           className={cn(
                             "rounded-2xl p-4 mb-3",
-                            isDark ? "bg-gray-800" : "bg-gray-100"
+                            isDark ? "bg-gray-700" : "bg-gray-100"
                           )}
                         >
                           <View className="flex-row justify-between items-start mb-2">

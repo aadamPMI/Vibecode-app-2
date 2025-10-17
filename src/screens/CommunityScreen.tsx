@@ -208,7 +208,7 @@ export default function CommunityScreen({ navigation, route }: any) {
   };
 
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="px-4 pt-4 pb-4">
@@ -239,7 +239,7 @@ export default function CommunityScreen({ navigation, route }: any) {
             }}
             className={cn(
               "rounded-3xl p-6 mb-4",
-              isDark ? "bg-gray-800" : "bg-white"
+              isDark ? "bg-gray-700" : "bg-white"
             )}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
@@ -312,7 +312,7 @@ export default function CommunityScreen({ navigation, route }: any) {
               activeView === "discover"
                 ? "border-2 border-blue-500"
                 : isDark
-                ? "bg-gray-800"
+                ? "bg-gray-700"
                 : "bg-white"
             )}
             style={{
@@ -384,7 +384,7 @@ export default function CommunityScreen({ navigation, route }: any) {
               activeView === "trending"
                 ? "border-2 border-orange-500"
                 : isDark
-                ? "bg-gray-800"
+                ? "bg-gray-700"
                 : "bg-white"
             )}
             style={{
@@ -541,7 +541,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                 }}
                 className={cn(
                   "rounded-2xl p-4 mb-3",
-                  isDark ? "bg-gray-800" : "bg-gray-100"
+                  isDark ? "bg-gray-700" : "bg-gray-100"
                 )}
               >
                 <Text
@@ -703,7 +703,7 @@ export default function CommunityScreen({ navigation, route }: any) {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-gray-50")}>
+          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-gray-50")}>
             <View className="px-4 pt-4 pb-2 border-b border-gray-200">
               <View className="flex-row justify-between items-center">
                 <Text
@@ -791,7 +791,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                 <View
                   className={cn(
                     "rounded-2xl p-4",
-                    isDark ? "bg-gray-800" : "bg-white"
+                    isDark ? "bg-gray-700" : "bg-white"
                   )}
                 >
                   <View className="flex-row items-center justify-between">
@@ -863,7 +863,7 @@ export default function CommunityScreen({ navigation, route }: any) {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-gray-50")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-gray-50")}>
           <View className="px-4 pt-4 pb-2 border-b border-gray-200">
             <View className="flex-row justify-between items-center">
               <Text
@@ -971,7 +971,7 @@ export default function CommunityScreen({ navigation, route }: any) {
         animationType="slide"
         presentationStyle="fullScreen"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-gray-50")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-gray-50")}>
           <View className="px-4 pt-4 pb-2 border-b border-gray-200">
             <View className="flex-row justify-between items-center">
               <Text
@@ -1061,7 +1061,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                 <View
                   className={cn(
                     "mb-4 rounded-xl p-4",
-                    isDark ? "bg-gray-800" : "bg-white"
+                    isDark ? "bg-gray-700" : "bg-white"
                   )}
                   style={{
                     shadowColor: "#000",
@@ -1176,7 +1176,7 @@ export default function CommunityScreen({ navigation, route }: any) {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-gray-50")}>
+          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-gray-50")}>
             <View className="px-4 pt-4 pb-2 border-b border-gray-200">
               <View className="flex-row justify-between items-center">
                 <Text
@@ -1247,7 +1247,7 @@ export default function CommunityScreen({ navigation, route }: any) {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
           {/* Header */}
           <View className={cn("px-4 pt-4 pb-3", isDark ? "bg-gray-800/50" : "bg-gray-50")}>
             <View className="flex-row items-center justify-between">
@@ -1358,7 +1358,7 @@ export default function CommunityScreen({ navigation, route }: any) {
           </View>
 
           {/* Tabs */}
-          <View className={cn("flex-row px-4 py-3 border-b", isDark ? "border-gray-800 bg-gray-900" : "border-gray-200 bg-white")}>
+          <View className={cn("flex-row px-4 py-3 border-b", isDark ? "border-gray-800 bg-gray-800" : "border-gray-200 bg-white")}>
             <Pressable
               onPress={() => {
                 setActiveTab("members");
@@ -1453,7 +1453,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                     key={memberId}
                     className={cn(
                       "rounded-2xl p-4 mb-3 flex-row items-center",
-                      isDark ? "bg-gray-800" : "bg-gray-50"
+                      isDark ? "bg-gray-700" : "bg-gray-50"
                     )}
                   >
                     <View
@@ -1495,7 +1495,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                       index === 0 ? "bg-yellow-500/10 border-2 border-yellow-500/30" :
                       index === 1 ? "bg-gray-400/10 border-2 border-gray-400/30" :
                       index === 2 ? "bg-orange-500/10 border-2 border-orange-500/30" :
-                      isDark ? "bg-gray-800" : "bg-gray-50"
+                      isDark ? "bg-gray-700" : "bg-gray-50"
                     )}
                   >
                     <View className="w-10 items-center mr-3">
@@ -1573,7 +1573,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                         key={challenge.id}
                         className={cn(
                           "rounded-3xl p-5 mb-4",
-                          isDark ? "bg-gray-800" : "bg-gray-50"
+                          isDark ? "bg-gray-700" : "bg-gray-50"
                         )}
                       >
                         {/* Challenge Header */}
@@ -1706,7 +1706,7 @@ export default function CommunityScreen({ navigation, route }: any) {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-gray-50")}>
+          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-gray-50")}>
             <View className="px-4 pt-4 pb-2 border-b border-gray-200">
               <View className="flex-row justify-between items-center">
                 <Text
@@ -1768,7 +1768,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                         challengeType === type.value
                           ? "bg-purple-600"
                           : isDark
-                          ? "bg-gray-800"
+                          ? "bg-gray-700"
                           : "bg-white"
                       )}
                     >
@@ -1903,7 +1903,7 @@ export default function CommunityScreen({ navigation, route }: any) {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
           {/* Header */}
           <View className={cn("px-4 pt-4 pb-3 border-b", isDark ? "border-gray-800" : "border-gray-200")}>
             <View className="flex-row items-center justify-between">
@@ -1942,7 +1942,7 @@ export default function CommunityScreen({ navigation, route }: any) {
             <View
               className={cn(
                 "rounded-3xl p-6 mb-4",
-                isDark ? "bg-gray-800" : "bg-gray-50"
+                isDark ? "bg-gray-700" : "bg-gray-50"
               )}
             >
               <View className="flex-row items-center mb-3">
@@ -1960,7 +1960,7 @@ export default function CommunityScreen({ navigation, route }: any) {
             <View
               className={cn(
                 "rounded-3xl p-6 mb-4",
-                isDark ? "bg-gray-800" : "bg-gray-50"
+                isDark ? "bg-gray-700" : "bg-gray-50"
               )}
             >
               <View className="flex-row items-center mb-4">
@@ -2032,7 +2032,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                 <View 
                   className={cn(
                     "rounded-2xl p-4 flex-row items-center justify-between",
-                    isDark ? "bg-gray-800" : "bg-white"
+                    isDark ? "bg-gray-700" : "bg-white"
                   )}
                 >
                   <View className="flex-row items-center flex-1">

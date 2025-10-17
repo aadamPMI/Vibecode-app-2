@@ -38,7 +38,7 @@ export default function MyCommunitiesScreen({ navigation }: any) {
   const joinedCommunities = getJoinedCommunities();
 
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-white")}>
       {/* Header */}
       <View className="px-4 pt-4 pb-4 flex-row items-center">
         <Pressable
