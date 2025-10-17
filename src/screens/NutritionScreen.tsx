@@ -220,10 +220,10 @@ export default function NutritionScreen() {
   };
 
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")} edges={['left', 'right']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-4 pt-4 pb-2">
+        <View className="px-4 pt-4 pb-4">
           <Text
             className={cn(
               "text-3xl font-bold",

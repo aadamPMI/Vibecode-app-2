@@ -131,28 +131,27 @@ export default function WorkoutScreen() {
 
   // Home view with 4 cards
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
-      <View className="flex-1 px-4 pt-4">
-        <View className="mb-6">
-          <Text
-            className={cn(
-              "text-3xl font-bold",
-              isDark ? "text-white" : "text-gray-900"
-            )}
-          >
-            GainAI
-          </Text>
-          <Text
-            className={cn(
-              "text-sm mt-1",
-              isDark ? "text-gray-400" : "text-gray-600"
-            )}
-          >
-            Workout
-          </Text>
-        </View>
-
-        <ScrollView showsVerticalScrollIndicator={false}>
+    <>
+      <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")} edges={['left', 'right']}>
+        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+          <View className="pt-4 mb-6">
+            <Text
+              className={cn(
+                "text-3xl font-bold",
+                isDark ? "text-white" : "text-gray-900"
+              )}
+            >
+              GainAI
+            </Text>
+            <Text
+              className={cn(
+                "text-sm mt-1",
+                isDark ? "text-gray-400" : "text-gray-600"
+              )}
+            >
+              Workout
+            </Text>
+          </View>
           {/* Active Workout Card */}
           <Pressable
             onPress={() => {
@@ -803,7 +802,7 @@ export default function WorkoutScreen() {
             </View>
           )}
         </ScrollView>
-      </View>
+      </SafeAreaView>
 
       {/* Create Workout Modal */}
       <Modal
@@ -1039,7 +1038,7 @@ export default function WorkoutScreen() {
           </ScrollView>
         </SafeAreaView>
       </Modal>
-    </SafeAreaView>
+    </>
   );
 }
 
