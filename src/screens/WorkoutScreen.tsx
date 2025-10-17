@@ -2269,7 +2269,7 @@ function WeightSlider({
   const lastHapticValue = React.useRef(Math.floor(value));
 
   const handleValueChange = (newValue: number) => {
-    const roundedValue = Math.round(newValue * 2) / 2; // Round to nearest 0.5
+    const roundedValue = Math.round(newValue * 10) / 10; // Round to nearest 0.1
     setSliderValue(roundedValue);
     
     // Haptic feedback every whole number
@@ -2281,7 +2281,7 @@ function WeightSlider({
   };
 
   const handleSlidingComplete = (newValue: number) => {
-    const roundedValue = Math.round(newValue * 2) / 2;
+    const roundedValue = Math.round(newValue * 10) / 10;
     setSliderValue(roundedValue);
     onValueChange(roundedValue);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -2325,14 +2325,14 @@ function WeightSlider({
         minimumTrackTintColor="#3b82f6"
         maximumTrackTintColor={isDark ? "#374151" : "#d1d5db"}
         thumbTintColor="#3b82f6"
-        step={0.5}
+        step={0.1}
       />
 
       {/* Quick adjustment buttons */}
       <View className="flex-row items-center justify-center gap-3 mt-6 mb-4">
         <Pressable
           onPress={() => {
-            const newValue = Math.max(min, sliderValue - 5);
+            const newValue = Math.max(min, Math.round((sliderValue - 5) * 10) / 10);
             setSliderValue(newValue);
             onValueChange(newValue);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -2349,7 +2349,7 @@ function WeightSlider({
 
         <Pressable
           onPress={() => {
-            const newValue = Math.max(min, sliderValue - 1);
+            const newValue = Math.max(min, Math.round((sliderValue - 1) * 10) / 10);
             setSliderValue(newValue);
             onValueChange(newValue);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -2366,7 +2366,7 @@ function WeightSlider({
 
         <Pressable
           onPress={() => {
-            const newValue = Math.min(max, sliderValue + 1);
+            const newValue = Math.min(max, Math.round((sliderValue + 1) * 10) / 10);
             setSliderValue(newValue);
             onValueChange(newValue);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -2383,7 +2383,7 @@ function WeightSlider({
 
         <Pressable
           onPress={() => {
-            const newValue = Math.min(max, sliderValue + 5);
+            const newValue = Math.min(max, Math.round((sliderValue + 5) * 10) / 10);
             setSliderValue(newValue);
             onValueChange(newValue);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -2405,7 +2405,7 @@ function WeightSlider({
           isDark ? "text-gray-500" : "text-gray-600"
         )}
       >
-        Slide or tap buttons to adjust weight
+        Slide or tap buttons to adjust weight (0.1 {unit} precision)
       </Text>
     </View>
   );
