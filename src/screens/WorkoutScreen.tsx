@@ -22,8 +22,10 @@ import Animated, {
 import * as Haptics from "expo-haptics";
 import { useWorkoutStore, Workout, Exercise, PersonalRecord } from "../state/workoutStore";
 import { useSettingsStore } from "../state/settingsStore";
+import { useCommunityStore } from "../state/communityStore";
 import { cn } from "../utils/cn";
 import { GYM_EXERCISES } from "../utils/exerciseList";
+import { Switch } from "react-native";
 
 export default function WorkoutScreen() {
   const theme = useSettingsStore((s) => s.theme);
@@ -39,6 +41,10 @@ export default function WorkoutScreen() {
   const featuredPRs = useWorkoutStore((s) => s.featuredPRs);
   const setFeaturedPRs = useWorkoutStore((s) => s.setFeaturedPRs);
   
+  const shareWorkoutToAllCommunities = useCommunityStore((s) => s.shareWorkoutToAllCommunities);
+  const currentUserId = useCommunityStore((s) => s.currentUserId);
+  const currentUserName = useCommunityStore((s) => s.currentUserName);
+  
   const isDark = theme === "dark";
   const [activeView, setActiveView] = useState<"active" | "programs" | "history" | "stats" | null>(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
@@ -46,6 +52,9 @@ export default function WorkoutScreen() {
   const [workoutName, setWorkoutName] = useState("");
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExerciseName, setCurrentExerciseName] = useState("");
+  const [completedWorkout, setCompletedWorkout] = useState<Workout | null>(null);
+  const [isWorkoutCompletionModalVisible, setIsWorkoutCompletionModalVisible] = useState(false);
+  const [shareToFriends, setShareToFriends] = useState(true);
   
   // New state for stats modals
   const [isLogPRModalVisible, setIsLogPRModalVisible] = useState(false);
@@ -105,12 +114,44 @@ export default function WorkoutScreen() {
         exercises,
       };
       addWorkout(newWorkout);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setWorkoutName("");
-      setExercises([]);
+      setCompletedWorkout(newWorkout);
       setIsCreateModalVisible(false);
-      setActiveView(null);
+      setIsWorkoutCompletionModalVisible(true);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
+  };
+
+  const handleFinishWorkoutCompletion = () => {
+    if (completedWorkout && shareToFriends) {
+      const totalVolume = completedWorkout.exercises.reduce(
+        (total, exercise) =>
+          total + exercise.sets.reduce((sum, set) => sum + set.reps * set.weight, 0),
+        0
+      );
+      const totalSets = completedWorkout.exercises.reduce(
+        (total, exercise) => total + exercise.sets.length,
+        0
+      );
+      
+      shareWorkoutToAllCommunities(
+        {
+          workoutName: completedWorkout.name,
+          exercises: completedWorkout.exercises.length,
+          sets: totalSets,
+          totalVolume: Math.round(totalVolume),
+          duration: completedWorkout.duration || 45,
+        },
+        currentUserId,
+        currentUserName
+      );
+    }
+    
+    setWorkoutName("");
+    setExercises([]);
+    setCompletedWorkout(null);
+    setIsWorkoutCompletionModalVisible(false);
+    setActiveView(null);
+    setShareToFriends(true);
   };
 
   const handleCancelWorkout = () => {
@@ -1861,6 +1902,204 @@ export default function WorkoutScreen() {
               );
             })}
           </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Workout Completion Modal */}
+      <Modal
+        visible={isWorkoutCompletionModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => {
+          setIsWorkoutCompletionModalVisible(false);
+          handleFinishWorkoutCompletion();
+        }}
+      >
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+          <View className="flex-1 items-center justify-center px-6">
+            {/* Success Icon */}
+            <View
+              className="w-24 h-24 rounded-full items-center justify-center mb-6"
+              style={{
+                backgroundColor: isDark ? "rgba(34, 197, 94, 0.2)" : "rgba(34, 197, 94, 0.1)",
+              }}
+            >
+              <Ionicons name="checkmark-circle" size={80} color="#22c55e" />
+            </View>
+
+            <Text
+              className={cn(
+                "text-3xl font-bold mb-2",
+                isDark ? "text-white" : "text-gray-900"
+              )}
+            >
+              Workout Complete! 🎉
+            </Text>
+
+            <Text
+              className={cn(
+                "text-base text-center mb-8",
+                isDark ? "text-gray-400" : "text-gray-600"
+              )}
+            >
+              Great job on completing {completedWorkout?.name}!
+            </Text>
+
+            {/* Workout Summary */}
+            <View
+              className={cn(
+                "w-full rounded-3xl p-6 mb-6",
+                isDark ? "bg-gray-800" : "bg-gray-100"
+              )}
+            >
+              <Text
+                className={cn(
+                  "text-lg font-bold mb-4",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                Workout Summary
+              </Text>
+
+              <View className="space-y-3">
+                <View className="flex-row justify-between items-center py-2">
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name="barbell"
+                      size={20}
+                      color={isDark ? "#9ca3af" : "#6b7280"}
+                    />
+                    <Text
+                      className={cn(
+                        "text-base ml-2",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      Exercises
+                    </Text>
+                  </View>
+                  <Text
+                    className={cn(
+                      "text-lg font-bold",
+                      isDark ? "text-white" : "text-gray-900"
+                    )}
+                  >
+                    {completedWorkout?.exercises.length}
+                  </Text>
+                </View>
+
+                <View className="flex-row justify-between items-center py-2">
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name="repeat"
+                      size={20}
+                      color={isDark ? "#9ca3af" : "#6b7280"}
+                    />
+                    <Text
+                      className={cn(
+                        "text-base ml-2",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      Total Sets
+                    </Text>
+                  </View>
+                  <Text
+                    className={cn(
+                      "text-lg font-bold",
+                      isDark ? "text-white" : "text-gray-900"
+                    )}
+                  >
+                    {completedWorkout?.exercises.reduce(
+                      (total, ex) => total + ex.sets.length,
+                      0
+                    )}
+                  </Text>
+                </View>
+
+                <View className="flex-row justify-between items-center py-2">
+                  <View className="flex-row items-center">
+                    <Ionicons
+                      name="trending-up"
+                      size={20}
+                      color={isDark ? "#9ca3af" : "#6b7280"}
+                    />
+                    <Text
+                      className={cn(
+                        "text-base ml-2",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      Total Volume
+                    </Text>
+                  </View>
+                  <Text
+                    className={cn(
+                      "text-lg font-bold",
+                      isDark ? "text-white" : "text-gray-900"
+                    )}
+                  >
+                    {Math.round(
+                      completedWorkout?.exercises.reduce(
+                        (total, exercise) =>
+                          total +
+                          exercise.sets.reduce(
+                            (sum, set) => sum + set.reps * set.weight,
+                            0
+                          ),
+                        0
+                      ) || 0
+                    )}
+                    kg
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Share Toggle */}
+            <View
+              className={cn(
+                "w-full rounded-2xl p-4 mb-6 flex-row items-center justify-between",
+                isDark ? "bg-gray-800" : "bg-gray-100"
+              )}
+            >
+              <View className="flex-1 mr-4">
+                <Text
+                  className={cn(
+                    "text-base font-bold mb-1",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}
+                >
+                  Share to Community
+                </Text>
+                <Text
+                  className={cn(
+                    "text-sm",
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  Let your friends see your progress
+                </Text>
+              </View>
+              <Switch
+                value={shareToFriends}
+                onValueChange={(val) => {
+                  setShareToFriends(val);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                trackColor={{ false: isDark ? "#374151" : "#d1d5db", true: "#3b82f6" }}
+                thumbColor={shareToFriends ? "#ffffff" : "#f3f4f6"}
+              />
+            </View>
+
+            {/* Done Button */}
+            <Pressable
+              onPress={handleFinishWorkoutCompletion}
+              className="w-full bg-green-500 py-4 rounded-2xl items-center"
+            >
+              <Text className="text-white font-bold text-lg">Done</Text>
+            </Pressable>
+          </View>
         </SafeAreaView>
       </Modal>
     </>
