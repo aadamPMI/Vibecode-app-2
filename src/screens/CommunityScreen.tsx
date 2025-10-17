@@ -45,6 +45,9 @@ export default function CommunityScreen() {
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] =
     useState(false);
   const [activeView, setActiveView] = useState<"my" | "discover" | "trending" | null>(null);
+  const [isCommunityDetailVisible, setIsCommunityDetailVisible] = useState(false);
+  const [detailCommunity, setDetailCommunity] = useState<Community | null>(null);
+  const [activeTab, setActiveTab] = useState<"about" | "members" | "leaderboard">("about");
 
   // Create community form
   const [communityName, setCommunityName] = useState("");
@@ -566,13 +569,15 @@ export default function CommunityScreen() {
                     <Pressable
                       onPress={() => {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                        setSelectedCommunity(community);
+                        setDetailCommunity(community);
+                        setIsCommunityDetailVisible(true);
+                        setActiveTab("about");
                       }}
                       className="flex-1 bg-blue-500 py-4 rounded-2xl mr-2 flex-row items-center justify-center"
                     >
-                      <Ionicons name="trophy" size={20} color="white" />
+                      <Ionicons name="arrow-forward" size={20} color="white" />
                       <Text className="text-white font-bold text-base ml-2">
-                        View
+                        Enter Community
                       </Text>
                     </Pressable>
                     <Pressable
@@ -1245,6 +1250,361 @@ export default function CommunityScreen() {
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Community Detail Modal */}
+      <Modal
+        visible={isCommunityDetailVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+          {/* Header */}
+          <View className={cn("px-4 pt-4 pb-3", isDark ? "bg-gray-800/50" : "bg-gray-50")}>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
+                <View className="flex-row items-center">
+                  <View
+                    className="w-16 h-16 rounded-3xl items-center justify-center mr-4"
+                    style={{
+                      backgroundColor: isDark ? "rgba(147, 51, 234, 0.2)" : "rgba(147, 51, 234, 0.1)",
+                    }}
+                  >
+                    <Ionicons name="people" size={32} color="#9333ea" />
+                  </View>
+                  <View className="flex-1">
+                    <Text
+                      className={cn(
+                        "text-2xl font-bold",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      {detailCommunity?.name}
+                    </Text>
+                    <View className="flex-row items-center mt-1">
+                      <View className="bg-blue-500 px-3 py-1 rounded-full mr-2">
+                        <Text className="text-white text-xs font-semibold flex-row items-center">
+                          <Ionicons name="globe" size={12} color="#fff" /> Public
+                        </Text>
+                      </View>
+                      <View className={cn("px-3 py-1 rounded-full", isDark ? "bg-gray-700" : "bg-gray-200")}>
+                        <Text className={cn("text-xs font-semibold", isDark ? "text-gray-300" : "text-gray-700")}>
+                          <Ionicons name="people" size={12} /> {detailCommunity?.members.length} members
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+              <Pressable
+                onPress={() => {
+                  setIsCommunityDetailVisible(false);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                className="ml-2"
+              >
+                <Ionicons name="close" size={28} color={isDark ? "#fff" : "#000"} />
+              </Pressable>
+            </View>
+
+            {/* Action Buttons */}
+            <View className="flex-row mt-4">
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  if (detailCommunity) {
+                    setSelectedCommunity(detailCommunity);
+                    setIsCommunityDetailVisible(false);
+                  }
+                }}
+                className="flex-1 bg-blue-500 py-3 rounded-2xl mr-2 flex-row items-center justify-center"
+              >
+                <Ionicons name="arrow-forward" size={18} color="white" />
+                <Text className="text-white font-bold ml-2">Enter Community</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                className={cn(
+                  "px-6 py-3 rounded-2xl flex-row items-center justify-center",
+                  isDark ? "bg-gray-700" : "bg-gray-200"
+                )}
+              >
+                <Ionicons name="copy-outline" size={18} color={isDark ? "#fff" : "#000"} />
+                <Text className={cn("font-bold ml-2", isDark ? "text-white" : "text-gray-900")}>
+                  Copy Invite
+                </Text>
+              </Pressable>
+            </View>
+
+            {/* Leave Button */}
+            <Pressable
+              onPress={() => {
+                if (detailCommunity) {
+                  handleLeaveCommunity(detailCommunity.id);
+                  setIsCommunityDetailVisible(false);
+                }
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              }}
+              className="mt-3 py-3 rounded-2xl flex-row items-center justify-center border-2 border-red-500/30"
+            >
+              <Ionicons name="close-circle-outline" size={18} color="#ef4444" />
+              <Text className="text-red-500 font-bold ml-2">Leave</Text>
+            </Pressable>
+          </View>
+
+          {/* Tabs */}
+          <View className={cn("flex-row px-4 py-3 border-b", isDark ? "border-gray-800 bg-gray-900" : "border-gray-200 bg-white")}>
+            <Pressable
+              onPress={() => {
+                setActiveTab("about");
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              className="flex-1 items-center"
+            >
+              <View className="flex-row items-center pb-2">
+                <Ionicons name="information-circle" size={18} color={activeTab === "about" ? "#9333ea" : (isDark ? "#6b7280" : "#9ca3af")} />
+                <Text
+                  className={cn(
+                    "text-base font-semibold ml-2",
+                    activeTab === "about"
+                      ? "text-purple-600"
+                      : isDark
+                      ? "text-gray-500"
+                      : "text-gray-400"
+                  )}
+                >
+                  About
+                </Text>
+              </View>
+              {activeTab === "about" && (
+                <View className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600" />
+              )}
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                setActiveTab("members");
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              className="flex-1 items-center"
+            >
+              <View className="flex-row items-center pb-2">
+                <Ionicons name="people" size={18} color={activeTab === "members" ? "#9333ea" : (isDark ? "#6b7280" : "#9ca3af")} />
+                <Text
+                  className={cn(
+                    "text-base font-semibold ml-2",
+                    activeTab === "members"
+                      ? "text-purple-600"
+                      : isDark
+                      ? "text-gray-500"
+                      : "text-gray-400"
+                  )}
+                >
+                  Members
+                </Text>
+              </View>
+              {activeTab === "members" && (
+                <View className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600" />
+              )}
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                setActiveTab("leaderboard");
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              className="flex-1 items-center"
+            >
+              <View className="flex-row items-center pb-2">
+                <Ionicons name="trophy" size={18} color={activeTab === "leaderboard" ? "#9333ea" : (isDark ? "#6b7280" : "#9ca3af")} />
+                <Text
+                  className={cn(
+                    "text-base font-semibold ml-2",
+                    activeTab === "leaderboard"
+                      ? "text-purple-600"
+                      : isDark
+                      ? "text-gray-500"
+                      : "text-gray-400"
+                  )}
+                >
+                  Leaderboard
+                </Text>
+              </View>
+              {activeTab === "leaderboard" && (
+                <View className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600" />
+              )}
+            </Pressable>
+          </View>
+
+          {/* Tab Content */}
+          <ScrollView className="flex-1 px-4 pt-4">
+            {activeTab === "about" && (
+              <View>
+                {/* Description */}
+                <View
+                  className={cn(
+                    "rounded-3xl p-6 mb-4",
+                    isDark ? "bg-gray-800" : "bg-gray-50"
+                  )}
+                >
+                  <View className="flex-row items-center mb-3">
+                    <Ionicons name="sparkles" size={20} color="#9333ea" />
+                    <Text className={cn("text-lg font-bold ml-2", isDark ? "text-purple-400" : "text-purple-600")}>
+                      Description
+                    </Text>
+                  </View>
+                  <Text className={cn("text-base leading-6", isDark ? "text-gray-300" : "text-gray-700")}>
+                    {detailCommunity?.description || "A community for fitness lovers to share their journey"}
+                  </Text>
+                </View>
+
+                {/* Community Info */}
+                <View
+                  className={cn(
+                    "rounded-3xl p-6 mb-4",
+                    isDark ? "bg-gray-800" : "bg-gray-50"
+                  )}
+                >
+                  <View className="flex-row items-center mb-4">
+                    <Ionicons name="information-circle" size={20} color="#9333ea" />
+                    <Text className={cn("text-lg font-bold ml-2", isDark ? "text-purple-400" : "text-purple-600")}>
+                      Community Info
+                    </Text>
+                  </View>
+
+                  <View className="space-y-3">
+                    <View className="flex-row justify-between items-center py-3 border-b border-gray-700/30">
+                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                        Created
+                      </Text>
+                      <Text className={cn("text-base font-semibold", isDark ? "text-white" : "text-gray-900")}>
+                        {detailCommunity?.createdAt ? new Date(detailCommunity.createdAt).toLocaleDateString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric"
+                        }) : "October 17, 2025"}
+                      </Text>
+                    </View>
+
+                    <View className="flex-row justify-between items-center py-3 border-b border-gray-700/30">
+                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                        Total Members
+                      </Text>
+                      <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+                        {detailCommunity?.members.length || 0}
+                      </Text>
+                    </View>
+
+                    <View className="flex-row justify-between items-center py-3">
+                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                        Visibility
+                      </Text>
+                      <View className="bg-blue-500 px-3 py-1 rounded-full">
+                        <Text className="text-white text-sm font-semibold">Public</Text>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {activeTab === "members" && (
+              <View>
+                <Text className={cn("text-sm mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
+                  {detailCommunity?.members.length} member{detailCommunity?.members.length !== 1 ? "s" : ""} in this community
+                </Text>
+                {detailCommunity?.members.map((memberId, index) => (
+                  <View
+                    key={memberId}
+                    className={cn(
+                      "rounded-2xl p-4 mb-3 flex-row items-center",
+                      isDark ? "bg-gray-800" : "bg-gray-50"
+                    )}
+                  >
+                    <View
+                      className="w-12 h-12 rounded-full items-center justify-center mr-3"
+                      style={{
+                        backgroundColor: isDark ? "rgba(147, 51, 234, 0.2)" : "rgba(147, 51, 234, 0.1)",
+                      }}
+                    >
+                      <Ionicons name="person" size={24} color="#9333ea" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+                        {memberId === currentUserId ? currentUserName : `Member ${index + 1}`}
+                      </Text>
+                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                        {memberId === detailCommunity?.createdBy ? "Creator" : "Member"}
+                      </Text>
+                    </View>
+                    {memberId === currentUserId && (
+                      <View className="bg-purple-500/20 px-3 py-1 rounded-full">
+                        <Text className="text-purple-500 text-xs font-bold">You</Text>
+                      </View>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
+
+            {activeTab === "leaderboard" && (
+              <View>
+                <Text className={cn("text-sm mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
+                  Top performers based on total workouts completed
+                </Text>
+                {detailCommunity?.members.map((memberId, index) => (
+                  <View
+                    key={memberId}
+                    className={cn(
+                      "rounded-2xl p-4 mb-3 flex-row items-center",
+                      index === 0 ? "bg-yellow-500/10 border-2 border-yellow-500/30" :
+                      index === 1 ? "bg-gray-400/10 border-2 border-gray-400/30" :
+                      index === 2 ? "bg-orange-500/10 border-2 border-orange-500/30" :
+                      isDark ? "bg-gray-800" : "bg-gray-50"
+                    )}
+                  >
+                    <View className="w-10 items-center mr-3">
+                      {index < 3 ? (
+                        <Ionicons
+                          name="trophy"
+                          size={24}
+                          color={index === 0 ? "#eab308" : index === 1 ? "#9ca3af" : "#f97316"}
+                        />
+                      ) : (
+                        <Text className={cn("text-lg font-bold", isDark ? "text-gray-500" : "text-gray-400")}>
+                          #{index + 1}
+                        </Text>
+                      )}
+                    </View>
+                    <View
+                      className="w-12 h-12 rounded-full items-center justify-center mr-3"
+                      style={{
+                        backgroundColor: isDark ? "rgba(147, 51, 234, 0.2)" : "rgba(147, 51, 234, 0.1)",
+                      }}
+                    >
+                      <Ionicons name="person" size={24} color="#9333ea" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+                        {memberId === currentUserId ? currentUserName : `Member ${index + 1}`}
+                      </Text>
+                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                        {Math.floor(Math.random() * 50) + 10} workouts completed
+                      </Text>
+                    </View>
+                    <View className={cn("px-3 py-1 rounded-full", isDark ? "bg-purple-500/20" : "bg-purple-100")}>
+                      <Text className={cn("text-sm font-bold", isDark ? "text-purple-400" : "text-purple-600")}>
+                        {Math.floor(Math.random() * 500) + 100} pts
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </ScrollView>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
