@@ -251,23 +251,42 @@ export default function NutritionScreen() {
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-4 pt-3 pb-2">
-          <Text
-            className={cn(
-              "text-3xl font-bold",
-              isDark ? "text-white" : "text-gray-900"
-            )}
+        <View className="px-4 pt-3 pb-2 flex-row justify-between items-start">
+          <View>
+            <Text
+              className={cn(
+                "text-3xl font-bold",
+                isDark ? "text-white" : "text-gray-900"
+              )}
+            >
+              GainAI
+            </Text>
+            <Text
+              className={cn(
+                "text-sm mt-1",
+                isDark ? "text-gray-400" : "text-gray-600"
+              )}
+            >
+              Nutrition
+            </Text>
+          </View>
+          {/* Nutrition Streak Badge */}
+          <View 
+            className="rounded-2xl px-3 py-2 flex-row items-center"
+            style={{
+              backgroundColor: isDark ? "rgba(249, 115, 22, 0.15)" : "#fff7ed",
+              borderWidth: 1.5,
+              borderColor: "#f97316",
+            }}
           >
-            GainAI
-          </Text>
-          <Text
-            className={cn(
-              "text-sm mt-1",
-              isDark ? "text-gray-400" : "text-gray-600"
-            )}
-          >
-            Nutrition
-          </Text>
+            <Ionicons name="flame" size={20} color="#f97316" />
+            <Text 
+              className="text-lg font-bold ml-1"
+              style={{ color: "#f97316" }}
+            >
+              {getCurrentStreak()}
+            </Text>
+          </View>
         </View>
 
         {/* Week Calendar - Horizontal Scroll */}
