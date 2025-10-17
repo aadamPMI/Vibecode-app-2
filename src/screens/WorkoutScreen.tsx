@@ -19,6 +19,8 @@ import Animated, {
   FadeIn,
   SlideInLeft,
 } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
+import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
 import { useWorkoutStore, Workout, Exercise, PersonalRecord } from "../state/workoutStore";
 import { useSettingsStore } from "../state/settingsStore";
@@ -2263,22 +2265,38 @@ function WeightSlider({
   unit: "kg" | "lbs";
   isDark: boolean;
 }) {
-  const increment = (amount: number) => {
-    const newValue = Math.min(max, Math.max(min, value + amount));
-    onValueChange(Math.round(newValue * 10) / 10);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const [sliderValue, setSliderValue] = React.useState(value);
+  const lastHapticValue = React.useRef(Math.floor(value));
+
+  const handleValueChange = (newValue: number) => {
+    const roundedValue = Math.round(newValue * 2) / 2; // Round to nearest 0.5
+    setSliderValue(roundedValue);
+    
+    // Haptic feedback every whole number
+    const currentWhole = Math.floor(roundedValue);
+    if (currentWhole !== lastHapticValue.current) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      lastHapticValue.current = currentWhole;
+    }
+  };
+
+  const handleSlidingComplete = (newValue: number) => {
+    const roundedValue = Math.round(newValue * 2) / 2;
+    setSliderValue(roundedValue);
+    onValueChange(roundedValue);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   return (
-    <View className="items-center justify-center w-full">
+    <View className="items-center justify-center w-full px-6">
       {/* Current Value Display */}
-      <View className="mb-8">
-        <Text className="text-7xl font-bold text-blue-500 text-center">
-          {value}
+      <View className="mb-12">
+        <Text className="text-8xl font-bold text-blue-500 text-center">
+          {sliderValue.toFixed(1)}
         </Text>
         <Text
           className={cn(
-            "text-2xl font-bold text-center mt-2",
+            "text-3xl font-bold text-center mt-3",
             isDark ? "text-gray-400" : "text-gray-600"
           )}
         >
@@ -2286,100 +2304,108 @@ function WeightSlider({
         </Text>
       </View>
 
-      {/* Large Increment Buttons */}
-      <View className="flex-row items-center justify-center mb-6 w-full px-8">
-        <Pressable
-          onPress={() => increment(-10)}
-          className={cn(
-            "w-16 h-16 rounded-full items-center justify-center",
-            isDark ? "bg-gray-800" : "bg-gray-200"
-          )}
-        >
-          <Text className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-            −10
-          </Text>
-        </Pressable>
-
-        <View className="flex-1" />
-
-        <Pressable
-          onPress={() => increment(10)}
-          className={cn(
-            "w-16 h-16 rounded-full items-center justify-center",
-            isDark ? "bg-gray-800" : "bg-gray-200"
-          )}
-        >
-          <Text className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-            +10
-          </Text>
-        </Pressable>
+      {/* Range Labels */}
+      <View className="flex-row justify-between w-full mb-2 px-2">
+        <Text className={cn("text-sm font-semibold", isDark ? "text-gray-500" : "text-gray-600")}>
+          {min} {unit}
+        </Text>
+        <Text className={cn("text-sm font-semibold", isDark ? "text-gray-500" : "text-gray-600")}>
+          {max} {unit}
+        </Text>
       </View>
 
-      {/* Small Increment Buttons */}
-      <View className="flex-row items-center justify-center mb-6 w-full px-8">
+      {/* Horizontal Slider */}
+      <Slider
+        style={{ width: "100%", height: 60 }}
+        minimumValue={min}
+        maximumValue={max}
+        value={sliderValue}
+        onValueChange={handleValueChange}
+        onSlidingComplete={handleSlidingComplete}
+        minimumTrackTintColor="#3b82f6"
+        maximumTrackTintColor={isDark ? "#374151" : "#d1d5db"}
+        thumbTintColor="#3b82f6"
+        step={0.5}
+      />
+
+      {/* Quick adjustment buttons */}
+      <View className="flex-row items-center justify-center gap-3 mt-6 mb-4">
         <Pressable
-          onPress={() => increment(-1)}
+          onPress={() => {
+            const newValue = Math.max(min, sliderValue - 5);
+            setSliderValue(newValue);
+            onValueChange(newValue);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }}
           className={cn(
-            "w-14 h-14 rounded-full items-center justify-center",
+            "px-6 py-3 rounded-full",
             isDark ? "bg-gray-800" : "bg-gray-200"
           )}
         >
-          <Text className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
-            −1
+          <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
+            -5
           </Text>
         </Pressable>
 
-        <View className="flex-1" />
-
         <Pressable
-          onPress={() => increment(1)}
+          onPress={() => {
+            const newValue = Math.max(min, sliderValue - 1);
+            setSliderValue(newValue);
+            onValueChange(newValue);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }}
           className={cn(
-            "w-14 h-14 rounded-full items-center justify-center",
+            "px-6 py-3 rounded-full",
             isDark ? "bg-gray-800" : "bg-gray-200"
           )}
         >
-          <Text className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+          <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
+            -1
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => {
+            const newValue = Math.min(max, sliderValue + 1);
+            setSliderValue(newValue);
+            onValueChange(newValue);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }}
+          className={cn(
+            "px-6 py-3 rounded-full",
+            isDark ? "bg-gray-800" : "bg-gray-200"
+          )}
+        >
+          <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
             +1
           </Text>
         </Pressable>
-      </View>
 
-      {/* Fine Increment Buttons */}
-      <View className="flex-row items-center justify-center w-full px-8">
         <Pressable
-          onPress={() => increment(-0.5)}
+          onPress={() => {
+            const newValue = Math.min(max, sliderValue + 5);
+            setSliderValue(newValue);
+            onValueChange(newValue);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          }}
           className={cn(
-            "w-12 h-12 rounded-full items-center justify-center",
+            "px-6 py-3 rounded-full",
             isDark ? "bg-gray-800" : "bg-gray-200"
           )}
         >
-          <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
-            −0.5
-          </Text>
-        </Pressable>
-
-        <View className="flex-1" />
-
-        <Pressable
-          onPress={() => increment(0.5)}
-          className={cn(
-            "w-12 h-12 rounded-full items-center justify-center",
-            isDark ? "bg-gray-800" : "bg-gray-200"
-          )}
-        >
-          <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
-            +0.5
+          <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
+            +5
           </Text>
         </Pressable>
       </View>
 
       <Text
         className={cn(
-          "text-sm mt-8 text-center",
+          "text-sm text-center",
           isDark ? "text-gray-500" : "text-gray-600"
         )}
       >
-        Tap buttons to adjust weight
+        Slide or tap buttons to adjust weight
       </Text>
     </View>
   );
