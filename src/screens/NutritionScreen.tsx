@@ -428,6 +428,30 @@ export default function NutritionScreen() {
               isDark={isDark}
             />
 
+            {/* Add Meal Button - Centered after macros */}
+            <View className="mt-6 mb-4">
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  setIsAddFoodModalVisible(true);
+                }}
+                className="rounded-3xl py-4 flex-row justify-center items-center"
+                style={{
+                  backgroundColor: "#3b82f6",
+                  shadowColor: "#3b82f6",
+                  shadowOffset: { width: 0, height: 6 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 12,
+                  elevation: 8,
+                }}
+              >
+                <Ionicons name="add-circle" size={24} color="white" />
+                <Text className="text-white text-base font-bold ml-2">
+                  Add Meal
+                </Text>
+              </Pressable>
+            </View>
+
             {/* Streak Card - Inside Macros Card */}
             <View 
               className="mt-6 rounded-3xl p-6 overflow-hidden"
@@ -670,30 +694,6 @@ export default function NutritionScreen() {
             ))}
           </View>
         )}
-
-        {/* Add Meal Button */}
-        <View className="px-4 mt-4 mb-20">
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setIsAddFoodModalVisible(true);
-            }}
-            className="rounded-3xl py-4 flex-row justify-center items-center"
-            style={{
-              backgroundColor: "#3b82f6",
-              shadowColor: "#3b82f6",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: 0.4,
-              shadowRadius: 12,
-              elevation: 8,
-            }}
-          >
-            <Ionicons name="add-circle" size={24} color="white" />
-            <Text className="text-white text-base font-bold ml-2">
-              Add Meal
-            </Text>
-          </Pressable>
-        </View>
       </ScrollView>
 
       {/* Add Food Options Modal - Liquid Glass UI */}
@@ -1371,13 +1371,15 @@ function MacroRow({
         </View>
         <Text
           className={cn(
-            "text-base",
+            "text-base font-semibold",
             isComplete
-              ? "text-green-500 font-bold"
+              ? "text-green-500"
               : isDark ? "text-white" : "text-gray-900"
           )}
         >
-          {value}g / {target}g
+          {isComplete 
+            ? `Complete! ✓` 
+            : `${Math.max(0, target - value)}g left`}
         </Text>
       </View>
       <View
