@@ -12,6 +12,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import Animated, {
+  FadeInDown,
+  FadeOutUp,
+} from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import {
   useCommunityStore,
@@ -434,7 +438,11 @@ export default function CommunityScreen() {
 
         {/* Community Details Panel - Shows when activeView is "my", "discover", or "trending" */}
         {activeView && getJoinedCommunities().length > 0 && activeView === "my" && (
-          <View className="px-4 mb-4">
+          <Animated.View 
+            entering={FadeInDown.duration(300).springify()}
+            exiting={FadeOutUp.duration(200)}
+            className="px-4 mb-4"
+          >
             {getJoinedCommunities().map((community) => (
               <View
                 key={community.id}
@@ -595,12 +603,16 @@ export default function CommunityScreen() {
                 </View>
               </View>
             ))}
-          </View>
+          </Animated.View>
         )}
 
         {/* Discover Communities - Shows when activeView is "discover" */}
         {activeView === "discover" && getAvailableCommunities().length > 0 && (
-          <View className="px-4 mb-4">
+          <Animated.View 
+            entering={FadeInDown.duration(300).springify()}
+            exiting={FadeOutUp.duration(200)}
+            className="px-4 mb-4"
+          >
             <Text
               className={cn(
                 "text-xl font-bold mb-3",
@@ -663,12 +675,16 @@ export default function CommunityScreen() {
                 </View>
               </Pressable>
             ))}
-          </View>
+          </Animated.View>
         )}
 
         {/* Trending Communities - Shows when activeView is "trending" */}
         {activeView === "trending" && (
-          <View className="px-4 mb-20">
+          <Animated.View 
+            entering={FadeInDown.duration(300).springify()}
+            exiting={FadeOutUp.duration(200)}
+            className="px-4 mb-20"
+          >
             <Text
               className={cn(
                 "text-xl font-bold mb-3",
@@ -700,7 +716,7 @@ export default function CommunityScreen() {
                 Check back later for hot communities
               </Text>
             </View>
-          </View>
+          </Animated.View>
         )}
 
         {/* Old Communities List - Remove this section */}

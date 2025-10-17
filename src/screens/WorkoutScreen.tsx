@@ -12,6 +12,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import Animated, {
+  FadeInDown,
+  FadeOutUp,
+  Layout,
+  FadeIn,
+  SlideInLeft,
+} from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useWorkoutStore, Workout, Exercise } from "../state/workoutStore";
 import { useSettingsStore } from "../state/settingsStore";
@@ -280,7 +287,11 @@ export default function WorkoutScreen() {
 
           {/* Active Workout Options - Shows when clicked */}
           {activeView === "active" && (
-            <View className="mb-4">
+            <Animated.View 
+              entering={FadeInDown.duration(300).springify()}
+              exiting={FadeOutUp.duration(200)}
+              className="mb-4"
+            >
               <View
                 className={cn(
                   "rounded-3xl p-6",
@@ -359,12 +370,16 @@ export default function WorkoutScreen() {
                   ))}
                 </View>
               </View>
-            </View>
+            </Animated.View>
           )}
 
           {/* Programs List - Shows when clicked */}
           {activeView === "programs" && (
-            <View className="mb-4">
+            <Animated.View 
+              entering={FadeInDown.duration(300).springify()}
+              exiting={FadeOutUp.duration(200)}
+              className="mb-4"
+            >
               <View
                 className={cn(
                   "rounded-3xl p-6",
@@ -409,7 +424,7 @@ export default function WorkoutScreen() {
                   </Pressable>
                 </View>
               </View>
-            </View>
+            </Animated.View>
           )}
 
           {/* Bottom Row - History & Stats */}
@@ -539,7 +554,11 @@ export default function WorkoutScreen() {
 
           {/* History List - Shows when clicked */}
           {activeView === "history" && (
-            <View className="mb-4">
+            <Animated.View 
+              entering={FadeInDown.duration(300).springify()}
+              exiting={FadeOutUp.duration(200)}
+              className="mb-4"
+            >
               {workouts.length === 0 ? (
                 <View
                   className={cn(
@@ -679,12 +698,16 @@ export default function WorkoutScreen() {
                   </Pressable>
                 ))
               )}
-            </View>
+            </Animated.View>
           )}
 
           {/* Stats Dashboard - Shows when clicked */}
           {activeView === "stats" && (
-            <View className="mb-20">
+            <Animated.View 
+              entering={FadeInDown.duration(300).springify()}
+              exiting={FadeOutUp.duration(200)}
+              className="mb-20"
+            >
               <View
                 className="rounded-3xl p-6 mb-4"
                 style={{
@@ -803,7 +826,7 @@ export default function WorkoutScreen() {
                   ))}
                 </>
               )}
-            </View>
+            </Animated.View>
           )}
         </ScrollView>
       </SafeAreaView>
