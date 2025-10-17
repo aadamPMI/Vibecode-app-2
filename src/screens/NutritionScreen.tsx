@@ -33,14 +33,13 @@ export default function NutritionScreen() {
   const [viewMealsModalVisible, setViewMealsModalVisible] = useState(false);
   const [isManualEntryVisible, setIsManualEntryVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [viewMode, setViewMode] = useState<"daily" | "weekly">("daily");
   const [selectedDate, setSelectedDate] = useState(new Date());
   
-  // Get current week dates
+  // Get current week dates - starting 3 weeks ago
   const [selectedWeekStart, setSelectedWeekStart] = useState(() => {
     const today = new Date();
     const day = today.getDay();
-    const diff = today.getDate() - day;
+    const diff = today.getDate() - day - 21; // Start 3 weeks ago
     return new Date(today.setDate(diff));
   });
 
@@ -87,12 +86,29 @@ export default function NutritionScreen() {
 
   const getWeekDates = () => {
     const dates = [];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(selectedWeekStart);
-      date.setDate(selectedWeekStart.getDate() + i);
-      dates.push(date);
+    // Show 4 weeks total (3 weeks before + current week + 1 week ahead)
+    for (let week = 0; week < 5; week++) {
+      for (let day = 0; day < 7; day++) {
+        const date = new Date(selectedWeekStart);
+        date.setDate(selectedWeekStart.getDate() + (week * 7) + day);
+        dates.push(date);
+      }
     }
     return dates;
+  };
+
+  const getDayTotals = (date: Date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    const dayFood = foodLog.filter((f) => f.date === dateStr);
+    return dayFood.reduce(
+      (totals, food) => ({
+        calories: totals.calories + food.calories,
+        protein: totals.protein + food.protein,
+        carbs: totals.carbs + food.carbs,
+        fats: totals.fats + food.fats,
+      }),
+      { calories: 0, protein: 0, carbs: 0, fats: 0 }
+    );
   };
 
   const getTodayTotals = () => {
@@ -110,17 +126,8 @@ export default function NutritionScreen() {
   };
 
   const getWeekTotals = () => {
-    const weekDates = getWeekDates().map((d) => d.toISOString().split("T")[0]);
-    const weekFood = foodLog.filter((f) => weekDates.includes(f.date));
-    return weekFood.reduce(
-      (totals, food) => ({
-        calories: totals.calories + food.calories,
-        protein: totals.protein + food.protein,
-        carbs: totals.carbs + food.carbs,
-        fats: totals.fats + food.fats,
-      }),
-      { calories: 0, protein: 0, carbs: 0, fats: 0 }
-    );
+    // Not used anymore, but keeping for compatibility
+    return getTodayTotals();
   };
 
   const getCurrentStreak = () => {
@@ -175,7 +182,7 @@ export default function NutritionScreen() {
     return foodLog.filter((f) => f.date === dateStr);
   };
 
-  const totals = viewMode === "daily" ? getTodayTotals() : getWeekTotals();
+  const totals = getTodayTotals();
   const targetCalories = fitnessGoals.targetCalories || 2000;
   const targetProtein = fitnessGoals.targetProtein || 150;
   const targetCarbs = fitnessGoals.targetCarbs || 200;
@@ -185,30 +192,12 @@ export default function NutritionScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const newDate = new Date(selectedWeekStart);
     newDate.setDate(newDate.getDate() + (direction === "next" ? 7 : -7));
-    
-    // Allow navigating up to 3 weeks before current week
-    const today = new Date();
-    const currentWeekStart = new Date(today);
-    const day = currentWeekStart.getDay();
-    const diff = currentWeekStart.getDate() - day;
-    currentWeekStart.setDate(diff);
-    currentWeekStart.setHours(0, 0, 0, 0);
-    
-    const threeWeeksAgo = new Date(currentWeekStart);
-    threeWeeksAgo.setDate(threeWeeksAgo.getDate() - 21);
-    
-    // Only update if within range
-    if (newDate >= threeWeeksAgo && newDate <= currentWeekStart) {
-      setSelectedWeekStart(newDate);
-    }
+    setSelectedWeekStart(newDate);
   };
 
   const handleDayPress = (date: Date) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSelectedDate(date);
-    if (viewMode === "weekly") {
-      setViewMode("daily");
-    }
   };
 
   const formatDate = (date: Date) => {
@@ -242,79 +231,84 @@ export default function NutritionScreen() {
           </Text>
         </View>
 
-        {/* View Mode Selector */}
-        <View className="px-4 mt-4">
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              setViewMode(viewMode === "daily" ? "weekly" : "daily");
-            }}
-            className={cn(
-              "rounded-2xl px-4 py-3 border flex-row justify-between items-center",
-              isDark ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-200"
-            )}
+        {/* Week Calendar - Horizontal Scroll */}
+        <View className="mb-4">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="px-4"
+            contentContainerStyle={{ paddingRight: 16 }}
           >
-            <Text
-              className={cn(
-                "text-base font-semibold capitalize",
-                isDark ? "text-white" : "text-gray-900"
-              )}
-            >
-              {viewMode}
-            </Text>
-            <Ionicons
-              name="chevron-down"
-              size={20}
-              color={isDark ? "#9ca3af" : "#6b7280"}
-            />
-          </Pressable>
-        </View>
-
-        {/* Week Calendar */}
-        {viewMode === "weekly" && (
-          <View className="px-4 mt-4">
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="mb-2"
-            >
-              {getWeekDates().map((date, index) => {
-                const isToday =
-                  date.toISOString().split("T")[0] ===
-                  new Date().toISOString().split("T")[0];
-                const isSelected = 
-                  date.toISOString().split("T")[0] ===
-                  selectedDate.toISOString().split("T")[0];
-                return (
-                  <Pressable
-                    key={index}
-                    onPress={() => handleDayPress(date)}
-                    className="items-center mr-4"
+            {getWeekDates().map((date, index) => {
+              const isToday =
+                date.toISOString().split("T")[0] ===
+                new Date().toISOString().split("T")[0];
+              const isSelected = 
+                date.toISOString().split("T")[0] ===
+                selectedDate.toISOString().split("T")[0];
+              const dayTotals = getDayTotals(date);
+              const hasData = dayTotals.calories > 0;
+              const metGoal = dayTotals.calories >= targetCalories;
+              const isPastDate = date < new Date(new Date().setHours(0, 0, 0, 0));
+              
+              return (
+                <Pressable
+                  key={index}
+                  onPress={() => handleDayPress(date)}
+                  className="items-center mr-4"
+                >
+                  <Text
+                    className={cn(
+                      "text-xs mb-2",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
                   >
-                    <Text
-                      className={cn(
-                        "text-xs mb-1",
-                        isDark ? "text-gray-400" : "text-gray-600"
-                      )}
-                    >
-                      {date.toLocaleDateString("en-US", { weekday: "short" })}
-                    </Text>
+                    {date.toLocaleDateString("en-US", { weekday: "short" })}
+                  </Text>
+                  <View className="relative items-center justify-center">
+                    {/* Outer dotted circle */}
+                    <View
+                      className="absolute w-14 h-14 rounded-full items-center justify-center"
+                      style={{
+                        borderWidth: 2,
+                        borderStyle: "dashed",
+                        borderColor: isDark ? "#4b5563" : "#d1d5db",
+                      }}
+                    />
+                    {/* Inner solid circle */}
                     <View
                       className={cn(
                         "w-12 h-12 rounded-full items-center justify-center",
                         isSelected
                           ? "bg-blue-500"
-                          : isToday
-                          ? "bg-purple-500"
+                          : hasData
+                          ? metGoal
+                            ? "bg-green-500"
+                            : "bg-red-500"
+                          : isPastDate && !hasData
+                          ? "bg-red-500 opacity-60"
                           : isDark
                           ? "bg-gray-800"
                           : "bg-gray-100"
                       )}
+                      style={{
+                        shadowColor: isSelected
+                          ? "#3b82f6"
+                          : hasData
+                          ? metGoal
+                            ? "#22c55e"
+                            : "#ef4444"
+                          : "transparent",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 4,
+                        elevation: 3,
+                      }}
                     >
                       <Text
                         className={cn(
                           "text-xl font-bold",
-                          isSelected || isToday
+                          isSelected || hasData || (isPastDate && !hasData)
                             ? "text-white"
                             : isDark
                             ? "text-white"
@@ -324,44 +318,20 @@ export default function NutritionScreen() {
                         {date.getDate()}
                       </Text>
                     </View>
-                    <Text
-                      className={cn(
-                        "text-xs mt-1",
-                        isDark ? "text-gray-500" : "text-gray-500"
-                      )}
-                    >
-                      {date.toLocaleDateString("en-US", { month: "short" })}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </ScrollView>
-            <View className="flex-row justify-center items-center mt-2 mb-4">
-              <Pressable onPress={() => navigateWeek("prev")} className="mr-4">
-                <Ionicons
-                  name="chevron-back"
-                  size={20}
-                  color={isDark ? "#9ca3af" : "#6b7280"}
-                />
-              </Pressable>
-              <Text
-                className={cn(
-                  "text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                Scroll to navigate weeks
-              </Text>
-              <Pressable onPress={() => navigateWeek("next")} className="ml-4">
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={isDark ? "#9ca3af" : "#6b7280"}
-                />
-              </Pressable>
-            </View>
-          </View>
-        )}
+                  </View>
+                  <Text
+                    className={cn(
+                      "text-xs mt-2",
+                      isDark ? "text-gray-500" : "text-gray-500"
+                    )}
+                  >
+                    {date.toLocaleDateString("en-US", { month: "short" })}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
 
         {/* Calorie Display */}
         <View className="px-4 mt-6 items-center">
