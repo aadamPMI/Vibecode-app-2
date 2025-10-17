@@ -52,7 +52,8 @@ export default function CommunityScreen({ navigation, route }: any) {
   const [activeView, setActiveView] = useState<"my" | "discover" | "trending" | null>(null);
   const [isCommunityDetailVisible, setIsCommunityDetailVisible] = useState(false);
   const [detailCommunity, setDetailCommunity] = useState<Community | null>(null);
-  const [activeTab, setActiveTab] = useState<"about" | "members" | "leaderboard" | "challenges">("about");
+  const [activeTab, setActiveTab] = useState<"members" | "leaderboard" | "challenges">("members");
+  const [isAboutModalVisible, setIsAboutModalVisible] = useState(false);
 
   // Handle navigation from MyCommunitiesScreen
   useEffect(() => {
@@ -60,7 +61,7 @@ export default function CommunityScreen({ navigation, route }: any) {
       const community = route.params.openCommunity;
       setDetailCommunity(community);
       setIsCommunityDetailVisible(true);
-      setActiveTab("about");
+      setActiveTab("members");
       // Clear the param so it doesn't reopen on re-render
       navigation.setParams({ openCommunity: undefined });
     }
@@ -1260,28 +1261,42 @@ export default function CommunityScreen({ navigation, route }: any) {
                   >
                     <Ionicons name="people" size={32} color="#9333ea" />
                   </View>
-                  <View className="flex-1">
-                    <Text
-                      className={cn(
-                        "text-2xl font-bold",
-                        isDark ? "text-white" : "text-gray-900"
-                      )}
-                    >
-                      {detailCommunity?.name}
-                    </Text>
+                  <Pressable 
+                    className="flex-1"
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setIsAboutModalVisible(true);
+                    }}
+                  >
+                    <View className="flex-row items-center">
+                      <Text
+                        className={cn(
+                          "text-2xl font-bold",
+                          isDark ? "text-white" : "text-gray-900"
+                        )}
+                      >
+                        {detailCommunity?.name}
+                      </Text>
+                      <Ionicons 
+                        name="information-circle" 
+                        size={20} 
+                        color={isDark ? "#9ca3af" : "#6b7280"} 
+                        style={{ marginLeft: 8 }}
+                      />
+                    </View>
                     <View className="flex-row items-center mt-1">
-                      <View className="bg-blue-500 px-3 py-1 rounded-full mr-2">
-                        <Text className="text-white text-xs font-semibold flex-row items-center">
-                          <Ionicons name="globe" size={12} color="#fff" /> Public
+                      <View className={detailCommunity?.isPrivate ? "bg-purple-500 px-3 py-1 rounded-full mr-2" : "bg-blue-500 px-3 py-1 rounded-full mr-2"}>
+                        <Text className="text-white text-xs font-semibold">
+                          {detailCommunity?.isPrivate ? "Private" : "Public"}
                         </Text>
                       </View>
                       <View className={cn("px-3 py-1 rounded-full", isDark ? "bg-gray-700" : "bg-gray-200")}>
                         <Text className={cn("text-xs font-semibold", isDark ? "text-gray-300" : "text-gray-700")}>
-                          <Ionicons name="people" size={12} /> {detailCommunity?.members.length} members
+                          {detailCommunity?.members.length} members
                         </Text>
                       </View>
                     </View>
-                  </View>
+                  </Pressable>
                 </View>
               </View>
               <Pressable
@@ -1344,33 +1359,6 @@ export default function CommunityScreen({ navigation, route }: any) {
 
           {/* Tabs */}
           <View className={cn("flex-row px-4 py-3 border-b", isDark ? "border-gray-800 bg-gray-900" : "border-gray-200 bg-white")}>
-            <Pressable
-              onPress={() => {
-                setActiveTab("about");
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              }}
-              className="flex-1 items-center"
-            >
-              <View className="flex-row items-center pb-2">
-                <Ionicons name="information-circle" size={18} color={activeTab === "about" ? "#9333ea" : (isDark ? "#6b7280" : "#9ca3af")} />
-                <Text
-                  className={cn(
-                    "text-base font-semibold ml-2",
-                    activeTab === "about"
-                      ? "text-purple-600"
-                      : isDark
-                      ? "text-gray-500"
-                      : "text-gray-400"
-                  )}
-                >
-                  About
-                </Text>
-              </View>
-              {activeTab === "about" && (
-                <View className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600" />
-              )}
-            </Pressable>
-
             <Pressable
               onPress={() => {
                 setActiveTab("members");
@@ -1455,133 +1443,6 @@ export default function CommunityScreen({ navigation, route }: any) {
 
           {/* Tab Content */}
           <ScrollView className="flex-1 px-4 pt-4">
-            {activeTab === "about" && (
-              <View>
-                {/* Description */}
-                <View
-                  className={cn(
-                    "rounded-3xl p-6 mb-4",
-                    isDark ? "bg-gray-800" : "bg-gray-50"
-                  )}
-                >
-                  <View className="flex-row items-center mb-3">
-                    <Ionicons name="sparkles" size={20} color="#9333ea" />
-                    <Text className={cn("text-lg font-bold ml-2", isDark ? "text-purple-400" : "text-purple-600")}>
-                      Description
-                    </Text>
-                  </View>
-                  <Text className={cn("text-base leading-6", isDark ? "text-gray-300" : "text-gray-700")}>
-                    {detailCommunity?.description || "A community for fitness lovers to share their journey"}
-                  </Text>
-                </View>
-
-                {/* Community Info */}
-                <View
-                  className={cn(
-                    "rounded-3xl p-6 mb-4",
-                    isDark ? "bg-gray-800" : "bg-gray-50"
-                  )}
-                >
-                  <View className="flex-row items-center mb-4">
-                    <Ionicons name="information-circle" size={20} color="#9333ea" />
-                    <Text className={cn("text-lg font-bold ml-2", isDark ? "text-purple-400" : "text-purple-600")}>
-                      Community Info
-                    </Text>
-                  </View>
-
-                  <View className="space-y-3">
-                    <View className="flex-row justify-between items-center py-3 border-b border-gray-700/30">
-                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                        Created
-                      </Text>
-                      <Text className={cn("text-base font-semibold", isDark ? "text-white" : "text-gray-900")}>
-                        {detailCommunity?.createdAt ? new Date(detailCommunity.createdAt).toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric"
-                        }) : "October 17, 2025"}
-                      </Text>
-                    </View>
-
-                    <View className="flex-row justify-between items-center py-3 border-b border-gray-700/30">
-                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                        Total Members
-                      </Text>
-                      <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
-                        {detailCommunity?.members.length || 0}
-                      </Text>
-                    </View>
-
-                    <View className="flex-row justify-between items-center py-3">
-                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                        Visibility
-                      </Text>
-                      <View className={detailCommunity?.isPrivate ? "bg-purple-500 px-3 py-1 rounded-full" : "bg-blue-500 px-3 py-1 rounded-full"}>
-                        <Text className="text-white text-sm font-semibold">
-                          {detailCommunity?.isPrivate ? "Private" : "Public"}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-
-                {/* Join Code (Admin Only) */}
-                {detailCommunity && detailCommunity.admins && detailCommunity.admins.includes(currentUserId) && detailCommunity.joinCode && (
-                  <View
-                    className={cn(
-                      "rounded-3xl p-6 mb-4",
-                      isDark ? "bg-purple-900/20" : "bg-purple-50"
-                    )}
-                    style={{
-                      borderWidth: 2,
-                      borderColor: isDark ? "rgba(168, 85, 247, 0.3)" : "rgba(168, 85, 247, 0.2)",
-                    }}
-                  >
-                    <View className="flex-row items-center mb-4">
-                      <Ionicons name="key" size={20} color="#a855f7" />
-                      <Text className={cn("text-lg font-bold ml-2", isDark ? "text-purple-400" : "text-purple-600")}>
-                        Admin: Invite Code
-                      </Text>
-                    </View>
-                    
-                    <Text className={cn("text-sm mb-3", isDark ? "text-gray-400" : "text-gray-600")}>
-                      Share this code with people to invite them to your private community
-                    </Text>
-
-                    <View 
-                      className={cn(
-                        "rounded-2xl p-4 flex-row items-center justify-between",
-                        isDark ? "bg-gray-800" : "bg-white"
-                      )}
-                    >
-                      <View className="flex-row items-center flex-1">
-                        <Ionicons name="lock-closed" size={20} color="#a855f7" />
-                        <Text 
-                          className={cn(
-                            "ml-3 text-2xl font-bold tracking-widest",
-                            isDark ? "text-white" : "text-gray-900"
-                          )}
-                        >
-                          {detailCommunity.joinCode}
-                        </Text>
-                      </View>
-                      <Pressable
-                        onPress={() => {
-                          // TODO: Copy to clipboard
-                          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                          alert(`Code copied: ${detailCommunity.joinCode}`);
-                        }}
-                        className="bg-purple-600 px-4 py-2 rounded-xl flex-row items-center"
-                      >
-                        <Ionicons name="copy" size={18} color="white" />
-                        <Text className="text-white font-bold ml-2">Copy</Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                )}
-              </View>
-            )}
-
             {activeTab === "members" && (
               <View>
                 <Text className={cn("text-sm mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
@@ -2034,6 +1895,172 @@ export default function CommunityScreen({ navigation, route }: any) {
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
+      </Modal>
+
+      {/* About Info Modal */}
+      <Modal
+        visible={isAboutModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+          {/* Header */}
+          <View className={cn("px-4 pt-4 pb-3 border-b", isDark ? "border-gray-800" : "border-gray-200")}>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center flex-1">
+                <View
+                  className="w-12 h-12 rounded-2xl items-center justify-center mr-3"
+                  style={{
+                    backgroundColor: isDark ? "rgba(147, 51, 234, 0.2)" : "rgba(147, 51, 234, 0.1)",
+                  }}
+                >
+                  <Ionicons name="information-circle" size={24} color="#9333ea" />
+                </View>
+                <Text
+                  className={cn(
+                    "text-2xl font-bold flex-1",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}
+                  numberOfLines={1}
+                >
+                  About
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => {
+                  setIsAboutModalVisible(false);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+              >
+                <Ionicons name="close" size={28} color={isDark ? "#fff" : "#000"} />
+              </Pressable>
+            </View>
+          </View>
+
+          <ScrollView className="flex-1 px-4 pt-4">
+            {/* Description */}
+            <View
+              className={cn(
+                "rounded-3xl p-6 mb-4",
+                isDark ? "bg-gray-800" : "bg-gray-50"
+              )}
+            >
+              <View className="flex-row items-center mb-3">
+                <Ionicons name="sparkles" size={20} color="#9333ea" />
+                <Text className={cn("text-lg font-bold ml-2", isDark ? "text-purple-400" : "text-purple-600")}>
+                  Description
+                </Text>
+              </View>
+              <Text className={cn("text-base leading-6", isDark ? "text-gray-300" : "text-gray-700")}>
+                {detailCommunity?.description || "A community for fitness lovers to share their journey"}
+              </Text>
+            </View>
+
+            {/* Community Info */}
+            <View
+              className={cn(
+                "rounded-3xl p-6 mb-4",
+                isDark ? "bg-gray-800" : "bg-gray-50"
+              )}
+            >
+              <View className="flex-row items-center mb-4">
+                <Ionicons name="information-circle" size={20} color="#9333ea" />
+                <Text className={cn("text-lg font-bold ml-2", isDark ? "text-purple-400" : "text-purple-600")}>
+                  Community Info
+                </Text>
+              </View>
+
+              <View className="space-y-3">
+                <View className="flex-row justify-between items-center py-3 border-b border-gray-700/30">
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Created
+                  </Text>
+                  <Text className={cn("text-base font-semibold", isDark ? "text-white" : "text-gray-900")}>
+                    {detailCommunity?.createdAt ? new Date(detailCommunity.createdAt).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric"
+                    }) : "October 17, 2025"}
+                  </Text>
+                </View>
+
+                <View className="flex-row justify-between items-center py-3 border-b border-gray-700/30">
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Total Members
+                  </Text>
+                  <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+                    {detailCommunity?.members.length || 0}
+                  </Text>
+                </View>
+
+                <View className="flex-row justify-between items-center py-3">
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Visibility
+                  </Text>
+                  <View className={detailCommunity?.isPrivate ? "bg-purple-500 px-3 py-1 rounded-full" : "bg-blue-500 px-3 py-1 rounded-full"}>
+                    <Text className="text-white text-sm font-semibold">
+                      {detailCommunity?.isPrivate ? "Private" : "Public"}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* Join Code (Admin Only) */}
+            {detailCommunity && detailCommunity.admins && detailCommunity.admins.includes(currentUserId) && detailCommunity.joinCode && (
+              <View
+                className={cn(
+                  "rounded-3xl p-6 mb-4",
+                  isDark ? "bg-purple-900/20" : "bg-purple-50"
+                )}
+                style={{
+                  borderWidth: 2,
+                  borderColor: isDark ? "rgba(168, 85, 247, 0.3)" : "rgba(168, 85, 247, 0.2)",
+                }}
+              >
+                <View className="flex-row items-center mb-4">
+                  <Ionicons name="key" size={20} color="#a855f7" />
+                  <Text className={cn("text-lg font-bold ml-2", isDark ? "text-purple-400" : "text-purple-600")}>
+                    Admin: Invite Code
+                  </Text>
+                </View>
+                
+                <Text className={cn("text-sm mb-3", isDark ? "text-gray-400" : "text-gray-600")}>
+                  Share this code with people to invite them to your private community
+                </Text>
+
+                <View 
+                  className={cn(
+                    "rounded-2xl p-4 flex-row items-center justify-between",
+                    isDark ? "bg-gray-800" : "bg-white"
+                  )}
+                >
+                  <View className="flex-row items-center flex-1">
+                    <Ionicons name="lock-closed" size={20} color="#a855f7" />
+                    <Text 
+                      className={cn(
+                        "ml-3 text-2xl font-bold tracking-widest",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      {detailCommunity.joinCode}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => {
+                      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                      alert(`Code copied: ${detailCommunity.joinCode}`);
+                    }}
+                    className="bg-purple-600 px-4 py-2 rounded-xl flex-row items-center"
+                  >
+                    <Ionicons name="copy" size={18} color="white" />
+                    <Text className="text-white font-bold ml-2">Copy</Text>
+                  </Pressable>
+                </View>
+              </View>
+            )}
+          </ScrollView>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );
