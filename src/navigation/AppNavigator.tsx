@@ -63,8 +63,8 @@ export default function AppNavigator() {
         tabBarInactiveTintColor: isDark ? "#9ca3af" : "#6b7280",
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: isDark ? "#1f2937" : "#ffffff",
-          borderTopColor: isDark ? "#374151" : "#e5e7eb",
+          backgroundColor: isDark ? "#0a0a0a" : "#ffffff",
+          borderTopColor: isDark ? "#1f1f1f" : "#e5e7eb",
           borderTopWidth: 1,
         },
       })}

@@ -89,7 +89,7 @@ export default function SettingsScreen() {
   // If a section is open, show its detail view
   if (activeSection) {
     return (
-      <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-white")}>
+      <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
@@ -133,7 +133,7 @@ export default function SettingsScreen() {
               <View
                 className={cn(
                   "rounded-3xl p-6 mb-6",
-                  isDark ? "bg-gray-900/50 border border-gray-700/50" : "bg-gray-100 border border-gray-200"
+                  isDark ? "bg-[#0a0a0a]/50 border border-gray-700/50" : "bg-gray-100 border border-gray-200"
                 )}
               >
                 {/* Username */}
@@ -292,7 +292,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
                   )}
                 >
                   <Text
@@ -317,7 +317,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
                   )}
                 >
                   <Text
@@ -347,7 +347,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
                   )}
                 >
                   <Text
@@ -410,7 +410,7 @@ export default function SettingsScreen() {
                           selectedGoal === goal.key
                             ? "bg-blue-500"
                             : isDark
-                            ? "bg-gray-800"
+                            ? "bg-[#1a1a1a]"
                             : "bg-gray-100"
                         )}
                       >
@@ -449,7 +449,7 @@ export default function SettingsScreen() {
                     className={cn(
                       "rounded-xl p-4 text-base",
                       isDark
-                        ? "bg-gray-900 text-white"
+                        ? "bg-[#0a0a0a] text-white"
                         : "bg-gray-100 text-gray-900"
                     )}
                   />
@@ -473,7 +473,7 @@ export default function SettingsScreen() {
                     className={cn(
                       "rounded-xl p-4 text-base",
                       isDark
-                        ? "bg-gray-900 text-white"
+                        ? "bg-[#0a0a0a] text-white"
                         : "bg-gray-100 text-gray-900"
                     )}
                   />
@@ -497,7 +497,7 @@ export default function SettingsScreen() {
                     className={cn(
                       "rounded-xl p-4 text-base",
                       isDark
-                        ? "bg-gray-900 text-white"
+                        ? "bg-[#0a0a0a] text-white"
                         : "bg-gray-100 text-gray-900"
                     )}
                   />
@@ -521,7 +521,7 @@ export default function SettingsScreen() {
                     className={cn(
                       "rounded-xl p-4 text-base",
                       isDark
-                        ? "bg-gray-900 text-white"
+                        ? "bg-[#0a0a0a] text-white"
                         : "bg-gray-100 text-gray-900"
                     )}
                   />
@@ -545,7 +545,7 @@ export default function SettingsScreen() {
                     className={cn(
                       "rounded-xl p-4 text-base",
                       isDark
-                        ? "bg-gray-900 text-white"
+                        ? "bg-[#0a0a0a] text-white"
                         : "bg-gray-100 text-gray-900"
                     )}
                   />
@@ -568,7 +568,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
                   )}
                 >
                   <View className="flex-row justify-between items-center mb-4">
@@ -602,7 +602,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
                   )}
                 >
                   <View className="flex-row justify-between items-center mb-4">
@@ -636,7 +636,7 @@ export default function SettingsScreen() {
                 <View
                   className={cn(
                     "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
+                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
                   )}
                 >
                   <View className="flex-row justify-between items-center mb-4">
@@ -676,7 +676,7 @@ export default function SettingsScreen() {
 
   // Main Settings Menu
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-white")}>
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="px-4 pt-4 pb-4">
@@ -707,7 +707,7 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-gray-900/40" : "bg-white/60"
+              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
             )}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
@@ -762,7 +762,7 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-gray-900/40" : "bg-white/60"
+              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
             )}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
@@ -817,7 +817,7 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-gray-900/40" : "bg-white/60"
+              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
             )}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
@@ -872,7 +872,7 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-gray-900/40" : "bg-white/60"
+              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
             )}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
@@ -927,7 +927,7 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-6 flex-row items-center",
-              isDark ? "bg-gray-900/40" : "bg-white/60"
+              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
             )}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",

@@ -14,15 +14,15 @@ export function PremiumBackground({ theme, variant = "workout" }: PremiumBackgro
     if (isDark) {
       switch (variant) {
         case "workout":
-          return ["#111827", "#1f2937", "#111827"];
+          return ["#000000", "#0a0a0a", "#050505"];
         case "nutrition":
-          return ["#111827", "#1a231f", "#111827"];
+          return ["#000000", "#0a0f0a", "#050505"];
         case "community":
-          return ["#111827", "#1a1a2e", "#111827"];
+          return ["#000000", "#0a0a0f", "#050505"];
         case "settings":
-          return ["#111827", "#1a2332", "#111827"];
+          return ["#000000", "#0a0f0f", "#050505"];
         default:
-          return ["#111827", "#1f2937", "#111827"];
+          return ["#000000", "#0a0a0a", "#050505"];
       }
     } else {
       switch (variant) {
