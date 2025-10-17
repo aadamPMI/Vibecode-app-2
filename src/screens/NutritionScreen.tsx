@@ -251,7 +251,7 @@ export default function NutritionScreen() {
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-4 pt-3 pb-2 flex-row justify-between items-start">
+        <View className="px-4 pt-4 mb-6 flex-row justify-between items-start">
           <View>
             <Text
               className={cn(
