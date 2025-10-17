@@ -482,10 +482,10 @@ export default function NutritionScreen() {
             <Text 
               className="text-6xl font-bold"
               style={{
-                color: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
-                textShadowColor: totals.calories >= targetCalories ? "rgba(34, 197, 94, 0.4)" : "rgba(59, 130, 246, 0.4)",
+                color: isDark ? "#ffffff" : "#000000",
+                textShadowColor: isDark ? "rgba(255, 255, 255, 0.3)" : "rgba(0, 0, 0, 0.1)",
                 textShadowOffset: { width: 0, height: 2 },
-                textShadowRadius: 8,
+                textShadowRadius: 4,
               }}
             >
               {Math.round(totals.calories)}
@@ -506,19 +506,19 @@ export default function NutritionScreen() {
                 : `of ${targetCalories} calories`}
             </Text>
 
-            {/* Progress Bar */}
+            {/* Progress Bar - Glowy and Dopamine Inducing */}
             <View className="w-full mt-3">
               <View
                 className={cn(
-                  "h-3 rounded-full overflow-hidden",
+                  "h-4 rounded-full overflow-visible",
                   isDark ? "bg-[#1a1a1a]" : "bg-gray-200"
                 )}
                 style={{
                   shadowColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 6,
-                  elevation: 3,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 12,
+                  elevation: 8,
                 }}
               >
                 <Animated.View
@@ -526,6 +526,21 @@ export default function NutritionScreen() {
                   style={{
                     width: `${Math.min((totals.calories / targetCalories) * 100, 100)}%`,
                     backgroundColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
+                    shadowColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.8,
+                    shadowRadius: 16,
+                    elevation: 12,
+                  }}
+                />
+                {/* Extra glow layer */}
+                <View
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    shadowColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
+                    shadowOffset: { width: 0, height: 0 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 20,
                   }}
                 />
               </View>
