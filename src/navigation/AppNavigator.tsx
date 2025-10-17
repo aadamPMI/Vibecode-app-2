@@ -43,12 +43,8 @@ export default function AppNavigator() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: isDark ? "#1f2937" : "#ffffff",
-          borderTopWidth: 0,
-          elevation: 0,
-          shadowOpacity: 0,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
+          borderTopColor: isDark ? "#374151" : "#e5e7eb",
+          borderTopWidth: 1,
         },
       })}
     >

@@ -676,7 +676,7 @@ export default function SettingsScreen() {
 
   // Main Settings Menu
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")} edges={['left', 'right']}>
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="px-4 pt-4 pb-4">

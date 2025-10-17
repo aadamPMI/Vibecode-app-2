@@ -132,7 +132,7 @@ export default function WorkoutScreen() {
   // Home view with 4 cards
   return (
     <>
-      <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")} edges={['left', 'right']}>
+      <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="pt-4 mb-6">
             <Text
