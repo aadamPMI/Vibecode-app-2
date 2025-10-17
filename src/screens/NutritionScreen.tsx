@@ -31,6 +31,7 @@ export default function NutritionScreen() {
   const isDark = theme === "dark";
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [viewMealsModalVisible, setViewMealsModalVisible] = useState(false);
+  const [showMealsInline, setShowMealsInline] = useState(false);
   const [isManualEntryVisible, setIsManualEntryVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -500,19 +501,26 @@ export default function NutritionScreen() {
         </View>
 
         {/* View Meals Button */}
-        <View className="px-4 mt-4 mb-20">
+        <View className="px-4 mt-4">
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setViewMealsModalVisible(true);
+              setShowMealsInline(!showMealsInline);
             }}
             className={cn(
               "rounded-3xl py-4 flex-row justify-center items-center border",
-              isDark ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-200"
+              isDark ? "bg-gray-800/40 border-gray-700" : "bg-white/60 border-gray-200"
             )}
+            style={{
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
           >
             <Ionicons
-              name="eye-outline"
+              name={showMealsInline ? "chevron-up" : "chevron-down"}
               size={24}
               color={isDark ? "#fff" : "#000"}
             />
@@ -522,32 +530,171 @@ export default function NutritionScreen() {
                 isDark ? "text-white" : "text-gray-900"
               )}
             >
-              View {getTodayMeals().length} Meals
+              {showMealsInline ? "Hide" : "View"} {getTodayMeals().length} Meals
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* Meals List - Inline Dropdown */}
+        {showMealsInline && getTodayMeals().length > 0 && (
+          <View className="px-4 mt-4">
+            {getTodayMeals().map((item) => (
+              <View
+                key={item.id}
+                className={cn(
+                  "rounded-3xl p-5 mb-3",
+                  isDark ? "bg-gray-800/40" : "bg-white/60"
+                )}
+                style={{
+                  shadowColor: isDark ? "#000" : "#1f2937",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: isDark ? 0.4 : 0.2,
+                  shadowRadius: 8,
+                  elevation: 5,
+                }}
+              >
+                <View className="flex-row justify-between items-start mb-3">
+                  <View className="flex-1">
+                    <Text
+                      className={cn(
+                        "text-lg font-bold mb-1",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      {item.name}
+                    </Text>
+                    <View
+                      className="px-3 py-1 rounded-full self-start"
+                      style={{
+                        backgroundColor:
+                          item.meal === "breakfast"
+                            ? "#fbbf24"
+                            : item.meal === "lunch"
+                            ? "#3b82f6"
+                            : item.meal === "dinner"
+                            ? "#8b5cf6"
+                            : "#ec4899",
+                      }}
+                    >
+                      <Text className="text-white text-xs font-semibold capitalize">
+                        {item.meal}
+                      </Text>
+                    </View>
+                  </View>
+                  <Pressable
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      deleteFoodItem(item.id);
+                    }}
+                    className="ml-3"
+                  >
+                    <Ionicons name="trash-outline" size={24} color="#ef4444" />
+                  </Pressable>
+                </View>
+
+                <View className="flex-row justify-between">
+                  <View className="flex-1">
+                    <Text
+                      className={cn(
+                        "text-xs mb-1",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      Calories
+                    </Text>
+                    <Text
+                      className={cn(
+                        "text-base font-bold",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      {item.calories}
+                    </Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text
+                      className={cn(
+                        "text-xs mb-1",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      Protein
+                    </Text>
+                    <Text
+                      className={cn(
+                        "text-base font-bold",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      {item.protein}g
+                    </Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text
+                      className={cn(
+                        "text-xs mb-1",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      Carbs
+                    </Text>
+                    <Text
+                      className={cn(
+                        "text-base font-bold",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      {item.carbs}g
+                    </Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text
+                      className={cn(
+                        "text-xs mb-1",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      Fat
+                    </Text>
+                    <Text
+                      className={cn(
+                        "text-base font-bold",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      {item.fats}g
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Add Meal Button */}
+        <View className="px-4 mt-4 mb-20">
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              setIsAddFoodModalVisible(true);
+            }}
+            className="rounded-3xl py-4 flex-row justify-center items-center"
+            style={{
+              backgroundColor: "#3b82f6",
+              shadowColor: "#3b82f6",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.4,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
+            <Ionicons name="add-circle" size={24} color="white" />
+            <Text className="text-white text-base font-bold ml-2">
+              Add Meal
             </Text>
           </Pressable>
         </View>
       </ScrollView>
-
-      {/* Floating Add Button - Enhanced */}
-      <Pressable
-        onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          setIsAddFoodModalVisible(true);
-        }}
-        className="absolute bottom-24 right-6 w-18 h-18 rounded-full items-center justify-center"
-        style={{
-          backgroundColor: "#3b82f6",
-          shadowColor: "#3b82f6",
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.4,
-          shadowRadius: 12,
-          elevation: 8,
-          borderWidth: 3,
-          borderColor: "#fff",
-        }}
-      >
-        <Ionicons name="add" size={36} color="white" />
-      </Pressable>
 
       {/* Add Food Options Modal - Liquid Glass UI */}
       <Modal
