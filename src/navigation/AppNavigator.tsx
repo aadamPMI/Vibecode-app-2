@@ -1,20 +1,41 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import WorkoutScreen from "../screens/WorkoutScreen";
 import NutritionScreen from "../screens/NutritionScreen";
 import CommunityScreen from "../screens/CommunityScreen";
+import MyCommunitiesScreen from "../screens/MyCommunitiesScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { useSettingsStore } from "../state/settingsStore";
 
 export type RootTabParamList = {
   Workout: undefined;
   Nutrition: undefined;
-  Community: undefined;
+  CommunityStack: undefined;
   Settings: undefined;
 };
 
+export type CommunityStackParamList = {
+  Community: { openCommunity?: any };
+  MyCommunities: undefined;
+};
+
 const Tab = createBottomTabNavigator<RootTabParamList>();
+const CommunityStack = createNativeStackNavigator<CommunityStackParamList>();
+
+function CommunityStackNavigator() {
+  return (
+    <CommunityStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <CommunityStack.Screen name="Community" component={CommunityScreen} />
+      <CommunityStack.Screen name="MyCommunities" component={MyCommunitiesScreen} />
+    </CommunityStack.Navigator>
+  );
+}
 
 export default function AppNavigator() {
   const theme = useSettingsStore((s) => s.theme);
@@ -30,7 +51,7 @@ export default function AppNavigator() {
             iconName = focused ? "barbell" : "barbell-outline";
           } else if (route.name === "Nutrition") {
             iconName = focused ? "nutrition" : "nutrition-outline";
-          } else if (route.name === "Community") {
+          } else if (route.name === "CommunityStack") {
             iconName = focused ? "people" : "people-outline";
           } else if (route.name === "Settings") {
             iconName = focused ? "settings" : "settings-outline";
@@ -50,7 +71,13 @@ export default function AppNavigator() {
     >
       <Tab.Screen name="Workout" component={WorkoutScreen} />
       <Tab.Screen name="Nutrition" component={NutritionScreen} />
-      <Tab.Screen name="Community" component={CommunityScreen} />
+      <Tab.Screen 
+        name="CommunityStack" 
+        component={CommunityStackNavigator}
+        options={{
+          tabBarLabel: "Community",
+        }}
+      />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );

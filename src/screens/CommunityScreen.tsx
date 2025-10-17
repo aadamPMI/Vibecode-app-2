@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -27,7 +27,7 @@ import {
 import { useSettingsStore } from "../state/settingsStore";
 import { cn } from "../utils/cn";
 
-export default function CommunityScreen() {
+export default function CommunityScreen({ navigation, route }: any) {
   const theme = useSettingsStore((s) => s.theme);
   const communities = useCommunityStore((s) => s.communities);
   const createCommunity = useCommunityStore((s) => s.createCommunity);
@@ -53,6 +53,18 @@ export default function CommunityScreen() {
   const [isCommunityDetailVisible, setIsCommunityDetailVisible] = useState(false);
   const [detailCommunity, setDetailCommunity] = useState<Community | null>(null);
   const [activeTab, setActiveTab] = useState<"about" | "members" | "leaderboard" | "challenges">("about");
+
+  // Handle navigation from MyCommunitiesScreen
+  useEffect(() => {
+    if (route.params?.openCommunity) {
+      const community = route.params.openCommunity;
+      setDetailCommunity(community);
+      setIsCommunityDetailVisible(true);
+      setActiveTab("about");
+      // Clear the param so it doesn't reopen on re-render
+      navigation.setParams({ openCommunity: undefined });
+    }
+  }, [route.params?.openCommunity]);
 
   // Create community form
   const [communityName, setCommunityName] = useState("");
@@ -222,22 +234,18 @@ export default function CommunityScreen() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveView(activeView === "my" ? null : "my");
+              navigation.navigate("MyCommunities");
             }}
             className={cn(
               "rounded-3xl p-6 mb-4",
-              activeView === "my"
-                ? "border-2 border-green-500"
-                : isDark
-                ? "bg-gray-800"
-                : "bg-white"
+              isDark ? "bg-gray-800" : "bg-white"
             )}
             style={{
-              shadowColor: activeView === "my" ? "#22c55e" : (isDark ? "#000" : "#1f2937"),
-              shadowOffset: { width: 0, height: activeView === "my" ? 8 : 6 },
-              shadowOpacity: activeView === "my" ? 0.5 : (isDark ? 0.6 : 0.25),
-              shadowRadius: activeView === "my" ? 20 : 12,
-              elevation: activeView === "my" ? 10 : 8,
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
             }}
           >
             <View
@@ -508,202 +516,6 @@ export default function CommunityScreen() {
             </View>
           </View>
         </View>
-
-        {/* Empty State - No communities joined */}
-        {activeView === "my" && getJoinedCommunities().length === 0 && (
-          <Animated.View
-            entering={FadeInDown.duration(300).springify()}
-            exiting={FadeOutUp.duration(200)}
-            className="px-4 mb-4"
-          >
-            <View className="items-center py-12">
-              <Ionicons
-                name="people-outline"
-                size={64}
-                color={isDark ? "#6b7280" : "#9ca3af"}
-              />
-              <Text
-                className={cn(
-                  "text-lg mt-4 font-semibold",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                No Communities Yet
-              </Text>
-              <Text
-                className={cn(
-                  "text-sm mt-2 text-center px-8",
-                  isDark ? "text-gray-500" : "text-gray-500"
-                )}
-              >
-                You haven&apos;t joined any communities. Discover communities to connect with others!
-              </Text>
-            </View>
-          </Animated.View>
-        )}
-
-        {/* Empty State - No communities joined */}
-        {activeView === "my" && getJoinedCommunities().length === 0 && (
-          <Animated.View
-            entering={FadeInDown.duration(300).springify()}
-            exiting={FadeOutUp.duration(200)}
-            className="px-4 mb-4"
-          >
-            <View className="items-center py-12">
-              <Ionicons
-                name="people-outline"
-                size={64}
-                color={isDark ? "#6b7280" : "#9ca3af"}
-              />
-              <Text
-                className={cn(
-                  "text-lg mt-4 font-semibold",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                No Communities Yet
-              </Text>
-              <Text
-                className={cn(
-                  "text-sm mt-2 text-center px-8",
-                  isDark ? "text-gray-500" : "text-gray-500"
-                )}
-              >
-                {"You haven't joined any communities. Discover communities to connect with others!"}
-              </Text>
-            </View>
-          </Animated.View>
-        )}
-
-        {/* Community Details Panel - Shows when activeView is "my", "discover", or "trending" */}
-        {activeView && getJoinedCommunities().length > 0 && activeView === "my" && (
-          <Animated.View 
-            entering={FadeInDown.duration(300).springify()}
-            exiting={FadeOutUp.duration(200)}
-            className="px-4 mb-4"
-          >
-            {getJoinedCommunities().map((community) => (
-              <Pressable
-                key={community.id}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setDetailCommunity(community);
-                  setIsCommunityDetailVisible(true);
-                  setActiveTab("about");
-                }}
-                className="rounded-2xl overflow-hidden mb-3"
-                style={{
-                  backgroundColor: isDark ? "rgba(30, 30, 40, 0.6)" : "rgba(255, 255, 255, 0.7)",
-                  borderWidth: 1,
-                  borderColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
-                  shadowColor: "#ec4899",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: isDark ? 0.3 : 0.15,
-                  shadowRadius: 16,
-                  elevation: 8,
-                }}
-              >
-                {/* Glass morphism backdrop blur effect */}
-                <View
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: isDark 
-                      ? "rgba(236, 72, 153, 0.08)" 
-                      : "rgba(236, 72, 153, 0.05)",
-                  }}
-                />
-
-                {/* Compact content layout */}
-                <View className="flex-row items-center p-4">
-                  {/* Community Icon - Compact */}
-                  <View
-                    className="w-14 h-14 rounded-2xl items-center justify-center mr-4"
-                    style={{
-                      backgroundColor: isDark
-                        ? "rgba(236, 72, 153, 0.25)"
-                        : "rgba(236, 72, 153, 0.15)",
-                      shadowColor: "#ec4899",
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.3,
-                      shadowRadius: 8,
-                      elevation: 4,
-                    }}
-                  >
-                    <Ionicons 
-                      name="people" 
-                      size={28} 
-                      color={isDark ? "#f9a8d4" : "#ec4899"} 
-                    />
-                  </View>
-
-                  {/* Community Info */}
-                  <View className="flex-1">
-                    <Text
-                      className={cn(
-                        "text-lg font-bold mb-1",
-                        isDark ? "text-white" : "text-gray-900"
-                      )}
-                      numberOfLines={1}
-                    >
-                      {community.name}
-                    </Text>
-                    <View className="flex-row items-center">
-                      <View className="flex-row items-center mr-4">
-                        <Ionicons
-                          name="people"
-                          size={14}
-                          color={isDark ? "#9ca3af" : "#6b7280"}
-                        />
-                        <Text
-                          className={cn(
-                            "text-xs font-semibold ml-1",
-                            isDark ? "text-gray-400" : "text-gray-600"
-                          )}
-                        >
-                          {community.members.length}
-                        </Text>
-                      </View>
-                      <View className="flex-row items-center">
-                        <View
-                          className="w-2 h-2 rounded-full mr-1.5"
-                          style={{ backgroundColor: "#22c55e" }}
-                        />
-                        <Text
-                          className={cn(
-                            "text-xs font-semibold",
-                            isDark ? "text-gray-400" : "text-gray-600"
-                          )}
-                        >
-                          Active
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-
-                  {/* Chevron indicator */}
-                  <View
-                    className="w-8 h-8 rounded-full items-center justify-center ml-2"
-                    style={{
-                      backgroundColor: isDark
-                        ? "rgba(255, 255, 255, 0.08)"
-                        : "rgba(0, 0, 0, 0.04)",
-                    }}
-                  >
-                    <Ionicons
-                      name="chevron-forward"
-                      size={18}
-                      color={isDark ? "#9ca3af" : "#6b7280"}
-                    />
-                  </View>
-                </View>
-              </Pressable>
-            ))}
-          </Animated.View>
-        )}
 
         {/* Discover Communities - Shows when activeView is "discover" */}
         {activeView === "discover" && getAvailableCommunities().length > 0 && (
