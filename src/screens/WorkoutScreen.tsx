@@ -20,15 +20,24 @@ import Animated, {
   SlideInLeft,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
-import { useWorkoutStore, Workout, Exercise } from "../state/workoutStore";
+import { useWorkoutStore, Workout, Exercise, PersonalRecord } from "../state/workoutStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { cn } from "../utils/cn";
+import { GYM_EXERCISES } from "../utils/exerciseList";
 
 export default function WorkoutScreen() {
   const theme = useSettingsStore((s) => s.theme);
   const workouts = useWorkoutStore((s) => s.workouts);
   const addWorkout = useWorkoutStore((s) => s.addWorkout);
   const deleteWorkout = useWorkoutStore((s) => s.deleteWorkout);
+  const personalRecords = useWorkoutStore((s) => s.personalRecords);
+  const addPersonalRecord = useWorkoutStore((s) => s.addPersonalRecord);
+  const deletePersonalRecord = useWorkoutStore((s) => s.deletePersonalRecord);
+  const bodyWeight = useWorkoutStore((s) => s.bodyWeight);
+  const bodyWeightUnit = useWorkoutStore((s) => s.bodyWeightUnit);
+  const updateBodyWeight = useWorkoutStore((s) => s.updateBodyWeight);
+  const featuredPRs = useWorkoutStore((s) => s.featuredPRs);
+  const setFeaturedPRs = useWorkoutStore((s) => s.setFeaturedPRs);
   
   const isDark = theme === "dark";
   const [activeView, setActiveView] = useState<"active" | "programs" | "history" | "stats" | null>(null);
@@ -37,6 +46,16 @@ export default function WorkoutScreen() {
   const [workoutName, setWorkoutName] = useState("");
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExerciseName, setCurrentExerciseName] = useState("");
+  
+  // New state for stats modals
+  const [isLogPRModalVisible, setIsLogPRModalVisible] = useState(false);
+  const [isFeaturedPRModalVisible, setIsFeaturedPRModalVisible] = useState(false);
+  const [isWeightModalVisible, setIsWeightModalVisible] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState("");
+  const [prWeight, setPrWeight] = useState("");
+  const [prUnit, setPrUnit] = useState<"kg" | "lbs">("kg");
+  const [tempBodyWeight, setTempBodyWeight] = useState(bodyWeight.toString());
+  const [exerciseSearchQuery, setExerciseSearchQuery] = useState("");
 
   const handleAddExercise = () => {
     if (currentExerciseName.trim()) {
@@ -108,7 +127,7 @@ export default function WorkoutScreen() {
     });
   };
 
-  const getTotalVolume = (workout: Workout) => {
+  const getWorkoutVolume = (workout: Workout) => {
     return workout.exercises.reduce(
       (total, exercise) =>
         total +
@@ -129,11 +148,99 @@ export default function WorkoutScreen() {
   };
 
   const getTotalPRs = () => {
-    // Simple PR calculation: count exercises with max weight
+    return personalRecords.length;
+  };
+
+  const getTotalVolume = () => {
     return workouts.reduce((total, workout) => {
-      return total + workout.exercises.length;
+      return total + workout.exercises.reduce(
+        (workoutTotal, exercise) =>
+          workoutTotal +
+          exercise.sets.reduce((sum, set) => sum + set.reps * set.weight, 0),
+        0
+      );
     }, 0);
   };
+
+  const getTotalSets = () => {
+    return workouts.reduce((total, workout) => {
+      return total + workout.exercises.reduce(
+        (workoutTotal, exercise) => workoutTotal + exercise.sets.length,
+        0
+      );
+    }, 0);
+  };
+
+  const getTotalHours = () => {
+    return workouts.reduce((total, workout) => {
+      return total + (workout.duration || 60); // Default to 60 minutes if not logged
+    }, 0) / 60; // Convert to hours
+  };
+
+  const getWorkoutStreak = () => {
+    if (workouts.length === 0) return 0;
+    
+    let streak = 0;
+    const today = new Date();
+    const sortedWorkouts = [...workouts].sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    
+    // Check if most recent workout was today or yesterday
+    const lastWorkout = new Date(sortedWorkouts[0].date);
+    const daysDiff = Math.floor((today.getTime() - lastWorkout.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysDiff > 1) return 0; // Streak broken
+    
+    // Count consecutive days
+    const workoutDates = new Set(sortedWorkouts.map(w => 
+      new Date(w.date).toISOString().split('T')[0]
+    ));
+    
+    for (let i = 0; i <= 365; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(checkDate.getDate() - i);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      
+      if (workoutDates.has(dateStr)) {
+        streak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+    
+    return streak;
+  };
+
+  const handleLogPR = () => {
+    if (selectedExercise && prWeight) {
+      const newPR: PersonalRecord = {
+        id: Date.now().toString(),
+        exercise: selectedExercise,
+        weight: parseFloat(prWeight),
+        unit: prUnit,
+        date: new Date().toISOString(),
+      };
+      addPersonalRecord(newPR);
+      setSelectedExercise("");
+      setPrWeight("");
+      setIsLogPRModalVisible(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  };
+
+  const handleUpdateWeight = () => {
+    const weight = parseFloat(tempBodyWeight);
+    if (weight && weight > 0) {
+      updateBodyWeight(weight, bodyWeightUnit);
+      setIsWeightModalVisible(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  };
+
+  const filteredExercises = GYM_EXERCISES.filter(ex =>
+    ex.toLowerCase().includes(exerciseSearchQuery.toLowerCase())
+  );
 
 
   // Home view with 4 cards
@@ -693,7 +800,7 @@ export default function WorkoutScreen() {
                             isDark ? "text-purple-400" : "text-purple-600"
                           )}
                         >
-                          {getTotalVolume(item)}
+                          {getWorkoutVolume(item)}
                         </Text>
                       </View>
                     </View>
@@ -822,7 +929,7 @@ export default function WorkoutScreen() {
                           isDark ? "text-gray-400" : "text-gray-600"
                         )}
                       >
-                        {workout.exercises.length} exercises • {getTotalVolume(workout)} lbs total
+                        {workout.exercises.length} exercises • {getWorkoutVolume(workout)} lbs total
                       </Text>
                     </View>
                   ))}

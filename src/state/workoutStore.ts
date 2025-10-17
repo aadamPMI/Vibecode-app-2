@@ -17,21 +17,42 @@ export interface Workout {
   name: string;
   date: string;
   exercises: Exercise[];
-  duration?: number;
+  duration?: number; // in minutes
+  notes?: string;
+}
+
+export interface PersonalRecord {
+  id: string;
+  exercise: string;
+  weight: number;
+  unit: "kg" | "lbs";
+  date: string;
   notes?: string;
 }
 
 interface WorkoutStore {
   workouts: Workout[];
+  personalRecords: PersonalRecord[];
+  bodyWeight: number;
+  bodyWeightUnit: "kg" | "lbs";
+  featuredPRs: string[]; // Array of PR IDs to feature on profile
   addWorkout: (workout: Workout) => void;
   deleteWorkout: (id: string) => void;
   updateWorkout: (id: string, workout: Partial<Workout>) => void;
+  addPersonalRecord: (pr: PersonalRecord) => void;
+  deletePersonalRecord: (id: string) => void;
+  updateBodyWeight: (weight: number, unit: "kg" | "lbs") => void;
+  setFeaturedPRs: (prIds: string[]) => void;
 }
 
 export const useWorkoutStore = create<WorkoutStore>()(
   persist(
     (set) => ({
       workouts: [],
+      personalRecords: [],
+      bodyWeight: 70,
+      bodyWeightUnit: "kg",
+      featuredPRs: [],
       addWorkout: (workout) =>
         set((state) => ({ workouts: [workout, ...state.workouts] })),
       deleteWorkout: (id) =>
@@ -44,6 +65,16 @@ export const useWorkoutStore = create<WorkoutStore>()(
             w.id === id ? { ...w, ...updatedWorkout } : w
           ),
         })),
+      addPersonalRecord: (pr) =>
+        set((state) => ({ personalRecords: [pr, ...state.personalRecords] })),
+      deletePersonalRecord: (id) =>
+        set((state) => ({
+          personalRecords: state.personalRecords.filter((pr) => pr.id !== id),
+        })),
+      updateBodyWeight: (weight, unit) =>
+        set({ bodyWeight: weight, bodyWeightUnit: unit }),
+      setFeaturedPRs: (prIds) =>
+        set({ featuredPRs: prIds.slice(0, 5) }), // Max 5
     }),
     {
       name: "workout-storage",
