@@ -152,67 +152,131 @@ export default function WorkoutScreen() {
               Workout
             </Text>
           </View>
-          {/* Active Workout Card */}
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveView(activeView === "active" ? null : "active");
-            }}
-            className={cn(
-              "rounded-3xl p-6 mb-4",
-              activeView === "active"
-                ? "border-2 border-orange-500"
-                : isDark
-                ? "bg-gray-800"
-                : "bg-white"
-            )}
-            style={{
-              shadowColor: activeView === "active" ? "#fb923c" : "#000",
-              shadowOffset: { width: 0, height: activeView === "active" ? 6 : 4 },
-              shadowOpacity: activeView === "active" ? 0.4 : 0.2,
-              shadowRadius: activeView === "active" ? 16 : 8,
-              elevation: activeView === "active" ? 8 : 5,
-            }}
-          >
-            <View
-              className="rounded-3xl p-5 mb-4"
-              style={{ 
-                backgroundColor: "rgba(251, 146, 60, 0.15)",
-                shadowColor: "#fb923c",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 6,
+
+          {/* Top Row - Active Workout & My Programs */}
+          <View className="flex-row mb-4">
+            {/* Active Workout Card */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                setActiveView(activeView === "active" ? null : "active");
+              }}
+              className={cn(
+                "flex-1 rounded-3xl p-5 mr-2",
+                activeView === "active"
+                  ? "border-2 border-orange-500"
+                  : isDark
+                  ? "bg-gray-800"
+                  : "bg-gray-100"
+              )}
+              style={{
+                shadowColor: activeView === "active" ? "#fb923c" : "#000",
+                shadowOffset: { width: 0, height: activeView === "active" ? 6 : 4 },
+                shadowOpacity: activeView === "active" ? 0.4 : 0.1,
+                shadowRadius: activeView === "active" ? 16 : 8,
+                elevation: activeView === "active" ? 8 : 5,
               }}
             >
-              <Ionicons name="flame" size={36} color="#fb923c" />
-            </View>
-            <Text
-              className={cn(
-                "text-2xl font-bold mb-2",
-                isDark ? "text-white" : "text-gray-900"
-              )}
-            >
-              Active Workout
-            </Text>
-            <Text
-              className={cn(
-                "text-sm mb-4",
-                isDark ? "text-gray-400" : "text-gray-600"
-              )}
-            >
-              Start your training session
-            </Text>
-            <View className="flex-row items-center">
-              <Ionicons
-                name="play-circle"
-                size={20}
-                color="#fb923c"
-              />
-              <Text className="text-base font-semibold ml-2 text-orange-500">
-                Start Workout
+              <View
+                className="rounded-2xl p-4 mb-4"
+                style={{ backgroundColor: "rgba(251, 146, 60, 0.15)" }}
+              >
+                <Ionicons name="flame" size={28} color="#fb923c" />
+              </View>
+              <Text
+                className={cn(
+                  "text-xl font-bold mb-2",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                Active Workout
               </Text>
-            </View>
-          </Pressable>
+              <Text
+                className={cn(
+                  "text-xs mb-4",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}
+              >
+                Start training
+              </Text>
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="play"
+                  size={16}
+                  color={isDark ? "#9ca3af" : "#6b7280"}
+                />
+                <Text
+                  className={cn(
+                    "text-sm font-semibold ml-1",
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  Start
+                </Text>
+              </View>
+            </Pressable>
+
+            {/* My Programs Card */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                setActiveView(activeView === "programs" ? null : "programs");
+              }}
+              className={cn(
+                "flex-1 rounded-3xl p-5 ml-2",
+                activeView === "programs"
+                  ? "border-2 border-blue-500"
+                  : isDark
+                  ? "bg-gray-800"
+                  : "bg-gray-100"
+              )}
+              style={{
+                shadowColor: activeView === "programs" ? "#3b82f6" : "#000",
+                shadowOffset: { width: 0, height: activeView === "programs" ? 6 : 4 },
+                shadowOpacity: activeView === "programs" ? 0.4 : 0.1,
+                shadowRadius: activeView === "programs" ? 16 : 8,
+                elevation: activeView === "programs" ? 8 : 5,
+              }}
+            >
+              <View
+                className="rounded-2xl p-4 mb-4"
+                style={{ backgroundColor: "rgba(147, 197, 253, 0.3)" }}
+              >
+                <Ionicons name="fitness-outline" size={28} color="#60a5fa" />
+              </View>
+              <Text
+                className={cn(
+                  "text-xl font-bold mb-2",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                My Programs
+              </Text>
+              <Text
+                className={cn(
+                  "text-xs mb-4",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}
+              >
+                Workout splits
+              </Text>
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="albums-outline"
+                  size={16}
+                  color={isDark ? "#9ca3af" : "#6b7280"}
+                />
+                <Text
+                  className={cn(
+                    "text-sm font-semibold ml-1",
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  0 splits
+                </Text>
+              </View>
+            </Pressable>
+          </View>
 
           {/* Active Workout Options - Shows when clicked */}
           {activeView === "active" && (
@@ -298,67 +362,6 @@ export default function WorkoutScreen() {
             </View>
           )}
 
-          {/* My Programs Card */}
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveView(activeView === "programs" ? null : "programs");
-            }}
-            className={cn(
-              "rounded-3xl p-5 mb-4",
-              activeView === "programs"
-                ? "border-2 border-blue-500"
-                : isDark
-                ? "bg-gray-800"
-                : "bg-gray-100"
-            )}
-            style={{
-              shadowColor: activeView === "programs" ? "#3b82f6" : "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: activeView === "programs" ? 0.4 : 0.1,
-              shadowRadius: activeView === "programs" ? 16 : 8,
-              elevation: 5,
-            }}
-          >
-            <View
-              className="rounded-2xl p-4 mb-4"
-              style={{ backgroundColor: "rgba(147, 197, 253, 0.3)" }}
-            >
-              <Ionicons name="fitness-outline" size={32} color="#60a5fa" />
-            </View>
-            <Text
-              className={cn(
-                "text-2xl font-bold mb-2",
-                isDark ? "text-white" : "text-gray-900"
-              )}
-            >
-              My Programs
-            </Text>
-            <Text
-              className={cn(
-                "text-sm mb-4",
-                isDark ? "text-gray-400" : "text-gray-600"
-              )}
-            >
-              Manage workout splits
-            </Text>
-            <View className="flex-row items-center">
-              <Ionicons
-                name="albums-outline"
-                size={18}
-                color={isDark ? "#9ca3af" : "#6b7280"}
-              />
-              <Text
-                className={cn(
-                  "text-base font-semibold ml-2",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                0 splits
-              </Text>
-            </View>
-          </Pressable>
-
           {/* Programs List - Shows when clicked */}
           {activeView === "programs" && (
             <View className="mb-4">
@@ -409,6 +412,7 @@ export default function WorkoutScreen() {
             </View>
           )}
 
+          {/* Bottom Row - History & Stats */}
           <View className="flex-row mb-4">
             {/* History Card */}
             <Pressable
