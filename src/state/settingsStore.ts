@@ -25,7 +25,6 @@ export interface ProfileSettings {
 export interface PrivacySettings {
   shareProgress: boolean;
   publicProfile: boolean;
-  allowMessages: boolean;
 }
 
 interface SettingsStore {
@@ -49,7 +48,6 @@ export const useSettingsStore = create<SettingsStore>()(
       privacySettings: {
         shareProgress: true,
         publicProfile: true,
-        allowMessages: true,
       },
       fitnessGoals: {
         targetCalories: 2000,

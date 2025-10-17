@@ -313,31 +313,6 @@ export default function SettingsScreen() {
                     thumbColor="#ffffff"
                   />
                 </View>
-
-                <View
-                  className={cn(
-                    "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-gray-800" : "bg-gray-100"
-                  )}
-                >
-                  <Text
-                    className={cn(
-                      "text-base font-semibold flex-1",
-                      isDark ? "text-white" : "text-gray-900"
-                    )}
-                  >
-                    Allow Messages
-                  </Text>
-                  <Switch
-                    value={privacySettings.allowMessages}
-                    onValueChange={(value) => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      updatePrivacySettings({ allowMessages: value });
-                    }}
-                    trackColor={{ false: "#767577", true: "#3b82f6" }}
-                    thumbColor="#ffffff"
-                  />
-                </View>
               </View>
             )}
 
