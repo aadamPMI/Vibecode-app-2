@@ -292,7 +292,7 @@ export default function WorkoutScreen() {
   // Home view with 4 cards
   return (
     <>
-      <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
+      <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-white")}>
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="pt-4 mb-6">
             <Text
@@ -326,7 +326,7 @@ export default function WorkoutScreen() {
                 activeView === "active"
                   ? "border-2 border-orange-500"
                   : isDark
-                  ? "bg-gray-700"
+                  ? "bg-gray-800"
                   : "bg-gray-100"
               )}
               style={{
@@ -394,7 +394,7 @@ export default function WorkoutScreen() {
                 activeView === "programs"
                   ? "border-2 border-blue-500"
                   : isDark
-                  ? "bg-gray-700"
+                  ? "bg-gray-800"
                   : "bg-gray-100"
               )}
               style={{
@@ -465,7 +465,7 @@ export default function WorkoutScreen() {
                 activeView === "history"
                   ? "border-2 border-green-500"
                   : isDark
-                  ? "bg-gray-700"
+                  ? "bg-gray-800"
                   : "bg-gray-100"
               )}
               style={{
@@ -533,7 +533,7 @@ export default function WorkoutScreen() {
                 activeView === "stats"
                   ? "border-2 border-purple-500"
                   : isDark
-                  ? "bg-gray-700"
+                  ? "bg-gray-800"
                   : "bg-gray-100"
               )}
               style={{
@@ -603,7 +603,7 @@ export default function WorkoutScreen() {
               <View
                 className={cn(
                   "rounded-3xl p-6",
-                  isDark ? "bg-gray-700" : "bg-gray-100"
+                  isDark ? "bg-gray-800" : "bg-gray-100"
                 )}
               >
                 <Text
@@ -663,7 +663,7 @@ export default function WorkoutScreen() {
                       }}
                       className={cn(
                         "rounded-xl p-3 mb-2",
-                        isDark ? "bg-gray-700" : "bg-white"
+                        isDark ? "bg-gray-800" : "bg-white"
                       )}
                     >
                       <Text
@@ -691,7 +691,7 @@ export default function WorkoutScreen() {
               <View
                 className={cn(
                   "rounded-3xl p-6",
-                  isDark ? "bg-gray-700" : "bg-gray-100"
+                  isDark ? "bg-gray-800" : "bg-gray-100"
                 )}
               >
                 <View className="items-center py-8">
@@ -746,7 +746,7 @@ export default function WorkoutScreen() {
                 <View
                   className={cn(
                     "rounded-3xl p-6",
-                    isDark ? "bg-gray-700" : "bg-gray-100"
+                    isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                 >
                   <View className="items-center py-8">
@@ -788,7 +788,7 @@ export default function WorkoutScreen() {
                     }}
                     className={cn(
                       "rounded-2xl p-4 mb-3",
-                      isDark ? "bg-gray-700" : "bg-gray-100"
+                      isDark ? "bg-gray-800" : "bg-gray-100"
                     )}
                   >
                     <View className="flex-row justify-between items-start mb-2">
@@ -896,7 +896,7 @@ export default function WorkoutScreen() {
                 <View
                   className={cn(
                     "flex-1 rounded-3xl p-4 mr-2",
-                    isDark ? "bg-gray-700" : "bg-gray-100"
+                    isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
                     shadowColor: "#000",
@@ -930,7 +930,7 @@ export default function WorkoutScreen() {
                 <View
                   className={cn(
                     "flex-1 rounded-3xl p-4 mx-1",
-                    isDark ? "bg-gray-700" : "bg-gray-100"
+                    isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
                     shadowColor: "#000",
@@ -964,7 +964,7 @@ export default function WorkoutScreen() {
                 <View
                   className={cn(
                     "flex-1 rounded-3xl p-4 ml-2",
-                    isDark ? "bg-gray-700" : "bg-gray-100"
+                    isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
                     shadowColor: "#000",
@@ -1000,7 +1000,7 @@ export default function WorkoutScreen() {
               <View
                 className={cn(
                   "rounded-3xl p-6 mb-4",
-                  isDark ? "bg-gray-700" : "bg-gray-100"
+                  isDark ? "bg-gray-800" : "bg-gray-100"
                 )}
               >
                 <Text
@@ -1032,7 +1032,7 @@ export default function WorkoutScreen() {
               <View
                 className={cn(
                   "rounded-3xl p-6 mb-4",
-                  isDark ? "bg-gray-700" : "bg-gray-100"
+                  isDark ? "bg-gray-800" : "bg-gray-100"
                 )}
               >
                 <View className="flex-row justify-between items-center mb-4">
@@ -1055,7 +1055,7 @@ export default function WorkoutScreen() {
                     }}
                     className={cn(
                       "px-4 py-2 rounded-full",
-                      isDark ? "bg-gray-700" : "bg-white"
+                      isDark ? "bg-gray-800" : "bg-white"
                     )}
                   >
                     <Text
@@ -1098,7 +1098,7 @@ export default function WorkoutScreen() {
               <View
                 className={cn(
                   "rounded-3xl p-6 mb-4",
-                  isDark ? "bg-gray-700" : "bg-gray-100"
+                  isDark ? "bg-gray-800" : "bg-gray-100"
                 )}
               >
                 <View className="flex-row justify-between items-center mb-4">
@@ -1143,7 +1143,7 @@ export default function WorkoutScreen() {
                       key={pr.id}
                       className={cn(
                         "rounded-2xl p-4 mb-3",
-                        isDark ? "bg-gray-700" : "bg-white"
+                        isDark ? "bg-gray-800" : "bg-white"
                       )}
                     >
                       <View className="flex-row justify-between items-center">
@@ -1188,7 +1188,7 @@ export default function WorkoutScreen() {
               <View
                 className={cn(
                   "rounded-3xl p-6 mb-4",
-                  isDark ? "bg-gray-700" : "bg-gray-100"
+                  isDark ? "bg-gray-800" : "bg-gray-100"
                 )}
               >
                 <View className="flex-row justify-between items-center mb-4">
@@ -1207,7 +1207,7 @@ export default function WorkoutScreen() {
                     }}
                     className={cn(
                       "px-4 py-2 rounded-full",
-                      isDark ? "bg-gray-700" : "bg-white"
+                      isDark ? "bg-gray-800" : "bg-white"
                     )}
                   >
                     <Text
@@ -1254,7 +1254,7 @@ export default function WorkoutScreen() {
                         key={pr.id}
                         className={cn(
                           "rounded-2xl p-4 mb-3",
-                          isDark ? "bg-gray-700" : "bg-white"
+                          isDark ? "bg-gray-800" : "bg-white"
                         )}
                       >
                         <View className="flex-row items-center">
@@ -1296,7 +1296,7 @@ export default function WorkoutScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-gray-50")}>
+          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-gray-50")}>
             <View className="px-4 pt-4 pb-2 border-b border-gray-200">
               <View className="flex-row justify-between items-center">
                 <Text
@@ -1345,7 +1345,7 @@ export default function WorkoutScreen() {
                   className={cn(
                     "rounded-lg p-3 text-base",
                     isDark
-                      ? "bg-gray-800 text-white"
+                      ? "bg-gray-900 text-white"
                       : "bg-white text-gray-900"
                   )}
                 />
@@ -1369,7 +1369,7 @@ export default function WorkoutScreen() {
                     className={cn(
                       "flex-1 rounded-lg p-3 text-base mr-2",
                       isDark
-                        ? "bg-gray-800 text-white"
+                        ? "bg-gray-900 text-white"
                         : "bg-white text-gray-900"
                     )}
                   />
@@ -1402,7 +1402,7 @@ export default function WorkoutScreen() {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-gray-50")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-gray-50")}>
           <View className="px-4 pt-4 pb-2 border-b border-gray-200">
             <View className="flex-row justify-between items-center">
               <Text
@@ -1437,7 +1437,7 @@ export default function WorkoutScreen() {
                 key={exercise.id}
                 className={cn(
                   "mb-4 rounded-xl p-4",
-                  isDark ? "bg-gray-700" : "bg-white"
+                  isDark ? "bg-gray-800" : "bg-white"
                 )}
               >
                 <Text
@@ -1531,7 +1531,7 @@ export default function WorkoutScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
+          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-white")}>
             <View className="px-4 pt-4 pb-2 border-b border-gray-200">
               <View className="flex-row justify-between items-center">
                 <Text
@@ -1572,7 +1572,7 @@ export default function WorkoutScreen() {
                 placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
                 className={cn(
                   "rounded-lg p-3 text-base mb-4",
-                  isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+                  isDark ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
                 )}
               />
 
@@ -1590,7 +1590,7 @@ export default function WorkoutScreen() {
                       selectedExercise === exercise
                         ? "bg-blue-500"
                         : isDark
-                        ? "bg-gray-700"
+                        ? "bg-gray-800"
                         : "bg-gray-100"
                     )}
                   >
@@ -1628,7 +1628,7 @@ export default function WorkoutScreen() {
                   placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
                   className={cn(
                     "flex-1 rounded-lg p-3 text-base mr-2",
-                    isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+                    isDark ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
                   )}
                 />
                 <Pressable
@@ -1638,7 +1638,7 @@ export default function WorkoutScreen() {
                   }}
                   className={cn(
                     "px-6 rounded-lg items-center justify-center",
-                    isDark ? "bg-gray-700" : "bg-gray-100"
+                    isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                 >
                   <Text
@@ -1669,7 +1669,7 @@ export default function WorkoutScreen() {
                 placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
                 className={cn(
                   "rounded-lg p-3 text-base mb-6",
-                  isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+                  isDark ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-900"
                 )}
               />
 
@@ -1696,7 +1696,7 @@ export default function WorkoutScreen() {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-white")}>
           <View className="px-4 pt-4 pb-2 border-b border-gray-200">
             <View className="flex-row justify-between items-center">
               <Text
@@ -1741,7 +1741,7 @@ export default function WorkoutScreen() {
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-white")}>
           <View className="px-4 pt-4 pb-2 border-b border-gray-200">
             <View className="flex-row justify-between items-center">
               <Text
@@ -1788,7 +1788,7 @@ export default function WorkoutScreen() {
                     isFeatured
                       ? "bg-yellow-500"
                       : isDark
-                      ? "bg-gray-700"
+                      ? "bg-gray-800"
                       : "bg-gray-100"
                   )}
                 >
@@ -1840,7 +1840,7 @@ export default function WorkoutScreen() {
           handleFinishWorkoutCompletion();
         }}
       >
-        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-700" : "bg-white")}>
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-800" : "bg-white")}>
           <View className="flex-1 items-center justify-center px-6">
             {/* Success Icon */}
             <View
@@ -1874,7 +1874,7 @@ export default function WorkoutScreen() {
             <View
               className={cn(
                 "w-full rounded-3xl p-6 mb-6",
-                isDark ? "bg-gray-700" : "bg-gray-100"
+                isDark ? "bg-gray-800" : "bg-gray-100"
               )}
             >
               <Text
@@ -1985,7 +1985,7 @@ export default function WorkoutScreen() {
             <View
               className={cn(
                 "w-full rounded-2xl p-4 mb-6 flex-row items-center justify-between",
-                isDark ? "bg-gray-700" : "bg-gray-100"
+                isDark ? "bg-gray-800" : "bg-gray-100"
               )}
             >
               <View className="flex-1 mr-4">
@@ -2059,7 +2059,7 @@ function ExerciseCard({
     <View
       className={cn(
         "mt-4 rounded-xl p-4",
-        isDark ? "bg-gray-700" : "bg-white"
+        isDark ? "bg-gray-800" : "bg-white"
       )}
     >
       <Text
@@ -2262,7 +2262,7 @@ function WeightSlider({
           }}
           className={cn(
             "px-6 py-3 rounded-full",
-            isDark ? "bg-gray-700" : "bg-gray-200"
+            isDark ? "bg-gray-800" : "bg-gray-200"
           )}
         >
           <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
@@ -2279,7 +2279,7 @@ function WeightSlider({
           }}
           className={cn(
             "px-6 py-3 rounded-full",
-            isDark ? "bg-gray-700" : "bg-gray-200"
+            isDark ? "bg-gray-800" : "bg-gray-200"
           )}
         >
           <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
@@ -2296,7 +2296,7 @@ function WeightSlider({
           }}
           className={cn(
             "px-6 py-3 rounded-full",
-            isDark ? "bg-gray-700" : "bg-gray-200"
+            isDark ? "bg-gray-800" : "bg-gray-200"
           )}
         >
           <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
@@ -2313,7 +2313,7 @@ function WeightSlider({
           }}
           className={cn(
             "px-6 py-3 rounded-full",
-            isDark ? "bg-gray-700" : "bg-gray-200"
+            isDark ? "bg-gray-800" : "bg-gray-200"
           )}
         >
           <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
