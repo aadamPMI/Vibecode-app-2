@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,6 +18,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import { useIsFocused } from "@react-navigation/native";
 import { useNutritionStore, FoodItem } from "../state/nutritionStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { cn } from "../utils/cn";
@@ -30,6 +32,9 @@ export default function NutritionScreen() {
   const updateFoodItem = useNutritionStore((s) => s.updateFoodItem);
   
   const isDark = theme === "dark";
+  const isFocused = useIsFocused();
+  const scrollViewRef = useRef<ScrollView>(null);
+  
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [viewMealsModalVisible, setViewMealsModalVisible] = useState(false);
   const [showMealsInline, setShowMealsInline] = useState(false);
@@ -45,6 +50,11 @@ export default function NutritionScreen() {
     const diff = today.getDate() - day - 21; // Start 3 weeks ago
     return new Date(today.setDate(diff));
   });
+
+  // Constants for snapping
+  const DAY_ITEM_WIDTH = 60; // 48px circle + 12px margin-right
+  const SCREEN_WIDTH = Dimensions.get("window").width;
+  const PADDING_HORIZONTAL = 16; // px-4 = 16px
 
   // Form state
   const [foodName, setFoodName] = useState("");
@@ -247,6 +257,33 @@ export default function NutritionScreen() {
     });
   };
 
+  // Scroll to current day when tab is focused
+  useEffect(() => {
+    if (isFocused && scrollViewRef.current) {
+      const weekDates = getWeekDates();
+      const today = new Date();
+      const todayStr = today.toISOString().split("T")[0];
+      
+      // Find today's index in the week dates
+      const todayIndex = weekDates.findIndex(
+        (date) => date.toISOString().split("T")[0] === todayStr
+      );
+      
+      if (todayIndex !== -1) {
+        // Calculate scroll position to center today
+        const scrollToX = todayIndex * DAY_ITEM_WIDTH;
+        
+        // Delay to ensure ScrollView is mounted
+        setTimeout(() => {
+          scrollViewRef.current?.scrollTo({
+            x: scrollToX,
+            animated: true,
+          });
+        }, 100);
+      }
+    }
+  }, [isFocused]);
+
   return (
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -292,10 +329,14 @@ export default function NutritionScreen() {
         {/* Week Calendar - Horizontal Scroll */}
         <View className="mb-3">
           <ScrollView
+            ref={scrollViewRef}
             horizontal
             showsHorizontalScrollIndicator={false}
             className="px-4"
             contentContainerStyle={{ paddingRight: 16 }}
+            snapToInterval={DAY_ITEM_WIDTH}
+            decelerationRate="fast"
+            snapToAlignment="start"
           >
             {getWeekDates().map((date, index) => {
               const isToday =
