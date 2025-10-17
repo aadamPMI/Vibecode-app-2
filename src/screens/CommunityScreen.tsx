@@ -66,11 +66,6 @@ export default function CommunityScreen() {
       setCommunityDescription("");
       setIsCreateModalVisible(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      
-      // Extra celebration
-      setTimeout(() => {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }, 100);
     }
   };
 
@@ -104,7 +99,7 @@ export default function CommunityScreen() {
 
   const handleLikePost = (communityId: string, postId: string) => {
     likePost(communityId, postId, currentUserId);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const isMember = (community: Community) => {
@@ -144,23 +139,23 @@ export default function CommunityScreen() {
         <View className="px-4 pt-4">
           <Pressable
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               setActiveView(activeView === "my" ? null : "my");
             }}
             className={cn(
               "rounded-3xl p-6 mb-4",
               activeView === "my"
-                ? "border-4 border-green-500"
+                ? "border-2 border-green-500"
                 : isDark
                 ? "bg-gray-800"
                 : "bg-white"
             )}
             style={{
               shadowColor: activeView === "my" ? "#22c55e" : "#000",
-              shadowOffset: { width: 0, height: activeView === "my" ? 8 : 4 },
-              shadowOpacity: activeView === "my" ? 0.6 : 0.1,
-              shadowRadius: activeView === "my" ? 20 : 12,
-              elevation: activeView === "my" ? 10 : 5,
+              shadowOffset: { width: 0, height: activeView === "my" ? 6 : 4 },
+              shadowOpacity: activeView === "my" ? 0.4 : 0.1,
+              shadowRadius: activeView === "my" ? 16 : 12,
+              elevation: activeView === "my" ? 8 : 5,
             }}
           >
             <View
@@ -169,31 +164,31 @@ export default function CommunityScreen() {
                 backgroundColor: isDark ? "rgba(34, 197, 94, 0.15)" : "#bbf7d0",
                 shadowColor: "#22c55e",
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
+                shadowOpacity: 0.2,
+                shadowRadius: 6,
               }}
             >
               <Ionicons
                 name="people"
-                size={40}
+                size={36}
                 color={isDark ? "#22c55e" : "#16a34a"}
               />
             </View>
             <Text
               className={cn(
-                "text-3xl font-black mb-2",
+                "text-2xl font-bold mb-2",
                 isDark ? "text-white" : "text-gray-900"
               )}
             >
-              My Communities 🌟
+              My Communities
             </Text>
             <Text
               className={cn(
-                "text-base mb-3 font-semibold",
+                "text-sm mb-3",
                 isDark ? "text-gray-400" : "text-gray-600"
               )}
             >
-              Your squad is here!
+              Your joined communities
             </Text>
             <View
               className="rounded-full px-4 py-2 self-start"
@@ -201,12 +196,12 @@ export default function CommunityScreen() {
                 backgroundColor: "#22c55e",
                 shadowColor: "#22c55e",
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.4,
-                shadowRadius: 6,
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
               }}
             >
-              <Text className="text-sm font-black text-white">
-                {getJoinedCommunities().length} JOINED ✨
+              <Text className="text-sm font-bold text-white">
+                {getJoinedCommunities().length} Joined
               </Text>
             </View>
           </Pressable>

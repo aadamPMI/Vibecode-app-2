@@ -83,11 +83,6 @@ export default function WorkoutScreen() {
       setExercises([]);
       setIsCreateModalVisible(false);
       setActiveView(null);
-      
-      // Celebration for completing workout
-      setTimeout(() => {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }, 100);
     }
   };
 
@@ -173,23 +168,23 @@ export default function WorkoutScreen() {
           {/* Active Workout Card */}
           <Pressable
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               setActiveView(activeView === "active" ? null : "active");
             }}
             className={cn(
               "rounded-3xl p-6 mb-4",
               activeView === "active"
-                ? "border-4 border-orange-500"
+                ? "border-2 border-orange-500"
                 : isDark
                 ? "bg-gray-800"
                 : "bg-white"
             )}
             style={{
               shadowColor: activeView === "active" ? "#fb923c" : "#000",
-              shadowOffset: { width: 0, height: activeView === "active" ? 8 : 4 },
-              shadowOpacity: activeView === "active" ? 0.6 : 0.2,
-              shadowRadius: activeView === "active" ? 20 : 8,
-              elevation: activeView === "active" ? 10 : 5,
+              shadowOffset: { width: 0, height: activeView === "active" ? 6 : 4 },
+              shadowOpacity: activeView === "active" ? 0.4 : 0.2,
+              shadowRadius: activeView === "active" ? 16 : 8,
+              elevation: activeView === "active" ? 8 : 5,
             }}
           >
             <View
@@ -198,15 +193,15 @@ export default function WorkoutScreen() {
                 backgroundColor: "rgba(251, 146, 60, 0.15)",
                 shadowColor: "#fb923c",
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
+                shadowOpacity: 0.2,
+                shadowRadius: 6,
               }}
             >
-              <Ionicons name="flame" size={40} color="#fb923c" />
+              <Ionicons name="flame" size={36} color="#fb923c" />
             </View>
             <Text
               className={cn(
-                "text-3xl font-black mb-2",
+                "text-2xl font-bold mb-2",
                 isDark ? "text-white" : "text-gray-900"
               )}
             >
@@ -214,22 +209,20 @@ export default function WorkoutScreen() {
             </Text>
             <Text
               className={cn(
-                "text-base mb-4 font-semibold",
+                "text-sm mb-4",
                 isDark ? "text-gray-400" : "text-gray-600"
               )}
             >
-              Start training NOW 💪
+              Start your training session
             </Text>
             <View className="flex-row items-center">
               <Ionicons
                 name="play-circle"
-                size={24}
+                size={20}
                 color="#fb923c"
               />
-              <Text
-                className="text-lg font-black ml-2 text-orange-500"
-              >
-                START WORKOUT
+              <Text className="text-base font-semibold ml-2 text-orange-500">
+                Start Workout
               </Text>
             </View>
           </Pressable>
@@ -706,18 +699,18 @@ export default function WorkoutScreen() {
                 style={{
                   backgroundColor: "#3b82f6",
                   shadowColor: "#3b82f6",
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: 0.5,
-                  shadowRadius: 16,
-                  elevation: 10,
+                  shadowOffset: { width: 0, height: 6 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 12,
+                  elevation: 8,
                 }}
               >
-                <Text className="text-white text-sm font-bold mb-2">TOTAL WORKOUTS 💪</Text>
-                <Text className="text-white text-6xl font-black mb-2">
+                <Text className="text-white text-xs font-semibold mb-2 uppercase opacity-90">Total Workouts</Text>
+                <Text className="text-white text-6xl font-bold mb-2">
                   {workouts.length}
                 </Text>
-                <Text className="text-white text-base font-semibold opacity-90">
-                  All time - Keep crushing it! 🔥
+                <Text className="text-white text-sm opacity-80">
+                  All time - Keep it up! 💪
                 </Text>
               </View>
 
@@ -729,23 +722,21 @@ export default function WorkoutScreen() {
                   )}
                   style={{
                     shadowColor: "#22c55e",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 8,
-                    elevation: 5,
+                    shadowOffset: { width: 0, height: 3 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6,
+                    elevation: 3,
                   }}
                 >
                   <Text
                     className={cn(
-                      "text-xs mb-2 font-bold",
+                      "text-xs mb-2 font-semibold",
                       isDark ? "text-gray-400" : "text-gray-600"
                     )}
                   >
-                    THIS WEEK 📅
+                    This Week
                   </Text>
-                  <Text
-                    className="text-4xl font-black text-green-500"
-                  >
+                  <Text className="text-4xl font-bold text-green-500">
                     {getThisWeekWorkouts()}
                   </Text>
                 </View>
@@ -756,23 +747,21 @@ export default function WorkoutScreen() {
                   )}
                   style={{
                     shadowColor: "#f59e0b",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 8,
-                    elevation: 5,
+                    shadowOffset: { width: 0, height: 3 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6,
+                    elevation: 3,
                   }}
                 >
                   <Text
                     className={cn(
-                      "text-xs mb-2 font-bold",
+                      "text-xs mb-2 font-semibold",
                       isDark ? "text-gray-400" : "text-gray-600"
                     )}
                   >
-                    PERSONAL RECORDS 🏆
+                    Personal Records
                   </Text>
-                  <Text
-                    className="text-4xl font-black text-yellow-500"
-                  >
+                  <Text className="text-4xl font-bold text-yellow-500">
                     {getTotalPRs()}
                   </Text>
                 </View>
@@ -782,11 +771,11 @@ export default function WorkoutScreen() {
                 <>
                   <Text
                     className={cn(
-                      "text-xl font-black mb-4",
+                      "text-lg font-bold mb-4",
                       isDark ? "text-white" : "text-gray-900"
                     )}
                   >
-                    Recent Workouts 💪
+                    Recent Workouts
                   </Text>
                   {workouts.slice(0, 5).map((workout) => (
                     <View
@@ -798,26 +787,26 @@ export default function WorkoutScreen() {
                       style={{
                         shadowColor: "#3b82f6",
                         shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.2,
-                        shadowRadius: 6,
-                        elevation: 3,
+                        shadowOpacity: 0.15,
+                        shadowRadius: 4,
+                        elevation: 2,
                       }}
                     >
                       <Text
                         className={cn(
-                          "text-lg font-black mb-2",
+                          "text-base font-bold mb-2",
                           isDark ? "text-white" : "text-gray-900"
                         )}
                       >
-                        {workout.name} ✨
+                        {workout.name}
                       </Text>
                       <Text
                         className={cn(
-                          "text-base font-semibold",
+                          "text-sm",
                           isDark ? "text-gray-400" : "text-gray-600"
                         )}
                       >
-                        {workout.exercises.length} exercises • {getTotalVolume(workout)} lbs total 💪
+                        {workout.exercises.length} exercises • {getTotalVolume(workout)} lbs total
                       </Text>
                     </View>
                   ))}

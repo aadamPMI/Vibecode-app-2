@@ -366,12 +366,12 @@ export default function NutritionScreen() {
         {/* Calorie Display */}
         <View className="px-4 mt-6 items-center">
           <Text 
-            className="text-7xl font-black"
+            className="text-7xl font-bold"
             style={{
               color: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
-              textShadowColor: totals.calories >= targetCalories ? "rgba(34, 197, 94, 0.5)" : "rgba(59, 130, 246, 0.5)",
-              textShadowOffset: { width: 0, height: 4 },
-              textShadowRadius: 12,
+              textShadowColor: totals.calories >= targetCalories ? "rgba(34, 197, 94, 0.4)" : "rgba(59, 130, 246, 0.4)",
+              textShadowOffset: { width: 0, height: 3 },
+              textShadowRadius: 10,
             }}
           >
             {Math.round(totals.calories)}
@@ -381,14 +381,14 @@ export default function NutritionScreen() {
           )}
           <Text
             className={cn(
-              "text-lg mt-2 font-bold",
+              "text-base mt-2",
               totals.calories >= targetCalories
-                ? "text-green-500"
+                ? "text-green-500 font-semibold"
                 : isDark ? "text-gray-400" : "text-gray-600"
             )}
           >
             {totals.calories >= targetCalories 
-              ? "GOAL CRUSHED! 💪" 
+              ? "Goal reached! Keep it up 💪" 
               : `of ${targetCalories} calories`}
           </Text>
         </View>
@@ -459,34 +459,34 @@ export default function NutritionScreen() {
                 borderColor: isDark ? "#f59e0b" : "#fb923c",
                 shadowColor: "#f59e0b",
                 shadowOffset: { width: 0, height: 6 },
-                shadowOpacity: 0.4,
+                shadowOpacity: 0.3,
                 shadowRadius: 16,
-                elevation: 8,
+                elevation: 6,
               }}
             >
               <View className="flex-row justify-around">
                 <View className="items-center flex-1">
-                  <View className="mb-2">
-                    <Ionicons name="flame" size={52} color="#f97316" />
+                  <View className="mb-3">
+                    <Ionicons name="flame" size={48} color="#f97316" />
                   </View>
                   <Text
-                    className="text-5xl font-black"
+                    className="text-5xl font-bold"
                     style={{
                       color: "#f97316",
-                      textShadowColor: "rgba(249, 115, 22, 0.4)",
-                      textShadowOffset: { width: 0, height: 3 },
-                      textShadowRadius: 10,
+                      textShadowColor: "rgba(249, 115, 22, 0.3)",
+                      textShadowOffset: { width: 0, height: 2 },
+                      textShadowRadius: 8,
                     }}
                   >
                     {getCurrentStreak()}
                   </Text>
                   <Text
                     className={cn(
-                      "text-sm font-black mt-2 tracking-wider",
+                      "text-xs font-semibold mt-2",
                       isDark ? "text-orange-400" : "text-orange-600"
                     )}
                   >
-                    DAY STREAK 🔥
+                    Day Streak
                   </Text>
                 </View>
                 <View
@@ -494,27 +494,27 @@ export default function NutritionScreen() {
                   style={{ backgroundColor: isDark ? "#fb923c" : "#fdba74" }}
                 />
                 <View className="items-center flex-1">
-                  <View className="mb-2">
-                    <Ionicons name="trophy" size={52} color="#f59e0b" />
+                  <View className="mb-3">
+                    <Ionicons name="trophy" size={48} color="#f59e0b" />
                   </View>
                   <Text
-                    className="text-5xl font-black"
+                    className="text-5xl font-bold"
                     style={{
                       color: "#f59e0b",
-                      textShadowColor: "rgba(245, 158, 11, 0.4)",
-                      textShadowOffset: { width: 0, height: 3 },
-                      textShadowRadius: 10,
+                      textShadowColor: "rgba(245, 158, 11, 0.3)",
+                      textShadowOffset: { width: 0, height: 2 },
+                      textShadowRadius: 8,
                     }}
                   >
                     {getLongestStreak()}
                   </Text>
                   <Text
                     className={cn(
-                      "text-sm font-black mt-2 tracking-wider",
+                      "text-xs font-semibold mt-2",
                       isDark ? "text-yellow-400" : "text-yellow-600"
                     )}
                   >
-                    BEST EVER 👑
+                    Best Streak
                   </Text>
                 </View>
               </View>
@@ -554,22 +554,22 @@ export default function NutritionScreen() {
       {/* Floating Add Button - Enhanced */}
       <Pressable
         onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           setIsAddFoodModalVisible(true);
         }}
-        className="absolute bottom-24 right-6 w-20 h-20 rounded-full items-center justify-center"
+        className="absolute bottom-24 right-6 w-18 h-18 rounded-full items-center justify-center"
         style={{
           backgroundColor: "#3b82f6",
           shadowColor: "#3b82f6",
-          shadowOffset: { width: 0, height: 8 },
-          shadowOpacity: 0.5,
-          shadowRadius: 16,
-          elevation: 12,
-          borderWidth: 4,
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.4,
+          shadowRadius: 12,
+          elevation: 8,
+          borderWidth: 3,
           borderColor: "#fff",
         }}
       >
-        <Ionicons name="add" size={40} color="white" />
+        <Ionicons name="add" size={36} color="white" />
       </Pressable>
 
       {/* Add Food Options Modal - Liquid Glass UI */}
@@ -1228,28 +1228,28 @@ function MacroRow({
               backgroundColor: color,
               shadowColor: color,
               shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.5,
+              shadowOpacity: 0.4,
               shadowRadius: 4,
-              elevation: 3,
+              elevation: 2,
             }}
           />
           <Text
             className={cn(
-              "text-lg font-black",
+              "text-lg font-semibold",
               isDark ? "text-white" : "text-gray-900"
             )}
           >
             {label}
           </Text>
           {isComplete && (
-            <Text className="ml-2 text-xl">✨</Text>
+            <Text className="ml-2 text-base">✨</Text>
           )}
         </View>
         <Text
           className={cn(
-            "text-lg font-black",
+            "text-base",
             isComplete
-              ? "text-green-500"
+              ? "text-green-500 font-bold"
               : isDark ? "text-white" : "text-gray-900"
           )}
         >
@@ -1264,9 +1264,9 @@ function MacroRow({
         style={{
           shadowColor: isComplete ? color : "transparent",
           shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.4,
+          shadowOpacity: 0.3,
           shadowRadius: 6,
-          elevation: isComplete ? 3 : 0,
+          elevation: isComplete ? 2 : 0,
         }}
       >
         <Animated.View
@@ -1277,8 +1277,8 @@ function MacroRow({
               backgroundColor: color,
               shadowColor: color,
               shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.6,
-              shadowRadius: 8,
+              shadowOpacity: 0.5,
+              shadowRadius: 6,
             }
           ]}
         />
