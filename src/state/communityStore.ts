@@ -52,14 +52,34 @@ export interface Post {
   };
 }
 
+export interface Challenge {
+  id: string;
+  type: "pb" | "calorie_streak" | "workout_streak" | "custom";
+  title: string;
+  description: string;
+  targetValue?: number;
+  targetDays?: number;
+  createdBy: string;
+  createdAt: string;
+  participants: {
+    userId: string;
+    progress: number;
+    completed: boolean;
+  }[];
+}
+
 export interface Community {
   id: string;
   name: string;
   description: string;
   members: string[];
+  admins: string[]; // Admin user IDs
   createdBy: string;
   createdAt: string;
   posts: Post[];
+  joinCode?: string; // Private join code
+  isPrivate: boolean;
+  challenges: Challenge[];
 }
 
 interface CommunityStore {
@@ -68,6 +88,7 @@ interface CommunityStore {
   currentUserName: string;
   createCommunity: (community: Community) => void;
   joinCommunity: (communityId: string, userId: string) => void;
+  joinCommunityWithCode: (joinCode: string, userId: string) => boolean;
   leaveCommunity: (communityId: string, userId: string) => void;
   addPost: (communityId: string, post: Post) => void;
   likePost: (communityId: string, postId: string, userId: string) => void;
@@ -77,6 +98,9 @@ interface CommunityStore {
   sharePRToAllCommunities: (prData: Post["prData"], userId: string, userName: string) => void;
   shareMealToAllCommunities: (mealData: Post["mealData"], userId: string, userName: string) => void;
   shareNutritionSummaryToAllCommunities: (summaryData: Post["nutritionSummaryData"], userId: string, userName: string) => void;
+  addChallenge: (communityId: string, challenge: Challenge) => void;
+  joinChallenge: (communityId: string, challengeId: string, userId: string) => void;
+  updateChallengeProgress: (communityId: string, challengeId: string, userId: string, progress: number) => void;
 }
 
 export const useCommunityStore = create<CommunityStore>()(
@@ -95,6 +119,24 @@ export const useCommunityStore = create<CommunityStore>()(
               : c
           ),
         })),
+      joinCommunityWithCode: (joinCode, userId) => {
+        let success = false;
+        set((state) => {
+          const community = state.communities.find((c) => c.joinCode === joinCode);
+          if (community && !community.members.includes(userId)) {
+            success = true;
+            return {
+              communities: state.communities.map((c) =>
+                c.joinCode === joinCode
+                  ? { ...c, members: [...c.members, userId] }
+                  : c
+              ),
+            };
+          }
+          return state;
+        });
+        return success;
+      },
       leaveCommunity: (communityId, userId) =>
         set((state) => ({
           communities: state.communities.map((c) =>
@@ -239,6 +281,60 @@ export const useCommunityStore = create<CommunityStore>()(
             ),
           };
         }),
+      
+      addChallenge: (communityId, challenge) =>
+        set((state) => ({
+          communities: state.communities.map((c) =>
+            c.id === communityId
+              ? { ...c, challenges: [...c.challenges, challenge] }
+              : c
+          ),
+        })),
+      
+      joinChallenge: (communityId, challengeId, userId) =>
+        set((state) => ({
+          communities: state.communities.map((c) =>
+            c.id === communityId
+              ? {
+                  ...c,
+                  challenges: c.challenges.map((ch) =>
+                    ch.id === challengeId
+                      ? {
+                          ...ch,
+                          participants: [
+                            ...ch.participants,
+                            { userId, progress: 0, completed: false },
+                          ],
+                        }
+                      : ch
+                  ),
+                }
+              : c
+          ),
+        })),
+      
+      updateChallengeProgress: (communityId, challengeId, userId, progress) =>
+        set((state) => ({
+          communities: state.communities.map((c) =>
+            c.id === communityId
+              ? {
+                  ...c,
+                  challenges: c.challenges.map((ch) =>
+                    ch.id === challengeId
+                      ? {
+                          ...ch,
+                          participants: ch.participants.map((p) =>
+                            p.userId === userId
+                              ? { ...p, progress, completed: progress >= (ch.targetValue || ch.targetDays || 100) }
+                              : p
+                          ),
+                        }
+                      : ch
+                  ),
+                }
+              : c
+          ),
+        })),
     }),
     {
       name: "community-storage",
