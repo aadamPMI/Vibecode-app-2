@@ -18,11 +18,7 @@ import Animated, {
   Layout,
   FadeIn,
   SlideInLeft,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
 } from "react-native-reanimated";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { useWorkoutStore, Workout, Exercise, PersonalRecord } from "../state/workoutStore";
 import { useSettingsStore } from "../state/settingsStore";
@@ -2028,59 +2024,17 @@ function WeightSlider({
   unit: "kg" | "lbs";
   isDark: boolean;
 }) {
-  const DIAL_HEIGHT = 300;
-  const STEP = 0.5; // Increments of 0.5
-  
-  // Calculate initial position based on value
-  const initialPosition = -((value - min) / (max - min)) * DIAL_HEIGHT;
-  const translateY = useSharedValue(initialPosition);
-  const startY = useSharedValue(0);
-
-  const gesture = Gesture.Pan()
-    .onStart(() => {
-      startY.value = translateY.value;
-    })
-    .onUpdate((e) => {
-      const newTranslateY = startY.value + e.translationY;
-      // Clamp the translation
-      const clampedY = Math.max(-DIAL_HEIGHT, Math.min(0, newTranslateY));
-      translateY.value = clampedY;
-
-      // Convert position to weight value
-      const progress = Math.abs(clampedY) / DIAL_HEIGHT;
-      const newValue = min + progress * (max - min);
-      const steppedValue = Math.round(newValue / STEP) * STEP;
-      onValueChange(Math.round(steppedValue * 10) / 10);
-
-      // Haptic feedback on value change
-      if (Math.round(steppedValue) !== Math.round(value)) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-    })
-    .onEnd(() => {
-      // Snap to nearest step
-      const progress = Math.abs(translateY.value) / DIAL_HEIGHT;
-      const newValue = min + progress * (max - min);
-      const steppedValue = Math.round(newValue / STEP) * STEP;
-      const snappedProgress = (steppedValue - min) / (max - min);
-      translateY.value = withSpring(-snappedProgress * DIAL_HEIGHT);
-    });
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: translateY.value }],
-  }));
-
-  // Generate scale marks
-  const marks = [];
-  for (let i = min; i <= max; i += 10) {
-    marks.push(i);
-  }
+  const increment = (amount: number) => {
+    const newValue = Math.min(max, Math.max(min, value + amount));
+    onValueChange(Math.round(newValue * 10) / 10);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
 
   return (
-    <View className="items-center justify-center">
+    <View className="items-center justify-center w-full">
       {/* Current Value Display */}
       <View className="mb-8">
-        <Text className="text-7xl font-bold text-blue-500">
+        <Text className="text-7xl font-bold text-blue-500 text-center">
           {value}
         </Text>
         <Text
@@ -2093,73 +2047,100 @@ function WeightSlider({
         </Text>
       </View>
 
-      {/* Dial Container */}
-      <View className="relative" style={{ height: 200, width: 200 }}>
-        {/* Center Indicator */}
-        <View
-          className="absolute left-0 right-0 z-10"
-          style={{
-            top: 95,
-            height: 10,
-            borderRadius: 5,
-            backgroundColor: "#3b82f6",
-          }}
-        />
+      {/* Large Increment Buttons */}
+      <View className="flex-row items-center justify-center mb-6 w-full px-8">
+        <Pressable
+          onPress={() => increment(-10)}
+          className={cn(
+            "w-16 h-16 rounded-full items-center justify-center",
+            isDark ? "bg-gray-800" : "bg-gray-200"
+          )}
+        >
+          <Text className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+            −10
+          </Text>
+        </Pressable>
 
-        {/* Scrollable Dial */}
-        <GestureDetector gesture={gesture}>
-          <Animated.View
-            style={[
-              {
-                position: "absolute",
-                left: 0,
-                right: 0,
-                alignItems: "center",
-              },
-              animatedStyle,
-            ]}
-          >
-            {marks.map((mark, index) => {
-              const isMajor = mark % 20 === 0;
-              return (
-                <View
-                  key={mark}
-                  className="flex-row items-center justify-center mb-4"
-                  style={{ height: 30 }}
-                >
-                  <View
-                    style={{
-                      width: isMajor ? 60 : 30,
-                      height: 3,
-                      backgroundColor: isDark ? "#6b7280" : "#9ca3af",
-                      marginRight: 10,
-                    }}
-                  />
-                  {isMajor && (
-                    <Text
-                      className={cn(
-                        "text-base font-semibold",
-                        isDark ? "text-gray-400" : "text-gray-600"
-                      )}
-                      style={{ width: 50 }}
-                    >
-                      {mark}
-                    </Text>
-                  )}
-                </View>
-              );
-            })}
-          </Animated.View>
-        </GestureDetector>
+        <View className="flex-1" />
+
+        <Pressable
+          onPress={() => increment(10)}
+          className={cn(
+            "w-16 h-16 rounded-full items-center justify-center",
+            isDark ? "bg-gray-800" : "bg-gray-200"
+          )}
+        >
+          <Text className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+            +10
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Small Increment Buttons */}
+      <View className="flex-row items-center justify-center mb-6 w-full px-8">
+        <Pressable
+          onPress={() => increment(-1)}
+          className={cn(
+            "w-14 h-14 rounded-full items-center justify-center",
+            isDark ? "bg-gray-800" : "bg-gray-200"
+          )}
+        >
+          <Text className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+            −1
+          </Text>
+        </Pressable>
+
+        <View className="flex-1" />
+
+        <Pressable
+          onPress={() => increment(1)}
+          className={cn(
+            "w-14 h-14 rounded-full items-center justify-center",
+            isDark ? "bg-gray-800" : "bg-gray-200"
+          )}
+        >
+          <Text className={cn("text-xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+            +1
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Fine Increment Buttons */}
+      <View className="flex-row items-center justify-center w-full px-8">
+        <Pressable
+          onPress={() => increment(-0.5)}
+          className={cn(
+            "w-12 h-12 rounded-full items-center justify-center",
+            isDark ? "bg-gray-800" : "bg-gray-200"
+          )}
+        >
+          <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+            −0.5
+          </Text>
+        </Pressable>
+
+        <View className="flex-1" />
+
+        <Pressable
+          onPress={() => increment(0.5)}
+          className={cn(
+            "w-12 h-12 rounded-full items-center justify-center",
+            isDark ? "bg-gray-800" : "bg-gray-200"
+          )}
+        >
+          <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+            +0.5
+          </Text>
+        </Pressable>
       </View>
 
       <Text
         className={cn(
-          "text-sm mt-6",
+          "text-sm mt-8 text-center",
           isDark ? "text-gray-500" : "text-gray-600"
         )}
       >
-        Drag to adjust weight
+        Tap buttons to adjust weight
       </Text>
     </View>
   );
