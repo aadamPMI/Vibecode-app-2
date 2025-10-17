@@ -251,7 +251,7 @@ export default function NutritionScreen() {
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-4 pt-4 pb-4">
+        <View className="px-4 pt-3 pb-2">
           <Text
             className={cn(
               "text-3xl font-bold",
@@ -271,7 +271,7 @@ export default function NutritionScreen() {
         </View>
 
         {/* Week Calendar - Horizontal Scroll */}
-        <View className="mb-4">
+        <View className="mb-3">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -294,11 +294,11 @@ export default function NutritionScreen() {
                 <Pressable
                   key={index}
                   onPress={() => handleDayPress(date)}
-                  className="items-center mr-4"
+                  className="items-center mr-3"
                 >
                   <Text
                     className={cn(
-                      "text-xs mb-2",
+                      "text-xs mb-1",
                       isDark ? "text-gray-400" : "text-gray-600"
                     )}
                   >
@@ -307,7 +307,7 @@ export default function NutritionScreen() {
                   <View className="relative items-center justify-center">
                     {/* Outer dotted/solid circle */}
                     <View
-                      className="absolute w-14 h-14 rounded-full items-center justify-center"
+                      className="absolute w-12 h-12 rounded-full items-center justify-center"
                       style={{
                         borderWidth: 2,
                         borderStyle: missedGoal ? "solid" : "dashed",
@@ -323,7 +323,7 @@ export default function NutritionScreen() {
                     {/* Inner solid circle */}
                     <View
                       className={cn(
-                        "w-12 h-12 rounded-full items-center justify-center",
+                        "w-10 h-10 rounded-full items-center justify-center",
                         isSelected
                           ? "bg-blue-500"
                           : metGoal
@@ -346,7 +346,7 @@ export default function NutritionScreen() {
                     >
                       <Text
                         className={cn(
-                          "text-xl font-bold",
+                          "text-lg font-bold",
                           isSelected || metGoal
                             ? "text-white"
                             : isDark
@@ -360,7 +360,7 @@ export default function NutritionScreen() {
                   </View>
                   <Text
                     className={cn(
-                      "text-xs mt-2",
+                      "text-xs mt-1",
                       isDark ? "text-gray-500" : "text-gray-500"
                     )}
                   >
@@ -372,66 +372,80 @@ export default function NutritionScreen() {
           </ScrollView>
         </View>
 
-        {/* Calorie Display */}
-        <View className="px-4 mt-6 items-center">
-          <Text 
-            className="text-7xl font-bold"
-            style={{
-              color: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
-              textShadowColor: totals.calories >= targetCalories ? "rgba(34, 197, 94, 0.4)" : "rgba(59, 130, 246, 0.4)",
-              textShadowOffset: { width: 0, height: 3 },
-              textShadowRadius: 10,
-            }}
-          >
-            {Math.round(totals.calories)}
-          </Text>
-          {totals.calories >= targetCalories && (
-            <Text className="text-2xl mt-1">🎉</Text>
-          )}
-          <Text
-            className={cn(
-              "text-base mt-2",
-              totals.calories >= targetCalories
-                ? "text-green-500 font-semibold"
-                : isDark ? "text-gray-400" : "text-gray-600"
-            )}
-          >
-            {totals.calories >= targetCalories 
-              ? "Goal reached! Keep it up 💪" 
-              : `of ${targetCalories} calories`}
-          </Text>
-        </View>
-
-        {/* Progress Bar */}
-        <View className="px-4 mt-4">
+        {/* Calorie Counter Card */}
+        <View className="px-4 mt-3">
           <View
             className={cn(
-              "h-4 rounded-full overflow-hidden",
-              isDark ? "bg-[#1a1a1a]" : "bg-gray-200"
+              "rounded-3xl p-4 items-center",
+              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
             )}
             style={{
-              shadowColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.3,
-              shadowRadius: 6,
-              elevation: 3,
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
             }}
           >
-            <Animated.View
-              className="h-full rounded-full"
+            <Text 
+              className="text-6xl font-bold"
               style={{
-                width: `${Math.min((totals.calories / targetCalories) * 100, 100)}%`,
-                backgroundColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
+                color: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
+                textShadowColor: totals.calories >= targetCalories ? "rgba(34, 197, 94, 0.4)" : "rgba(59, 130, 246, 0.4)",
+                textShadowOffset: { width: 0, height: 2 },
+                textShadowRadius: 8,
               }}
-            />
+            >
+              {Math.round(totals.calories)}
+            </Text>
+            {totals.calories >= targetCalories && (
+              <Text className="text-xl mt-1">🎉</Text>
+            )}
+            <Text
+              className={cn(
+                "text-sm mt-1",
+                totals.calories >= targetCalories
+                  ? "text-green-500 font-semibold"
+                  : isDark ? "text-gray-400" : "text-gray-600"
+              )}
+            >
+              {totals.calories >= targetCalories 
+                ? "Goal reached! Keep it up 💪" 
+                : `of ${targetCalories} calories`}
+            </Text>
+
+            {/* Progress Bar */}
+            <View className="w-full mt-3">
+              <View
+                className={cn(
+                  "h-3 rounded-full overflow-hidden",
+                  isDark ? "bg-[#1a1a1a]" : "bg-gray-200"
+                )}
+                style={{
+                  shadowColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 6,
+                  elevation: 3,
+                }}
+              >
+                <Animated.View
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${Math.min((totals.calories / targetCalories) * 100, 100)}%`,
+                    backgroundColor: totals.calories >= targetCalories ? "#22c55e" : "#3b82f6",
+                  }}
+                />
+              </View>
+            </View>
           </View>
         </View>
 
         {/* Macros Card */}
-        <View className="px-4 mt-6">
+        <View className="px-4 mt-3">
           <View
             className={cn(
-              "rounded-3xl p-6",
+              "rounded-3xl p-4",
               isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
             )}
             style={{
@@ -454,7 +468,7 @@ export default function NutritionScreen() {
                 setShowMacroTotals(!showMacroTotals);
               }}
             />
-            <View className="h-5" />
+            <View className="h-4" />
             <MacroRow
               label="Carbs"
               value={Math.round(totals.carbs)}
@@ -467,7 +481,7 @@ export default function NutritionScreen() {
                 setShowMacroTotals(!showMacroTotals);
               }}
             />
-            <View className="h-5" />
+            <View className="h-4" />
             <MacroRow
               label="Fat"
               value={Math.round(totals.fats)}
@@ -484,13 +498,13 @@ export default function NutritionScreen() {
         </View>
 
         {/* Add Meal Button - Separate Card */}
-        <View className="px-4 mt-4">
+        <View className="px-4 mt-3">
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               setIsAddFoodModalVisible(true);
             }}
-            className="rounded-3xl py-4 flex-row justify-center items-center"
+            className="rounded-3xl py-3 flex-row justify-center items-center"
             style={{
               backgroundColor: "#3b82f6",
               shadowColor: "#3b82f6",
@@ -500,7 +514,7 @@ export default function NutritionScreen() {
               elevation: 8,
             }}
           >
-            <Ionicons name="add-circle" size={24} color="white" />
+            <Ionicons name="add-circle" size={22} color="white" />
             <Text className="text-white text-base font-bold ml-2">
               Add Meal
             </Text>
@@ -508,9 +522,9 @@ export default function NutritionScreen() {
         </View>
 
         {/* Streak Card */}
-        <View className="px-4 mt-4">
+        <View className="px-4 mt-3 mb-4">
           <View 
-            className="rounded-3xl p-6 overflow-hidden"
+            className="rounded-3xl p-4 overflow-hidden"
             style={{
               backgroundColor: isDark ? "#1f2937" : "#fff7ed",
               borderWidth: 2,
@@ -524,11 +538,11 @@ export default function NutritionScreen() {
           >
               <View className="flex-row justify-around">
                 <View className="items-center flex-1">
-                  <View className="mb-3">
-                    <Ionicons name="flame" size={48} color="#f97316" />
+                  <View className="mb-2">
+                    <Ionicons name="flame" size={40} color="#f97316" />
                   </View>
                   <Text
-                    className="text-5xl font-bold"
+                    className="text-4xl font-bold"
                     style={{
                       color: "#f97316",
                       textShadowColor: "rgba(249, 115, 22, 0.3)",
@@ -540,7 +554,7 @@ export default function NutritionScreen() {
                   </Text>
                   <Text
                     className={cn(
-                      "text-xs font-semibold mt-2",
+                      "text-xs font-semibold mt-1",
                       isDark ? "text-orange-400" : "text-orange-600"
                     )}
                   >
@@ -548,15 +562,15 @@ export default function NutritionScreen() {
                   </Text>
                 </View>
                 <View
-                  className="w-0.5 mx-3"
+                  className="w-0.5 mx-2"
                   style={{ backgroundColor: isDark ? "#fb923c" : "#fdba74" }}
                 />
                 <View className="items-center flex-1">
-                  <View className="mb-3">
-                    <Ionicons name="trophy" size={48} color="#f59e0b" />
+                  <View className="mb-2">
+                    <Ionicons name="trophy" size={40} color="#f59e0b" />
                   </View>
                   <Text
-                    className="text-5xl font-bold"
+                    className="text-4xl font-bold"
                     style={{
                       color: "#f59e0b",
                       textShadowColor: "rgba(245, 158, 11, 0.3)",
@@ -568,7 +582,7 @@ export default function NutritionScreen() {
                   </Text>
                   <Text
                     className={cn(
-                      "text-xs font-semibold mt-2",
+                      "text-xs font-semibold mt-1",
                       isDark ? "text-yellow-400" : "text-yellow-600"
                     )}
                   >
@@ -580,14 +594,14 @@ export default function NutritionScreen() {
           </View>
 
         {/* View Meals Button */}
-        <View className="px-4 mt-4">
+        <View className="px-4 mt-3 mb-4">
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               setShowMealsInline(!showMealsInline);
             }}
             className={cn(
-              "rounded-3xl py-4 flex-row justify-center items-center border",
+              "rounded-3xl py-3 flex-row justify-center items-center border",
               isDark ? "bg-[#0a0a0a]/40 border-gray-700" : "bg-white/60 border-gray-200"
             )}
             style={{
@@ -600,7 +614,7 @@ export default function NutritionScreen() {
           >
             <Ionicons
               name={showMealsInline ? "chevron-up" : "chevron-down"}
-              size={24}
+              size={20}
               color={isDark ? "#fff" : "#000"}
             />
             <Text
