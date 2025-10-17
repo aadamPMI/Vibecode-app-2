@@ -34,6 +34,7 @@ export default function NutritionScreen() {
   const [isManualEntryVisible, setIsManualEntryVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [viewMode, setViewMode] = useState<"daily" | "weekly">("daily");
+  const [selectedDate, setSelectedDate] = useState(new Date());
   
   // Get current week dates
   const [selectedWeekStart, setSelectedWeekStart] = useState(() => {
@@ -95,9 +96,9 @@ export default function NutritionScreen() {
   };
 
   const getTodayTotals = () => {
-    const today = new Date().toISOString().split("T")[0];
-    const todayFood = foodLog.filter((f) => f.date === today);
-    return todayFood.reduce(
+    const dateStr = selectedDate.toISOString().split("T")[0];
+    const dayFood = foodLog.filter((f) => f.date === dateStr);
+    return dayFood.reduce(
       (totals, food) => ({
         calories: totals.calories + food.calories,
         protein: totals.protein + food.protein,
@@ -170,8 +171,8 @@ export default function NutritionScreen() {
   };
 
   const getTodayMeals = () => {
-    const today = new Date().toISOString().split("T")[0];
-    return foodLog.filter((f) => f.date === today);
+    const dateStr = selectedDate.toISOString().split("T")[0];
+    return foodLog.filter((f) => f.date === dateStr);
   };
 
   const totals = viewMode === "daily" ? getTodayTotals() : getWeekTotals();
@@ -184,7 +185,30 @@ export default function NutritionScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const newDate = new Date(selectedWeekStart);
     newDate.setDate(newDate.getDate() + (direction === "next" ? 7 : -7));
-    setSelectedWeekStart(newDate);
+    
+    // Allow navigating up to 3 weeks before current week
+    const today = new Date();
+    const currentWeekStart = new Date(today);
+    const day = currentWeekStart.getDay();
+    const diff = currentWeekStart.getDate() - day;
+    currentWeekStart.setDate(diff);
+    currentWeekStart.setHours(0, 0, 0, 0);
+    
+    const threeWeeksAgo = new Date(currentWeekStart);
+    threeWeeksAgo.setDate(threeWeeksAgo.getDate() - 21);
+    
+    // Only update if within range
+    if (newDate >= threeWeeksAgo && newDate <= currentWeekStart) {
+      setSelectedWeekStart(newDate);
+    }
+  };
+
+  const handleDayPress = (date: Date) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setSelectedDate(date);
+    if (viewMode === "weekly") {
+      setViewMode("daily");
+    }
   };
 
   const formatDate = (date: Date) => {
@@ -206,7 +230,7 @@ export default function NutritionScreen() {
               isDark ? "text-white" : "text-gray-900"
             )}
           >
-            {"Today's Calories"}
+            {viewMode === "daily" ? "Calories" : "Weekly Calories"}
           </Text>
           <Text
             className={cn(
@@ -214,7 +238,7 @@ export default function NutritionScreen() {
               isDark ? "text-gray-400" : "text-gray-600"
             )}
           >
-            {formatDate(new Date())}
+            {viewMode === "daily" ? formatDate(selectedDate) : ""}
           </Text>
         </View>
 
@@ -258,10 +282,13 @@ export default function NutritionScreen() {
                 const isToday =
                   date.toISOString().split("T")[0] ===
                   new Date().toISOString().split("T")[0];
+                const isSelected = 
+                  date.toISOString().split("T")[0] ===
+                  selectedDate.toISOString().split("T")[0];
                 return (
                   <Pressable
                     key={index}
-                    onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+                    onPress={() => handleDayPress(date)}
                     className="items-center mr-4"
                   >
                     <Text
@@ -275,8 +302,10 @@ export default function NutritionScreen() {
                     <View
                       className={cn(
                         "w-12 h-12 rounded-full items-center justify-center",
-                        isToday
+                        isSelected
                           ? "bg-blue-500"
+                          : isToday
+                          ? "bg-purple-500"
                           : isDark
                           ? "bg-gray-800"
                           : "bg-gray-100"
@@ -285,7 +314,7 @@ export default function NutritionScreen() {
                       <Text
                         className={cn(
                           "text-xl font-bold",
-                          isToday
+                          isSelected || isToday
                             ? "text-white"
                             : isDark
                             ? "text-white"
@@ -370,7 +399,7 @@ export default function NutritionScreen() {
         <View className="px-4 mt-6">
           <View
             className={cn(
-              "rounded-3xl p-5",
+              "rounded-3xl p-6",
               isDark ? "bg-gray-800" : "bg-gray-50"
             )}
           >
@@ -381,6 +410,7 @@ export default function NutritionScreen() {
               color="#3b82f6"
               isDark={isDark}
             />
+            <View className="h-5" />
             <MacroRow
               label="Carbs"
               value={Math.round(totals.carbs)}
@@ -388,6 +418,7 @@ export default function NutritionScreen() {
               color="#22c55e"
               isDark={isDark}
             />
+            <View className="h-5" />
             <MacroRow
               label="Fat"
               value={Math.round(totals.fats)}
@@ -1144,16 +1175,16 @@ function MacroRow({
   });
 
   return (
-    <View className="mb-4 last:mb-0">
-      <View className="flex-row justify-between items-center mb-2">
+    <View>
+      <View className="flex-row justify-between items-center mb-3">
         <View className="flex-row items-center">
           <View
-            className="w-3 h-3 rounded-full mr-2"
+            className="w-4 h-4 rounded-full mr-3"
             style={{ backgroundColor: color }}
           />
           <Text
             className={cn(
-              "text-base font-semibold",
+              "text-lg font-semibold",
               isDark ? "text-white" : "text-gray-900"
             )}
           >
@@ -1162,7 +1193,7 @@ function MacroRow({
         </View>
         <Text
           className={cn(
-            "text-base font-bold",
+            "text-lg font-bold",
             isDark ? "text-white" : "text-gray-900"
           )}
         >
@@ -1171,7 +1202,7 @@ function MacroRow({
       </View>
       <View
         className={cn(
-          "h-2 rounded-full overflow-hidden",
+          "h-3 rounded-full overflow-hidden",
           isDark ? "bg-gray-700" : "bg-gray-200"
         )}
       >
