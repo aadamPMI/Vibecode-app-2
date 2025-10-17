@@ -32,6 +32,7 @@ export default function NutritionScreen() {
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [viewMealsModalVisible, setViewMealsModalVisible] = useState(false);
   const [showMealsInline, setShowMealsInline] = useState(false);
+  const [showMacroTotals, setShowMacroTotals] = useState(false);
   const [isManualEntryVisible, setIsManualEntryVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -410,6 +411,11 @@ export default function NutritionScreen() {
               target={targetProtein}
               color="#3b82f6"
               isDark={isDark}
+              showTotals={showMacroTotals}
+              onToggle={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setShowMacroTotals(!showMacroTotals);
+              }}
             />
             <View className="h-5" />
             <MacroRow
@@ -418,6 +424,11 @@ export default function NutritionScreen() {
               target={targetCarbs}
               color="#22c55e"
               isDark={isDark}
+              showTotals={showMacroTotals}
+              onToggle={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setShowMacroTotals(!showMacroTotals);
+              }}
             />
             <View className="h-5" />
             <MacroRow
@@ -426,46 +437,54 @@ export default function NutritionScreen() {
               target={targetFats}
               color="#f97316"
               isDark={isDark}
-            />
-
-            {/* Add Meal Button - Centered after macros */}
-            <View className="mt-6 mb-4">
-              <Pressable
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                  setIsAddFoodModalVisible(true);
-                }}
-                className="rounded-3xl py-4 flex-row justify-center items-center"
-                style={{
-                  backgroundColor: "#3b82f6",
-                  shadowColor: "#3b82f6",
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: 0.4,
-                  shadowRadius: 12,
-                  elevation: 8,
-                }}
-              >
-                <Ionicons name="add-circle" size={24} color="white" />
-                <Text className="text-white text-base font-bold ml-2">
-                  Add Meal
-                </Text>
-              </Pressable>
-            </View>
-
-            {/* Streak Card - Inside Macros Card */}
-            <View 
-              className="mt-6 rounded-3xl p-6 overflow-hidden"
-              style={{
-                backgroundColor: isDark ? "#1f2937" : "#fff7ed",
-                borderWidth: 2,
-                borderColor: isDark ? "#f59e0b" : "#fb923c",
-                shadowColor: "#f59e0b",
-                shadowOffset: { width: 0, height: 6 },
-                shadowOpacity: 0.3,
-                shadowRadius: 16,
-                elevation: 6,
+              showTotals={showMacroTotals}
+              onToggle={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setShowMacroTotals(!showMacroTotals);
               }}
-            >
+            />
+          </View>
+        </View>
+
+        {/* Add Meal Button - Separate Card */}
+        <View className="px-4 mt-4">
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              setIsAddFoodModalVisible(true);
+            }}
+            className="rounded-3xl py-4 flex-row justify-center items-center"
+            style={{
+              backgroundColor: "#3b82f6",
+              shadowColor: "#3b82f6",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.4,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
+            <Ionicons name="add-circle" size={24} color="white" />
+            <Text className="text-white text-base font-bold ml-2">
+              Add Meal
+            </Text>
+          </Pressable>
+        </View>
+
+        {/* Streak Card */}
+        <View className="px-4 mt-4">
+          <View 
+            className="rounded-3xl p-6 overflow-hidden"
+            style={{
+              backgroundColor: isDark ? "#1f2937" : "#fff7ed",
+              borderWidth: 2,
+              borderColor: isDark ? "#f59e0b" : "#fb923c",
+              shadowColor: "#f59e0b",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.3,
+              shadowRadius: 16,
+              elevation: 6,
+            }}
+          >
               <View className="flex-row justify-around">
                 <View className="items-center flex-1">
                   <View className="mb-3">
@@ -522,7 +541,6 @@ export default function NutritionScreen() {
               </View>
             </View>
           </View>
-        </View>
 
         {/* View Meals Button */}
         <View className="px-4 mt-4">
@@ -1319,12 +1337,16 @@ function MacroRow({
   target,
   color,
   isDark,
+  showTotals,
+  onToggle,
 }: {
   label: string;
   value: number;
   target: number;
   color: string;
   isDark: boolean;
+  showTotals: boolean;
+  onToggle: () => void;
 }) {
   const progress = useSharedValue(0);
   const isComplete = value >= target;
@@ -1369,18 +1391,22 @@ function MacroRow({
             <Text className="ml-2 text-base">✨</Text>
           )}
         </View>
-        <Text
-          className={cn(
-            "text-base font-semibold",
-            isComplete
-              ? "text-green-500"
-              : isDark ? "text-white" : "text-gray-900"
-          )}
-        >
-          {isComplete 
-            ? `Complete! ✓` 
-            : `${Math.max(0, target - value)}g left`}
-        </Text>
+        <Pressable onPress={onToggle}>
+          <Text
+            className={cn(
+              "text-base font-semibold",
+              isComplete
+                ? "text-green-500"
+                : isDark ? "text-white" : "text-gray-900"
+            )}
+          >
+            {showTotals 
+              ? `${value}g / ${target}g`
+              : isComplete 
+                ? `Complete! ✓` 
+                : `${Math.max(0, target - value)}g left`}
+          </Text>
+        </Pressable>
       </View>
       <View
         className={cn(
