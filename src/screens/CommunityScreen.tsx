@@ -462,166 +462,124 @@ export default function CommunityScreen() {
             className="px-4 mb-4"
           >
             {getJoinedCommunities().map((community) => (
-              <View
+              <Pressable
                 key={community.id}
-                className="rounded-3xl overflow-hidden mb-4"
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setDetailCommunity(community);
+                  setIsCommunityDetailVisible(true);
+                  setActiveTab("about");
+                }}
+                className="rounded-2xl overflow-hidden mb-3"
                 style={{
-                  backgroundColor: isDark ? "rgba(236, 72, 153, 0.15)" : "#fce7f3",
+                  backgroundColor: isDark ? "rgba(30, 30, 40, 0.6)" : "rgba(255, 255, 255, 0.7)",
+                  borderWidth: 1,
+                  borderColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
                   shadowColor: "#ec4899",
                   shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 12,
-                  elevation: 5,
+                  shadowOpacity: isDark ? 0.3 : 0.15,
+                  shadowRadius: 16,
+                  elevation: 8,
                 }}
               >
-                {/* Header with gradient background */}
+                {/* Glass morphism backdrop blur effect */}
                 <View
-                  className="p-6"
                   style={{
-                    backgroundColor: isDark ? "#ec4899" : "#f9a8d4",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: isDark 
+                      ? "rgba(236, 72, 153, 0.08)" 
+                      : "rgba(236, 72, 153, 0.05)",
                   }}
-                >
-                  <View className="flex-row items-center justify-between mb-4">
-                    <View
-                      className="w-20 h-20 rounded-full items-center justify-center border-4"
-                      style={{
-                        backgroundColor: isDark
-                          ? "rgba(255, 255, 255, 0.2)"
-                          : "rgba(255, 255, 255, 0.4)",
-                        borderColor: isDark ? "#fce7f3" : "#ffffff",
-                      }}
-                    >
-                      <Ionicons name="people" size={40} color="#fff" />
-                    </View>
-                    <View className="flex-row">
-                      <Pressable
-                        onPress={() => {
-                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        }}
-                        className="mr-2"
-                      >
-                        <View
-                          className="w-12 h-12 rounded-2xl items-center justify-center"
-                          style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
-                        >
-                          <Ionicons name="star" size={24} color="#fbbf24" />
-                        </View>
-                      </Pressable>
-                      <Pressable
-                        onPress={() => {
-                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        }}
-                      >
-                        <View
-                          className="w-12 h-12 rounded-2xl items-center justify-center"
-                          style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
-                        >
-                          <Ionicons name="globe" size={24} color="#22c55e" />
-                        </View>
-                      </Pressable>
-                    </View>
-                  </View>
-                  <Text className="text-white text-3xl font-bold">
-                    {community.name}
-                  </Text>
-                </View>
+                />
 
-                {/* Content section */}
-                <View className={cn("p-6", isDark ? "bg-gray-800" : "bg-white")}>
-                  <Text
-                    className={cn(
-                      "text-base mb-4",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
+                {/* Compact content layout */}
+                <View className="flex-row items-center p-4">
+                  {/* Community Icon - Compact */}
+                  <View
+                    className="w-14 h-14 rounded-2xl items-center justify-center mr-4"
+                    style={{
+                      backgroundColor: isDark
+                        ? "rgba(236, 72, 153, 0.25)"
+                        : "rgba(236, 72, 153, 0.15)",
+                      shadowColor: "#ec4899",
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 8,
+                      elevation: 4,
+                    }}
                   >
-                    {community.description || "A community for fitness lovers to share their journey"}
-                  </Text>
+                    <Ionicons 
+                      name="people" 
+                      size={28} 
+                      color={isDark ? "#f9a8d4" : "#ec4899"} 
+                    />
+                  </View>
 
-                  <View className="flex-row mb-4">
-                    <View
+                  {/* Community Info */}
+                  <View className="flex-1">
+                    <Text
                       className={cn(
-                        "rounded-full px-4 py-2 mr-2 flex-row items-center",
-                        isDark ? "bg-gray-700" : "bg-gray-100"
+                        "text-lg font-bold mb-1",
+                        isDark ? "text-white" : "text-gray-900"
                       )}
+                      numberOfLines={1}
                     >
-                      <Ionicons
-                        name="people"
-                        size={16}
-                        color={isDark ? "#9ca3af" : "#6b7280"}
-                      />
-                      <Text
-                        className={cn(
-                          "text-sm font-semibold ml-1",
-                          isDark ? "text-white" : "text-gray-900"
-                        )}
-                      >
-                        {community.members.length} members
-                      </Text>
-                    </View>
-                    <View
-                      className={cn(
-                        "rounded-full px-4 py-2 flex-row items-center",
-                        isDark ? "bg-gray-700" : "bg-gray-100"
-                      )}
-                    >
-                      <Ionicons
-                        name="pulse"
-                        size={16}
-                        color={isDark ? "#22c55e" : "#16a34a"}
-                      />
-                      <Text
-                        className={cn(
-                          "text-sm font-semibold ml-1",
-                          isDark ? "text-white" : "text-gray-900"
-                        )}
-                      >
-                        Active today
-                      </Text>
+                      {community.name}
+                    </Text>
+                    <View className="flex-row items-center">
+                      <View className="flex-row items-center mr-4">
+                        <Ionicons
+                          name="people"
+                          size={14}
+                          color={isDark ? "#9ca3af" : "#6b7280"}
+                        />
+                        <Text
+                          className={cn(
+                            "text-xs font-semibold ml-1",
+                            isDark ? "text-gray-400" : "text-gray-600"
+                          )}
+                        >
+                          {community.members.length}
+                        </Text>
+                      </View>
+                      <View className="flex-row items-center">
+                        <View
+                          className="w-2 h-2 rounded-full mr-1.5"
+                          style={{ backgroundColor: "#22c55e" }}
+                        />
+                        <Text
+                          className={cn(
+                            "text-xs font-semibold",
+                            isDark ? "text-gray-400" : "text-gray-600"
+                          )}
+                        >
+                          Active
+                        </Text>
+                      </View>
                     </View>
                   </View>
 
-                  <View className="flex-row items-center">
-                    <Pressable
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                        setDetailCommunity(community);
-                        setIsCommunityDetailVisible(true);
-                        setActiveTab("about");
-                      }}
-                      className="flex-1 bg-blue-500 py-4 rounded-2xl mr-2 flex-row items-center justify-center"
-                    >
-                      <Ionicons name="arrow-forward" size={20} color="white" />
-                      <Text className="text-white font-bold text-base ml-2">
-                        Enter Community
-                      </Text>
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      }}
-                      className={cn(
-                        "w-14 h-14 rounded-2xl items-center justify-center mr-2",
-                        isDark ? "bg-gray-700" : "bg-gray-100"
-                      )}
-                    >
-                      <Ionicons
-                        name="copy-outline"
-                        size={24}
-                        color={isDark ? "#fff" : "#000"}
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                        handleLeaveCommunity(community.id);
-                      }}
-                      className="w-14 h-14 bg-red-500 rounded-2xl items-center justify-center"
-                    >
-                      <Ionicons name="close" size={24} color="white" />
-                    </Pressable>
+                  {/* Chevron indicator */}
+                  <View
+                    className="w-8 h-8 rounded-full items-center justify-center ml-2"
+                    style={{
+                      backgroundColor: isDark
+                        ? "rgba(255, 255, 255, 0.08)"
+                        : "rgba(0, 0, 0, 0.04)",
+                    }}
+                  >
+                    <Ionicons
+                      name="chevron-forward"
+                      size={18}
+                      color={isDark ? "#9ca3af" : "#6b7280"}
+                    />
                   </View>
                 </View>
-              </View>
+              </Pressable>
             ))}
           </Animated.View>
         )}
