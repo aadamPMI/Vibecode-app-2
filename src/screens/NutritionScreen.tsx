@@ -37,7 +37,6 @@ export default function NutritionScreen() {
   
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [viewMealsModalVisible, setViewMealsModalVisible] = useState(false);
-  const [showMealsInline, setShowMealsInline] = useState(false);
   const [showMacroTotals, setShowMacroTotals] = useState(false);
   const [isManualEntryVisible, setIsManualEntryVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
@@ -553,7 +552,7 @@ export default function NutritionScreen() {
               label="Protein"
               value={Math.round(totals.protein)}
               target={targetProtein}
-              color="#3b82f6"
+              color="#ef4444"
               isDark={isDark}
               showTotals={showMacroTotals}
               onToggle={() => {
@@ -566,7 +565,7 @@ export default function NutritionScreen() {
               label="Carbs"
               value={Math.round(totals.carbs)}
               target={targetCarbs}
-              color="#22c55e"
+              color="#fb923c"
               isDark={isDark}
               showTotals={showMacroTotals}
               onToggle={() => {
@@ -579,7 +578,7 @@ export default function NutritionScreen() {
               label="Fat"
               value={Math.round(totals.fats)}
               target={targetFats}
-              color="#f97316"
+              color="#ec4899"
               isDark={isDark}
               showTotals={showMacroTotals}
               onToggle={() => {
@@ -614,44 +613,9 @@ export default function NutritionScreen() {
           </Pressable>
         </View>
 
-        {/* View Meals Button */}
-        <View className="px-4 mt-3 mb-4">
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setShowMealsInline(!showMealsInline);
-            }}
-            className={cn(
-              "rounded-3xl py-3 flex-row justify-center items-center border",
-              isDark ? "bg-[#0a0a0a]/40 border-gray-700" : "bg-white/60 border-gray-200"
-            )}
-            style={{
-              shadowColor: isDark ? "#000" : "#1f2937",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: isDark ? 0.6 : 0.25,
-              shadowRadius: 12,
-              elevation: 8,
-            }}
-          >
-            <Ionicons
-              name={showMealsInline ? "chevron-up" : "chevron-down"}
-              size={20}
-              color={isDark ? "#fff" : "#000"}
-            />
-            <Text
-              className={cn(
-                "text-base font-semibold ml-2",
-                isDark ? "text-white" : "text-gray-900"
-              )}
-            >
-              {showMealsInline ? "Hide" : "View"} {getTodayMeals().length} Meals
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* Meals List - Inline Dropdown */}
-        {showMealsInline && getTodayMeals().length > 0 && (
-          <View className="px-4 mt-4">
+        {/* Meals List */}
+        {getTodayMeals().length > 0 && (
+          <View className="px-4 mt-4 mb-4">
             {getTodayMeals().map((item) => (
               <View
                 key={item.id}
