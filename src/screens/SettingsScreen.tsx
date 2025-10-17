@@ -130,34 +130,41 @@ export default function SettingsScreen() {
           <ScrollView className="flex-1 px-4 pt-4" keyboardShouldPersistTaps="handled">
             {/* Profile Settings Content */}
             {activeSection === "profile" && (
-              <View>
-                <View className="mb-4">
+              <View
+                className={cn(
+                  "rounded-3xl p-6 mb-6",
+                  isDark ? "bg-gray-800/50 border border-gray-700/50" : "bg-gray-100 border border-gray-200"
+                )}
+              >
+                {/* Username */}
+                <View className="mb-6">
                   <Text
                     className={cn(
-                      "text-sm font-semibold mb-2",
+                      "text-base font-semibold mb-3",
                       isDark ? "text-gray-300" : "text-gray-700"
                     )}
                   >
-                    Name
+                    Username
                   </Text>
                   <TextInput
                     value={name}
                     onChangeText={setName}
-                    placeholder="Your name"
+                    placeholder="Enter username"
                     placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
                     className={cn(
-                      "rounded-xl p-4 text-base",
+                      "rounded-2xl p-4 text-lg",
                       isDark
-                        ? "bg-gray-800 text-white"
-                        : "bg-gray-100 text-gray-900"
+                        ? "bg-black/40 text-white border border-gray-700/30"
+                        : "bg-white text-gray-900 border border-gray-300"
                     )}
                   />
                 </View>
 
-                <View className="mb-4">
+                {/* Email */}
+                <View className="mb-6">
                   <Text
                     className={cn(
-                      "text-sm font-semibold mb-2",
+                      "text-base font-semibold mb-3",
                       isDark ? "text-gray-300" : "text-gray-700"
                     )}
                   >
@@ -166,96 +173,114 @@ export default function SettingsScreen() {
                   <TextInput
                     value={email}
                     onChangeText={setEmail}
-                    placeholder="your@email.com"
+                    placeholder="Enter email"
                     keyboardType="email-address"
+                    autoCapitalize="none"
                     placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
                     className={cn(
-                      "rounded-xl p-4 text-base",
+                      "rounded-2xl p-4 text-lg",
                       isDark
-                        ? "bg-gray-800 text-white"
-                        : "bg-gray-100 text-gray-900"
+                        ? "bg-black/40 text-white border border-gray-700/30"
+                        : "bg-white text-gray-900 border border-gray-300"
                     )}
                   />
                 </View>
 
-                <View className="mb-4">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
-                    Age
-                  </Text>
-                  <TextInput
-                    value={age}
-                    onChangeText={setAge}
-                    placeholder="Age"
-                    keyboardType="numeric"
-                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-xl p-4 text-base",
-                      isDark
-                        ? "bg-gray-800 text-white"
-                        : "bg-gray-100 text-gray-900"
-                    )}
-                  />
+                {/* Height and Age Row */}
+                <View className="flex-row mb-6">
+                  <View className="flex-1 mr-3">
+                    <Text
+                      className={cn(
+                        "text-base font-semibold mb-3",
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      )}
+                    >
+                      Height (cm)
+                    </Text>
+                    <TextInput
+                      value={height}
+                      onChangeText={setHeight}
+                      placeholder="170"
+                      keyboardType="numeric"
+                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                      className={cn(
+                        "rounded-2xl p-4 text-lg",
+                        isDark
+                          ? "bg-black/40 text-white border border-gray-700/30"
+                          : "bg-white text-gray-900 border border-gray-300"
+                      )}
+                    />
+                  </View>
+
+                  <View className="flex-1 ml-3">
+                    <Text
+                      className={cn(
+                        "text-base font-semibold mb-3",
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      )}
+                    >
+                      Age
+                    </Text>
+                    <TextInput
+                      value={age}
+                      onChangeText={setAge}
+                      placeholder="25"
+                      keyboardType="numeric"
+                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                      className={cn(
+                        "rounded-2xl p-4 text-lg",
+                        isDark
+                          ? "bg-black/40 text-white border border-gray-700/30"
+                          : "bg-white text-gray-900 border border-gray-300"
+                      )}
+                    />
+                  </View>
                 </View>
 
-                <View className="mb-4">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
-                    Height (inches)
-                  </Text>
-                  <TextInput
-                    value={height}
-                    onChangeText={setHeight}
-                    placeholder="Height"
-                    keyboardType="numeric"
-                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-xl p-4 text-base",
-                      isDark
-                        ? "bg-gray-800 text-white"
-                        : "bg-gray-100 text-gray-900"
-                    )}
-                  />
-                </View>
-
+                {/* Gender */}
                 <View className="mb-6">
                   <Text
                     className={cn(
-                      "text-sm font-semibold mb-2",
+                      "text-base font-semibold mb-3",
                       isDark ? "text-gray-300" : "text-gray-700"
                     )}
                   >
-                    Current Weight (lbs)
+                    Gender
                   </Text>
-                  <TextInput
-                    value={weight}
-                    onChangeText={setWeight}
-                    placeholder="Weight"
-                    keyboardType="numeric"
-                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                  <View
                     className={cn(
-                      "rounded-xl p-4 text-base",
+                      "rounded-2xl p-4 flex-row justify-between items-center",
                       isDark
-                        ? "bg-gray-800 text-white"
-                        : "bg-gray-100 text-gray-900"
+                        ? "bg-black/40 border border-gray-700/30"
+                        : "bg-white border border-gray-300"
                     )}
-                  />
+                  >
+                    <Text
+                      className={cn(
+                        "text-lg",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      {profileSettings.gender === "male" ? "Male" : profileSettings.gender === "female" ? "Female" : "Other"}
+                    </Text>
+                    <Ionicons name="chevron-down" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+                  </View>
                 </View>
 
+                {/* Save Button */}
                 <Pressable
                   onPress={handleSaveProfile}
-                  className="bg-blue-500 py-4 rounded-2xl mb-6"
+                  className="bg-blue-500 py-4 rounded-2xl"
+                  style={{
+                    shadowColor: "#3b82f6",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 8,
+                  }}
                 >
-                  <Text className="text-white font-bold text-center text-base">
-                    Save Changes
+                  <Text className="text-white font-bold text-center text-lg">
+                    Save Profile Changes
                   </Text>
                 </Pressable>
               </View>
