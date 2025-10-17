@@ -25,6 +25,7 @@ export interface PersonalRecord {
   id: string;
   exercise: string;
   weight: number;
+  reps: number; // Added reps
   unit: "kg" | "lbs";
   date: string;
   notes?: string;

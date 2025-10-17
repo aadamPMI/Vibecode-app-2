@@ -18,7 +18,11 @@ import Animated, {
   Layout,
   FadeIn,
   SlideInLeft,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
 } from "react-native-reanimated";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import * as Haptics from "expo-haptics";
 import { useWorkoutStore, Workout, Exercise, PersonalRecord } from "../state/workoutStore";
 import { useSettingsStore } from "../state/settingsStore";
@@ -53,6 +57,7 @@ export default function WorkoutScreen() {
   const [isWeightModalVisible, setIsWeightModalVisible] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState("");
   const [prWeight, setPrWeight] = useState("");
+  const [prReps, setPrReps] = useState("1"); // Default to 1 rep
   const [prUnit, setPrUnit] = useState<"kg" | "lbs">("kg");
   const [tempBodyWeight, setTempBodyWeight] = useState(bodyWeight.toString());
   const [exerciseSearchQuery, setExerciseSearchQuery] = useState("");
@@ -213,17 +218,19 @@ export default function WorkoutScreen() {
   };
 
   const handleLogPR = () => {
-    if (selectedExercise && prWeight) {
+    if (selectedExercise && prWeight && prReps) {
       const newPR: PersonalRecord = {
         id: Date.now().toString(),
         exercise: selectedExercise,
         weight: parseFloat(prWeight),
+        reps: parseInt(prReps),
         unit: prUnit,
         date: new Date().toISOString(),
       };
       addPersonalRecord(newPR);
       setSelectedExercise("");
       setPrWeight("");
+      setPrReps("1");
       setIsLogPRModalVisible(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
@@ -825,15 +832,22 @@ export default function WorkoutScreen() {
                     isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
-                    shadowColor: "#3b82f6",
+                    shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 6,
-                    elevation: 3,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
                   }}
                 >
-                  <Ionicons name="fitness" size={24} color="#3b82f6" />
-                  <Text className="text-3xl font-bold text-blue-500 mt-2">
+                  <Ionicons 
+                    name="fitness" 
+                    size={20} 
+                    color={isDark ? "#9ca3af" : "#6b7280"} 
+                  />
+                  <Text className={cn(
+                    "text-3xl font-bold mt-2",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}>
                     {workouts.length}
                   </Text>
                   <Text
@@ -852,15 +866,22 @@ export default function WorkoutScreen() {
                     isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
-                    shadowColor: "#f97316",
+                    shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 6,
-                    elevation: 3,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
                   }}
                 >
-                  <Ionicons name="flame" size={24} color="#f97316" />
-                  <Text className="text-3xl font-bold text-orange-500 mt-2">
+                  <Ionicons 
+                    name="flame" 
+                    size={20} 
+                    color={isDark ? "#9ca3af" : "#6b7280"} 
+                  />
+                  <Text className={cn(
+                    "text-3xl font-bold mt-2",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}>
                     {getWorkoutStreak()}
                   </Text>
                   <Text
@@ -879,15 +900,22 @@ export default function WorkoutScreen() {
                     isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
-                    shadowColor: "#f59e0b",
+                    shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 6,
-                    elevation: 3,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
                   }}
                 >
-                  <Ionicons name="trophy" size={24} color="#f59e0b" />
-                  <Text className="text-3xl font-bold text-yellow-500 mt-2">
+                  <Ionicons 
+                    name="trophy" 
+                    size={20} 
+                    color={isDark ? "#9ca3af" : "#6b7280"} 
+                  />
+                  <Text className={cn(
+                    "text-3xl font-bold mt-2",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}>
                     {getTotalPRs()}
                   </Text>
                   <Text
@@ -909,15 +937,22 @@ export default function WorkoutScreen() {
                     isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
-                    shadowColor: "#22c55e",
+                    shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 6,
-                    elevation: 3,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
                   }}
                 >
-                  <Ionicons name="barbell" size={24} color="#22c55e" />
-                  <Text className="text-3xl font-bold text-green-500 mt-2">
+                  <Ionicons 
+                    name="barbell" 
+                    size={20} 
+                    color={isDark ? "#9ca3af" : "#6b7280"} 
+                  />
+                  <Text className={cn(
+                    "text-3xl font-bold mt-2",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}>
                     {Math.round(getTotalVolume())}
                   </Text>
                   <Text
@@ -936,15 +971,22 @@ export default function WorkoutScreen() {
                     isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
-                    shadowColor: "#a855f7",
+                    shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 6,
-                    elevation: 3,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
                   }}
                 >
-                  <Ionicons name="repeat" size={24} color="#a855f7" />
-                  <Text className="text-3xl font-bold text-purple-500 mt-2">
+                  <Ionicons 
+                    name="repeat" 
+                    size={20} 
+                    color={isDark ? "#9ca3af" : "#6b7280"} 
+                  />
+                  <Text className={cn(
+                    "text-3xl font-bold mt-2",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}>
                     {getTotalSets()}
                   </Text>
                   <Text
@@ -963,15 +1005,22 @@ export default function WorkoutScreen() {
                     isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
-                    shadowColor: "#ec4899",
+                    shadowColor: "#000",
                     shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 6,
-                    elevation: 3,
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
                   }}
                 >
-                  <Ionicons name="time" size={24} color="#ec4899" />
-                  <Text className="text-3xl font-bold text-pink-500 mt-2">
+                  <Ionicons 
+                    name="time" 
+                    size={20} 
+                    color={isDark ? "#9ca3af" : "#6b7280"} 
+                  />
+                  <Text className={cn(
+                    "text-3xl font-bold mt-2",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}>
                     {Math.round(getTotalHours())}
                   </Text>
                   <Text
@@ -1151,7 +1200,7 @@ export default function WorkoutScreen() {
                               isDark ? "text-gray-400" : "text-gray-600"
                             )}
                           >
-                            {pr.weight} {pr.unit}
+                            {pr.weight} {pr.unit} × {pr.reps} {pr.reps === 1 ? "rep" : "reps"}
                           </Text>
                         </View>
                         <Pressable
@@ -1257,13 +1306,13 @@ export default function WorkoutScreen() {
                             {pr.exercise}
                           </Text>
                           <Text
-                            className={cn(
-                              "text-lg font-bold",
-                              isDark ? "text-white" : "text-gray-900"
-                            )}
-                          >
-                            {pr.weight} {pr.unit}
-                          </Text>
+                          className={cn(
+                            "text-lg font-bold",
+                            isDark ? "text-white" : "text-gray-900"
+                          )}
+                        >
+                          {pr.weight} {pr.unit} × {pr.reps}
+                        </Text>
                         </View>
                       </View>
                     );
@@ -1641,12 +1690,33 @@ export default function WorkoutScreen() {
                 </Pressable>
               </View>
 
+              {/* Reps Input */}
+              <Text
+                className={cn(
+                  "text-sm font-semibold mb-2",
+                  isDark ? "text-gray-300" : "text-gray-700"
+                )}
+              >
+                Reps
+              </Text>
+              <TextInput
+                value={prReps}
+                onChangeText={setPrReps}
+                placeholder="1"
+                keyboardType="numeric"
+                placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                className={cn(
+                  "rounded-lg p-3 text-base mb-6",
+                  isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+                )}
+              />
+
               <Pressable
                 onPress={handleLogPR}
-                disabled={!selectedExercise || !prWeight}
+                disabled={!selectedExercise || !prWeight || !prReps}
                 className={cn(
                   "py-4 rounded-full items-center",
-                  !selectedExercise || !prWeight
+                  !selectedExercise || !prWeight || !prReps
                     ? "bg-gray-400"
                     : "bg-yellow-500"
                 )}
@@ -1684,30 +1754,18 @@ export default function WorkoutScreen() {
           </View>
 
           <View className="flex-1 justify-center items-center px-4">
-            <TextInput
-              value={tempBodyWeight}
-              onChangeText={setTempBodyWeight}
-              placeholder="Enter weight"
-              keyboardType="numeric"
-              placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-              className={cn(
-                "rounded-lg p-4 text-4xl font-bold text-center w-full mb-6",
-                isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
-              )}
+            <WeightSlider
+              value={parseFloat(tempBodyWeight) || bodyWeight}
+              onValueChange={(val) => setTempBodyWeight(val.toString())}
+              min={bodyWeightUnit === "kg" ? 30 : 66}
+              max={bodyWeightUnit === "kg" ? 200 : 440}
+              unit={bodyWeightUnit}
+              isDark={isDark}
             />
-            
-            <Text
-              className={cn(
-                "text-2xl font-bold mb-8",
-                isDark ? "text-gray-400" : "text-gray-600"
-              )}
-            >
-              {bodyWeightUnit.toUpperCase()}
-            </Text>
 
             <Pressable
               onPress={handleUpdateWeight}
-              className="bg-blue-500 px-12 py-4 rounded-full"
+              className="bg-blue-500 px-12 py-4 rounded-full mt-8"
             >
               <Text className="text-white font-bold text-lg">Save Weight</Text>
             </Pressable>
@@ -1777,32 +1835,32 @@ export default function WorkoutScreen() {
                     size={24}
                     color={isFeatured ? "#fff" : isDark ? "#9ca3af" : "#6b7280"}
                   />
-                  <View className="flex-1 ml-3">
-                    <Text
-                      className={cn(
-                        "text-base font-bold",
-                        isFeatured
-                          ? "text-white"
-                          : isDark
-                          ? "text-white"
-                          : "text-gray-900"
-                      )}
-                    >
-                      {pr.exercise}
-                    </Text>
-                    <Text
-                      className={cn(
-                        "text-sm",
-                        isFeatured
-                          ? "text-white opacity-90"
-                          : isDark
-                          ? "text-gray-400"
-                          : "text-gray-600"
-                      )}
-                    >
-                      {pr.weight} {pr.unit}
-                    </Text>
-                  </View>
+                      <View className="flex-1 ml-3">
+                        <Text
+                          className={cn(
+                            "text-base font-bold",
+                            isFeatured
+                              ? "text-white"
+                              : isDark
+                              ? "text-white"
+                              : "text-gray-900"
+                          )}
+                        >
+                          {pr.exercise}
+                        </Text>
+                        <Text
+                          className={cn(
+                            "text-sm",
+                            isFeatured
+                              ? "text-white opacity-90"
+                              : isDark
+                              ? "text-gray-400"
+                              : "text-gray-600"
+                          )}
+                        >
+                          {pr.weight} {pr.unit} × {pr.reps}
+                        </Text>
+                      </View>
                 </Pressable>
               );
             })}
@@ -1950,6 +2008,159 @@ function ExerciseCard({
           <Text className="text-white font-semibold">Add Set</Text>
         </Pressable>
       </View>
+    </View>
+  );
+}
+
+// Weight Slider Component
+function WeightSlider({
+  value,
+  onValueChange,
+  min = 30,
+  max = 300,
+  unit,
+  isDark,
+}: {
+  value: number;
+  onValueChange: (val: number) => void;
+  min?: number;
+  max?: number;
+  unit: "kg" | "lbs";
+  isDark: boolean;
+}) {
+  const DIAL_HEIGHT = 300;
+  const STEP = 0.5; // Increments of 0.5
+  
+  // Calculate initial position based on value
+  const initialPosition = -((value - min) / (max - min)) * DIAL_HEIGHT;
+  const translateY = useSharedValue(initialPosition);
+  const startY = useSharedValue(0);
+
+  const gesture = Gesture.Pan()
+    .onStart(() => {
+      startY.value = translateY.value;
+    })
+    .onUpdate((e) => {
+      const newTranslateY = startY.value + e.translationY;
+      // Clamp the translation
+      const clampedY = Math.max(-DIAL_HEIGHT, Math.min(0, newTranslateY));
+      translateY.value = clampedY;
+
+      // Convert position to weight value
+      const progress = Math.abs(clampedY) / DIAL_HEIGHT;
+      const newValue = min + progress * (max - min);
+      const steppedValue = Math.round(newValue / STEP) * STEP;
+      onValueChange(Math.round(steppedValue * 10) / 10);
+
+      // Haptic feedback on value change
+      if (Math.round(steppedValue) !== Math.round(value)) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    })
+    .onEnd(() => {
+      // Snap to nearest step
+      const progress = Math.abs(translateY.value) / DIAL_HEIGHT;
+      const newValue = min + progress * (max - min);
+      const steppedValue = Math.round(newValue / STEP) * STEP;
+      const snappedProgress = (steppedValue - min) / (max - min);
+      translateY.value = withSpring(-snappedProgress * DIAL_HEIGHT);
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  // Generate scale marks
+  const marks = [];
+  for (let i = min; i <= max; i += 10) {
+    marks.push(i);
+  }
+
+  return (
+    <View className="items-center justify-center">
+      {/* Current Value Display */}
+      <View className="mb-8">
+        <Text className="text-7xl font-bold text-blue-500">
+          {value}
+        </Text>
+        <Text
+          className={cn(
+            "text-2xl font-bold text-center mt-2",
+            isDark ? "text-gray-400" : "text-gray-600"
+          )}
+        >
+          {unit.toUpperCase()}
+        </Text>
+      </View>
+
+      {/* Dial Container */}
+      <View className="relative" style={{ height: 200, width: 200 }}>
+        {/* Center Indicator */}
+        <View
+          className="absolute left-0 right-0 z-10"
+          style={{
+            top: 95,
+            height: 10,
+            borderRadius: 5,
+            backgroundColor: "#3b82f6",
+          }}
+        />
+
+        {/* Scrollable Dial */}
+        <GestureDetector gesture={gesture}>
+          <Animated.View
+            style={[
+              {
+                position: "absolute",
+                left: 0,
+                right: 0,
+                alignItems: "center",
+              },
+              animatedStyle,
+            ]}
+          >
+            {marks.map((mark, index) => {
+              const isMajor = mark % 20 === 0;
+              return (
+                <View
+                  key={mark}
+                  className="flex-row items-center justify-center mb-4"
+                  style={{ height: 30 }}
+                >
+                  <View
+                    style={{
+                      width: isMajor ? 60 : 30,
+                      height: 3,
+                      backgroundColor: isDark ? "#6b7280" : "#9ca3af",
+                      marginRight: 10,
+                    }}
+                  />
+                  {isMajor && (
+                    <Text
+                      className={cn(
+                        "text-base font-semibold",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                      style={{ width: 50 }}
+                    >
+                      {mark}
+                    </Text>
+                  )}
+                </View>
+              );
+            })}
+          </Animated.View>
+        </GestureDetector>
+      </View>
+
+      <Text
+        className={cn(
+          "text-sm mt-6",
+          isDark ? "text-gray-500" : "text-gray-600"
+        )}
+      >
+        Drag to adjust weight
+      </Text>
     </View>
   );
 }
