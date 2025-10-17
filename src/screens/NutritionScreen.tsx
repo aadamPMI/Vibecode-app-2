@@ -393,8 +393,15 @@ export default function NutritionScreen() {
           <View
             className={cn(
               "rounded-3xl p-6",
-              isDark ? "bg-gray-800" : "bg-gray-50"
+              isDark ? "bg-gray-800/40" : "bg-white/60"
             )}
+            style={{
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
           >
             <MacroRow
               label="Protein"

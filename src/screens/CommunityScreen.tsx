@@ -178,11 +178,11 @@ export default function CommunityScreen() {
                 : "bg-white"
             )}
             style={{
-              shadowColor: activeView === "my" ? "#22c55e" : "#000",
-              shadowOffset: { width: 0, height: activeView === "my" ? 6 : 4 },
-              shadowOpacity: activeView === "my" ? 0.4 : 0.1,
-              shadowRadius: activeView === "my" ? 16 : 12,
-              elevation: activeView === "my" ? 8 : 5,
+              shadowColor: activeView === "my" ? "#22c55e" : (isDark ? "#000" : "#1f2937"),
+              shadowOffset: { width: 0, height: activeView === "my" ? 8 : 6 },
+              shadowOpacity: activeView === "my" ? 0.5 : (isDark ? 0.6 : 0.25),
+              shadowRadius: activeView === "my" ? 20 : 12,
+              elevation: activeView === "my" ? 10 : 8,
             }}
           >
             <View
@@ -190,9 +190,10 @@ export default function CommunityScreen() {
               style={{ 
                 backgroundColor: isDark ? "rgba(34, 197, 94, 0.15)" : "#bbf7d0",
                 shadowColor: "#22c55e",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 6,
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
               }}
             >
               <Ionicons
@@ -251,16 +252,23 @@ export default function CommunityScreen() {
                 : "bg-white"
             )}
             style={{
-              shadowColor: activeView === "discover" ? "#3b82f6" : "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: activeView === "discover" ? 0.4 : 0.1,
-              shadowRadius: activeView === "discover" ? 16 : 12,
-              elevation: 5,
+              shadowColor: activeView === "discover" ? "#3b82f6" : (isDark ? "#000" : "#1f2937"),
+              shadowOffset: { width: 0, height: activeView === "discover" ? 8 : 6 },
+              shadowOpacity: activeView === "discover" ? 0.5 : (isDark ? 0.6 : 0.25),
+              shadowRadius: activeView === "discover" ? 20 : 12,
+              elevation: activeView === "discover" ? 10 : 8,
             }}
           >
             <View
               className="rounded-2xl p-4 mb-4"
-              style={{ backgroundColor: isDark ? "rgba(147, 197, 253, 0.2)" : "#dbeafe" }}
+              style={{ 
+                backgroundColor: isDark ? "rgba(147, 197, 253, 0.2)" : "#dbeafe",
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
             >
               <Ionicons
                 name="search"
@@ -316,16 +324,23 @@ export default function CommunityScreen() {
                 : "bg-white"
             )}
             style={{
-              shadowColor: activeView === "trending" ? "#f97316" : "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: activeView === "trending" ? 0.4 : 0.1,
-              shadowRadius: activeView === "trending" ? 16 : 12,
-              elevation: 5,
+              shadowColor: activeView === "trending" ? "#f97316" : (isDark ? "#000" : "#1f2937"),
+              shadowOffset: { width: 0, height: activeView === "trending" ? 8 : 6 },
+              shadowOpacity: activeView === "trending" ? 0.5 : (isDark ? 0.6 : 0.25),
+              shadowRadius: activeView === "trending" ? 20 : 12,
+              elevation: activeView === "trending" ? 10 : 8,
             }}
           >
             <View
               className="rounded-2xl p-4 mb-4"
-              style={{ backgroundColor: isDark ? "rgba(251, 146, 60, 0.15)" : "#fed7aa" }}
+              style={{ 
+                backgroundColor: isDark ? "rgba(251, 146, 60, 0.15)" : "#fed7aa",
+                shadowColor: "#f97316",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
             >
               <Ionicons
                 name="flame"

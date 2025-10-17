@@ -330,16 +330,23 @@ export default function WorkoutScreen() {
                   : "bg-gray-100"
               )}
               style={{
-                shadowColor: activeView === "active" ? "#fb923c" : "#000",
-                shadowOffset: { width: 0, height: activeView === "active" ? 6 : 4 },
-                shadowOpacity: activeView === "active" ? 0.4 : 0.1,
-                shadowRadius: activeView === "active" ? 16 : 8,
-                elevation: activeView === "active" ? 8 : 5,
+                shadowColor: activeView === "active" ? "#fb923c" : (isDark ? "#000" : "#1f2937"),
+                shadowOffset: { width: 0, height: activeView === "active" ? 8 : 6 },
+                shadowOpacity: activeView === "active" ? 0.5 : (isDark ? 0.6 : 0.25),
+                shadowRadius: activeView === "active" ? 20 : 12,
+                elevation: activeView === "active" ? 10 : 8,
               }}
             >
               <View
                 className="rounded-2xl p-4 mb-4"
-                style={{ backgroundColor: "rgba(251, 146, 60, 0.15)" }}
+                style={{ 
+                  backgroundColor: "rgba(251, 146, 60, 0.15)",
+                  shadowColor: "#fb923c",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
               >
                 <Ionicons name="flame" size={28} color="#fb923c" />
               </View>
@@ -391,16 +398,23 @@ export default function WorkoutScreen() {
                   : "bg-gray-100"
               )}
               style={{
-                shadowColor: activeView === "programs" ? "#3b82f6" : "#000",
-                shadowOffset: { width: 0, height: activeView === "programs" ? 6 : 4 },
-                shadowOpacity: activeView === "programs" ? 0.4 : 0.1,
-                shadowRadius: activeView === "programs" ? 16 : 8,
-                elevation: activeView === "programs" ? 8 : 5,
+                shadowColor: activeView === "programs" ? "#3b82f6" : (isDark ? "#000" : "#1f2937"),
+                shadowOffset: { width: 0, height: activeView === "programs" ? 8 : 6 },
+                shadowOpacity: activeView === "programs" ? 0.5 : (isDark ? 0.6 : 0.25),
+                shadowRadius: activeView === "programs" ? 20 : 12,
+                elevation: activeView === "programs" ? 10 : 8,
               }}
             >
               <View
                 className="rounded-2xl p-4 mb-4"
-                style={{ backgroundColor: "rgba(147, 197, 253, 0.3)" }}
+                style={{ 
+                  backgroundColor: "rgba(147, 197, 253, 0.3)",
+                  shadowColor: "#3b82f6",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
               >
                 <Ionicons name="fitness-outline" size={28} color="#60a5fa" />
               </View>
@@ -455,16 +469,23 @@ export default function WorkoutScreen() {
                   : "bg-gray-100"
               )}
               style={{
-                shadowColor: activeView === "history" ? "#4ade80" : "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: activeView === "history" ? 0.4 : 0.1,
-                shadowRadius: activeView === "history" ? 16 : 8,
-                elevation: 5,
+                shadowColor: activeView === "history" ? "#4ade80" : (isDark ? "#000" : "#1f2937"),
+                shadowOffset: { width: 0, height: activeView === "history" ? 8 : 6 },
+                shadowOpacity: activeView === "history" ? 0.5 : (isDark ? 0.6 : 0.25),
+                shadowRadius: activeView === "history" ? 20 : 12,
+                elevation: activeView === "history" ? 10 : 8,
               }}
             >
               <View
                 className="rounded-2xl p-4 mb-4"
-                style={{ backgroundColor: "rgba(134, 239, 172, 0.3)" }}
+                style={{ 
+                  backgroundColor: "rgba(134, 239, 172, 0.3)",
+                  shadowColor: "#4ade80",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
               >
                 <Ionicons name="trending-up" size={28} color="#4ade80" />
               </View>
@@ -516,16 +537,23 @@ export default function WorkoutScreen() {
                   : "bg-gray-100"
               )}
               style={{
-                shadowColor: activeView === "stats" ? "#a855f7" : "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: activeView === "stats" ? 0.4 : 0.1,
-                shadowRadius: activeView === "stats" ? 16 : 8,
-                elevation: 5,
+                shadowColor: activeView === "stats" ? "#a855f7" : (isDark ? "#000" : "#1f2937"),
+                shadowOffset: { width: 0, height: activeView === "stats" ? 8 : 6 },
+                shadowOpacity: activeView === "stats" ? 0.5 : (isDark ? 0.6 : 0.25),
+                shadowRadius: activeView === "stats" ? 20 : 12,
+                elevation: activeView === "stats" ? 10 : 8,
               }}
             >
               <View
                 className="rounded-2xl p-4 mb-4"
-                style={{ backgroundColor: "rgba(251, 146, 60, 0.15)" }}
+                style={{ 
+                  backgroundColor: "rgba(251, 146, 60, 0.15)",
+                  shadowColor: "#a855f7",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 8,
+                  elevation: 4,
+                }}
               >
                 <Ionicons name="flame" size={28} color="#fb923c" />
               </View>

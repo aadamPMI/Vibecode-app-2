@@ -707,17 +707,26 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-gray-800" : "bg-white"
+              isDark ? "bg-gray-800/40" : "bg-white/60"
             )}
             style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 3,
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
             }}
           >
-            <View className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-blue-100">
+            <View 
+              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-blue-100"
+              style={{
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
               <Ionicons name="person" size={28} color="#3b82f6" />
             </View>
             <View className="flex-1">
@@ -753,17 +762,26 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-gray-800" : "bg-white"
+              isDark ? "bg-gray-800/40" : "bg-white/60"
             )}
             style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 3,
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
             }}
           >
-            <View className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-purple-100">
+            <View 
+              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-purple-100"
+              style={{
+                shadowColor: "#a855f7",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
               <Ionicons name="shield-checkmark" size={28} color="#a855f7" />
             </View>
             <View className="flex-1">
@@ -799,17 +817,26 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-gray-800" : "bg-white"
+              isDark ? "bg-gray-800/40" : "bg-white/60"
             )}
             style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 3,
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
             }}
           >
-            <View className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-cyan-100">
+            <View 
+              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-cyan-100"
+              style={{
+                shadowColor: "#06b6d4",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
               <Ionicons name="color-palette" size={28} color="#06b6d4" />
             </View>
             <View className="flex-1">
@@ -845,17 +872,26 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-gray-800" : "bg-white"
+              isDark ? "bg-gray-800/40" : "bg-white/60"
             )}
             style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 3,
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
             }}
           >
-            <View className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-green-100">
+            <View 
+              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-green-100"
+              style={{
+                shadowColor: "#22c55e",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
               <Ionicons name="trophy" size={28} color="#22c55e" />
             </View>
             <View className="flex-1">
@@ -891,17 +927,26 @@ export default function SettingsScreen() {
             }}
             className={cn(
               "rounded-3xl p-5 mb-6 flex-row items-center",
-              isDark ? "bg-gray-800" : "bg-white"
+              isDark ? "bg-gray-800/40" : "bg-white/60"
             )}
             style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 3,
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
             }}
           >
-            <View className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-orange-100">
+            <View 
+              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-orange-100"
+              style={{
+                shadowColor: "#f97316",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 4,
+              }}
+            >
               <Ionicons name="notifications" size={28} color="#f97316" />
             </View>
             <View className="flex-1">
