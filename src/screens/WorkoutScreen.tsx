@@ -285,6 +285,133 @@ export default function WorkoutScreen() {
             </Pressable>
           </View>
 
+          {/* Bottom Row - History & Stats */}
+          <View className="flex-row mb-6">
+            {/* History Card */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                setActiveView(activeView === "history" ? null : "history");
+              }}
+              className={cn(
+                "flex-1 rounded-3xl p-5 mr-2",
+                activeView === "history"
+                  ? "border-2 border-green-500"
+                  : isDark
+                  ? "bg-gray-800"
+                  : "bg-gray-100"
+              )}
+              style={{
+                shadowColor: activeView === "history" ? "#4ade80" : "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: activeView === "history" ? 0.4 : 0.1,
+                shadowRadius: activeView === "history" ? 16 : 8,
+                elevation: 5,
+              }}
+            >
+              <View
+                className="rounded-2xl p-4 mb-4"
+                style={{ backgroundColor: "rgba(134, 239, 172, 0.3)" }}
+              >
+                <Ionicons name="trending-up" size={28} color="#4ade80" />
+              </View>
+              <Text
+                className={cn(
+                  "text-xl font-bold mb-2",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                History
+              </Text>
+              <Text
+                className={cn(
+                  "text-xs mb-4",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}
+              >
+                Track your progress
+              </Text>
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="time-outline"
+                  size={16}
+                  color={isDark ? "#9ca3af" : "#6b7280"}
+                />
+                <Text
+                  className={cn(
+                    "text-sm font-semibold ml-1",
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  {getThisWeekWorkouts()} this week
+                </Text>
+              </View>
+            </Pressable>
+
+            {/* Stats Card */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                setActiveView(activeView === "stats" ? null : "stats");
+              }}
+              className={cn(
+                "flex-1 rounded-3xl p-5 ml-2",
+                activeView === "stats"
+                  ? "border-2 border-purple-500"
+                  : isDark
+                  ? "bg-gray-800"
+                  : "bg-gray-100"
+              )}
+              style={{
+                shadowColor: activeView === "stats" ? "#a855f7" : "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: activeView === "stats" ? 0.4 : 0.1,
+                shadowRadius: activeView === "stats" ? 16 : 8,
+                elevation: 5,
+              }}
+            >
+              <View
+                className="rounded-2xl p-4 mb-4"
+                style={{ backgroundColor: "rgba(251, 146, 60, 0.15)" }}
+              >
+                <Ionicons name="flame" size={28} color="#fb923c" />
+              </View>
+              <Text
+                className={cn(
+                  "text-xl font-bold mb-2",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                Stats
+              </Text>
+              <Text
+                className={cn(
+                  "text-xs mb-4",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}
+              >
+                Dashboard & insights
+              </Text>
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="star-outline"
+                  size={16}
+                  color={isDark ? "#9ca3af" : "#6b7280"}
+                />
+                <Text
+                  className={cn(
+                    "text-sm font-semibold ml-1",
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  {getTotalPRs()} PRs
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+
+          {/* All Expandable Content Sections - Show below all 4 cards */}
+          
           {/* Active Workout Options - Shows when clicked */}
           {activeView === "active" && (
             <Animated.View 
@@ -426,131 +553,6 @@ export default function WorkoutScreen() {
               </View>
             </Animated.View>
           )}
-
-          {/* Bottom Row - History & Stats */}
-          <View className="flex-row mb-4">
-            {/* History Card */}
-            <Pressable
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                setActiveView(activeView === "history" ? null : "history");
-              }}
-              className={cn(
-                "flex-1 rounded-3xl p-5 mr-2",
-                activeView === "history"
-                  ? "border-2 border-green-500"
-                  : isDark
-                  ? "bg-gray-800"
-                  : "bg-gray-100"
-              )}
-              style={{
-                shadowColor: activeView === "history" ? "#4ade80" : "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: activeView === "history" ? 0.4 : 0.1,
-                shadowRadius: activeView === "history" ? 16 : 8,
-                elevation: 5,
-              }}
-            >
-              <View
-                className="rounded-2xl p-4 mb-4"
-                style={{ backgroundColor: "rgba(134, 239, 172, 0.3)" }}
-              >
-                <Ionicons name="trending-up" size={28} color="#4ade80" />
-              </View>
-              <Text
-                className={cn(
-                  "text-xl font-bold mb-2",
-                  isDark ? "text-white" : "text-gray-900"
-                )}
-              >
-                History
-              </Text>
-              <Text
-                className={cn(
-                  "text-xs mb-4",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                Track your progress
-              </Text>
-              <View className="flex-row items-center">
-                <Ionicons
-                  name="time-outline"
-                  size={16}
-                  color={isDark ? "#9ca3af" : "#6b7280"}
-                />
-                <Text
-                  className={cn(
-                    "text-sm font-semibold ml-1",
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  )}
-                >
-                  {getThisWeekWorkouts()} this week
-                </Text>
-              </View>
-            </Pressable>
-
-            {/* Stats Card */}
-            <Pressable
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                setActiveView(activeView === "stats" ? null : "stats");
-              }}
-              className={cn(
-                "flex-1 rounded-3xl p-5 ml-2",
-                activeView === "stats"
-                  ? "border-2 border-purple-500"
-                  : isDark
-                  ? "bg-gray-800"
-                  : "bg-gray-100"
-              )}
-              style={{
-                shadowColor: activeView === "stats" ? "#a855f7" : "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: activeView === "stats" ? 0.4 : 0.1,
-                shadowRadius: activeView === "stats" ? 16 : 8,
-                elevation: 5,
-              }}
-            >
-              <View
-                className="rounded-2xl p-4 mb-4"
-                style={{ backgroundColor: "rgba(251, 146, 60, 0.15)" }}
-              >
-                <Ionicons name="flame" size={28} color="#fb923c" />
-              </View>
-              <Text
-                className={cn(
-                  "text-xl font-bold mb-2",
-                  isDark ? "text-white" : "text-gray-900"
-                )}
-              >
-                Stats
-              </Text>
-              <Text
-                className={cn(
-                  "text-xs mb-4",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                Dashboard & insights
-              </Text>
-              <View className="flex-row items-center">
-                <Ionicons
-                  name="star-outline"
-                  size={16}
-                  color={isDark ? "#9ca3af" : "#6b7280"}
-                />
-                <Text
-                  className={cn(
-                    "text-sm font-semibold ml-1",
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  )}
-                >
-                  {getTotalPRs()} PRs
-                </Text>
-              </View>
-            </Pressable>
-          </View>
 
           {/* History List - Shows when clicked */}
           {activeView === "history" && (
