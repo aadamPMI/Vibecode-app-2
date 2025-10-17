@@ -339,6 +339,17 @@ export const useCommunityStore = create<CommunityStore>()(
     {
       name: "community-storage",
       storage: createJSONStorage(() => AsyncStorage),
+      onRehydrateStorage: () => (state) => {
+        // Migration: Ensure all communities have required fields
+        if (state?.communities) {
+          state.communities = state.communities.map((community) => ({
+            ...community,
+            admins: community.admins || [community.createdBy],
+            isPrivate: community.isPrivate ?? false,
+            challenges: community.challenges || [],
+          }));
+        }
+      },
     }
   )
 );

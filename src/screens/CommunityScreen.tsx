@@ -1526,7 +1526,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                 </View>
 
                 {/* Join Code (Admin Only) */}
-                {detailCommunity && detailCommunity.admins.includes(currentUserId) && detailCommunity.joinCode && (
+                {detailCommunity && detailCommunity.admins && detailCommunity.admins.includes(currentUserId) && detailCommunity.joinCode && (
                   <View
                     className={cn(
                       "rounded-3xl p-6 mb-4",
@@ -1685,7 +1685,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                 </Text>
 
                 {/* Admin Create Challenge Button */}
-                {detailCommunity && detailCommunity.admins.includes(currentUserId) && (
+                {detailCommunity && detailCommunity.admins && detailCommunity.admins.includes(currentUserId) && (
                   <Pressable
                     onPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -1823,7 +1823,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                       No challenges yet
                     </Text>
                     <Text className={cn("text-sm mt-2 text-center", isDark ? "text-gray-500" : "text-gray-500")}>
-                      {detailCommunity && detailCommunity.admins.includes(currentUserId)
+                      {detailCommunity && detailCommunity.admins && detailCommunity.admins.includes(currentUserId)
                         ? "Create the first challenge for this community"
                         : "Check back later for new challenges"}
                     </Text>
