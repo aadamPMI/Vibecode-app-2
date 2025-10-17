@@ -43,18 +43,23 @@ export default function NutritionScreen() {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   
-  // Get current week dates - starting from Sunday of the current week
+  // Get week dates - start from 1 year ago
   const [selectedWeekStart, setSelectedWeekStart] = useState(() => {
     const today = new Date();
     const day = today.getDay();
-    const diff = today.getDate() - day - 21; // Start 3 weeks before today
-    const startSunday = new Date(today.setDate(diff));
+    // Go back 1 year to the Sunday of that week
+    const pastDate = new Date(today);
+    pastDate.setFullYear(pastDate.getFullYear() - 1);
+    const pastDay = pastDate.getDay();
+    const diff = pastDate.getDate() - pastDay;
+    const startSunday = new Date(pastDate);
+    startSunday.setDate(diff);
     return startSunday;
   });
 
   // Constants for snapping
   const DAY_ITEM_WIDTH = 60; // 48px circle + 12px margin-right
-  const WEEK_WIDTH = DAY_ITEM_WIDTH * 7; // Width of one full week
+  const WEEK_WIDTH = DAY_ITEM_WIDTH * 7; // Width of one full week (420px)
   const SCREEN_WIDTH = Dimensions.get("window").width;
   const PADDING_HORIZONTAL = 16; // px-4 = 16px
 
@@ -137,15 +142,43 @@ export default function NutritionScreen() {
 
   const getWeekDates = () => {
     const dates = [];
-    // Show 12 weeks total (can scroll through multiple weeks)
-    const numWeeks = 12;
-    for (let week = 0; week < numWeeks; week++) {
+    const today = new Date();
+    
+    // Calculate the max date (7 days from today)
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 7);
+    const maxDateStr = maxDate.toISOString().split("T")[0];
+    
+    // Generate weeks from selectedWeekStart until we hit the 7-day future limit
+    let weekIndex = 0;
+    let shouldContinue = true;
+    
+    while (shouldContinue && weekIndex < 100) { // Max 100 weeks (~2 years) as safety
+      let weekHasValidDate = false;
+      
       for (let day = 0; day < 7; day++) {
         const date = new Date(selectedWeekStart);
-        date.setDate(selectedWeekStart.getDate() + (week * 7) + day);
+        date.setDate(selectedWeekStart.getDate() + (weekIndex * 7) + day);
+        const dateStr = date.toISOString().split("T")[0];
+        
+        // Check if this date is within the allowed range
+        if (dateStr <= maxDateStr) {
+          weekHasValidDate = true;
+        }
+        
         dates.push(date);
       }
+      
+      // If this entire week is beyond the 7-day future limit, stop
+      if (!weekHasValidDate) {
+        // Remove the last 7 dates we just added
+        dates.splice(-7, 7);
+        shouldContinue = false;
+      }
+      
+      weekIndex++;
     }
+    
     return dates;
   };
 
@@ -264,11 +297,15 @@ export default function NutritionScreen() {
   useEffect(() => {
     if (isFocused && scrollViewRef.current) {
       const today = new Date();
+      const todaySunday = new Date(today);
+      const day = todaySunday.getDay();
+      todaySunday.setDate(todaySunday.getDate() - day); // Get Sunday of current week
       
-      // Calculate which week contains today
-      // We start 3 weeks before today, so today is in week index 3
-      const currentWeekIndex = 3;
-      const scrollToX = currentWeekIndex * WEEK_WIDTH;
+      // Calculate number of weeks between selectedWeekStart and today's week
+      const timeDiff = todaySunday.getTime() - selectedWeekStart.getTime();
+      const weeksDiff = Math.floor(timeDiff / (7 * 24 * 60 * 60 * 1000));
+      
+      const scrollToX = weeksDiff * WEEK_WIDTH;
       
       // Delay to ensure ScrollView is mounted
       setTimeout(() => {
