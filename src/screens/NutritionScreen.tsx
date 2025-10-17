@@ -27,6 +27,7 @@ export default function NutritionScreen() {
   const foodLog = useNutritionStore((s) => s.foodLog);
   const addFoodItem = useNutritionStore((s) => s.addFoodItem);
   const deleteFoodItem = useNutritionStore((s) => s.deleteFoodItem);
+  const updateFoodItem = useNutritionStore((s) => s.updateFoodItem);
   
   const isDark = theme === "dark";
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
@@ -55,6 +56,42 @@ export default function NutritionScreen() {
     "breakfast" | "lunch" | "dinner" | "snack"
   >("breakfast");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Edit meal states
+  const [isEditMealModalVisible, setIsEditMealModalVisible] = useState(false);
+  const [editingMeal, setEditingMeal] = useState<FoodItem | null>(null);
+  const [editCalories, setEditCalories] = useState("");
+  const [editProtein, setEditProtein] = useState("");
+  const [editCarbs, setEditCarbs] = useState("");
+  const [editFats, setEditFats] = useState("");
+
+  const handleEditMeal = (meal: FoodItem) => {
+    setEditingMeal(meal);
+    setEditCalories(meal.calories.toString());
+    setEditProtein(meal.protein.toString());
+    setEditCarbs(meal.carbs.toString());
+    setEditFats(meal.fats.toString());
+    setIsEditMealModalVisible(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
+  const handleSaveEditMeal = () => {
+    if (editingMeal && editCalories && editProtein && editCarbs && editFats) {
+      updateFoodItem(editingMeal.id, {
+        calories: parseFloat(editCalories),
+        protein: parseFloat(editProtein),
+        carbs: parseFloat(editCarbs),
+        fats: parseFloat(editFats),
+      });
+      setIsEditMealModalVisible(false);
+      setEditingMeal(null);
+      setEditCalories("");
+      setEditProtein("");
+      setEditCarbs("");
+      setEditFats("");
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    }
+  };
 
   const handleAddFood = () => {
     if (
@@ -1211,8 +1248,9 @@ export default function NutritionScreen() {
                         {meal}
                       </Text>
                       {mealItems.map((item) => (
-                        <View
+                        <Pressable
                           key={item.id}
+                          onPress={() => handleEditMeal(item)}
                           className={cn(
                             "rounded-2xl p-4 mb-3",
                             isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
@@ -1228,7 +1266,8 @@ export default function NutritionScreen() {
                               {item.name}
                             </Text>
                             <Pressable
-                              onPress={() => {
+                              onPress={(e) => {
+                                e.stopPropagation();
                                 Haptics.notificationAsync(
                                   Haptics.NotificationFeedbackType.Success
                                 );
@@ -1317,7 +1356,7 @@ export default function NutritionScreen() {
                               </Text>
                             </View>
                           </View>
-                        </View>
+                        </Pressable>
                       ))}
                     </View>
                   );
@@ -1326,6 +1365,182 @@ export default function NutritionScreen() {
             )}
           </ScrollView>
         </SafeAreaView>
+      </Modal>
+
+      {/* Edit Meal Modal */}
+      <Modal
+        visible={isEditMealModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
+        >
+          <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
+            <View className="px-4 pt-4 pb-2 border-b border-gray-200">
+              <View className="flex-row justify-between items-center">
+                <Text
+                  className={cn(
+                    "text-2xl font-bold",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}
+                >
+                  Edit Meal
+                </Text>
+                <View className="flex-row">
+                  <Pressable
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setIsEditMealModalVisible(false);
+                    }}
+                    className="mr-4 px-4 py-2"
+                  >
+                    <Text className="text-red-500 font-semibold">Cancel</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={handleSaveEditMeal}
+                    className="bg-green-500 px-4 py-2 rounded-full"
+                  >
+                    <Text className="text-white font-semibold">Save</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </View>
+
+            <ScrollView
+              className="flex-1 px-4"
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* Meal Name (Read-only) */}
+              <View className="mt-4">
+                <Text
+                  className={cn(
+                    "text-sm font-semibold mb-2",
+                    isDark ? "text-gray-300" : "text-gray-700"
+                  )}
+                >
+                  Meal Name
+                </Text>
+                <View
+                  className={cn(
+                    "rounded-lg p-3",
+                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
+                  )}
+                >
+                  <Text
+                    className={cn(
+                      "text-base",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
+                  >
+                    {editingMeal?.name}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Calories */}
+              <View className="mt-4">
+                <Text
+                  className={cn(
+                    "text-sm font-semibold mb-2",
+                    isDark ? "text-gray-300" : "text-gray-700"
+                  )}
+                >
+                  Calories
+                </Text>
+                <TextInput
+                  value={editCalories}
+                  onChangeText={setEditCalories}
+                  placeholder="e.g., 500"
+                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                  keyboardType="numeric"
+                  className={cn(
+                    "rounded-lg p-3 text-base",
+                    isDark
+                      ? "bg-[#1a1a1a] text-white"
+                      : "bg-white text-gray-900"
+                  )}
+                />
+              </View>
+
+              {/* Protein */}
+              <View className="mt-4">
+                <Text
+                  className={cn(
+                    "text-sm font-semibold mb-2",
+                    isDark ? "text-gray-300" : "text-gray-700"
+                  )}
+                >
+                  Protein (g)
+                </Text>
+                <TextInput
+                  value={editProtein}
+                  onChangeText={setEditProtein}
+                  placeholder="e.g., 30"
+                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                  keyboardType="numeric"
+                  className={cn(
+                    "rounded-lg p-3 text-base",
+                    isDark
+                      ? "bg-[#1a1a1a] text-white"
+                      : "bg-white text-gray-900"
+                  )}
+                />
+              </View>
+
+              {/* Carbs */}
+              <View className="mt-4">
+                <Text
+                  className={cn(
+                    "text-sm font-semibold mb-2",
+                    isDark ? "text-gray-300" : "text-gray-700"
+                  )}
+                >
+                  Carbs (g)
+                </Text>
+                <TextInput
+                  value={editCarbs}
+                  onChangeText={setEditCarbs}
+                  placeholder="e.g., 50"
+                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                  keyboardType="numeric"
+                  className={cn(
+                    "rounded-lg p-3 text-base",
+                    isDark
+                      ? "bg-[#1a1a1a] text-white"
+                      : "bg-white text-gray-900"
+                  )}
+                />
+              </View>
+
+              {/* Fats */}
+              <View className="mt-4">
+                <Text
+                  className={cn(
+                    "text-sm font-semibold mb-2",
+                    isDark ? "text-gray-300" : "text-gray-700"
+                  )}
+                >
+                  Fats (g)
+                </Text>
+                <TextInput
+                  value={editFats}
+                  onChangeText={setEditFats}
+                  placeholder="e.g., 15"
+                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                  keyboardType="numeric"
+                  className={cn(
+                    "rounded-lg p-3 text-base",
+                    isDark
+                      ? "bg-[#1a1a1a] text-white"
+                      : "bg-white text-gray-900"
+                  )}
+                />
+              </View>
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
