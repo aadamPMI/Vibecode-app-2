@@ -43,12 +43,13 @@ export default function NutritionScreen() {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   
-  // Get current week dates - starting 3 weeks ago
+  // Get current week dates - starting from Sunday of the current week
   const [selectedWeekStart, setSelectedWeekStart] = useState(() => {
     const today = new Date();
     const day = today.getDay();
-    const diff = today.getDate() - day - 21; // Start 3 weeks ago
-    return new Date(today.setDate(diff));
+    const diff = today.getDate() - day; // Start at Sunday of current week
+    const sunday = new Date(today.setDate(diff));
+    return sunday;
   });
 
   // Constants for snapping
@@ -135,13 +136,11 @@ export default function NutritionScreen() {
 
   const getWeekDates = () => {
     const dates = [];
-    // Show 4 weeks total (3 weeks before + current week + 1 week ahead)
-    for (let week = 0; week < 5; week++) {
-      for (let day = 0; day < 7; day++) {
-        const date = new Date(selectedWeekStart);
-        date.setDate(selectedWeekStart.getDate() + (week * 7) + day);
-        dates.push(date);
-      }
+    // Show only 7 days (Sunday to Saturday)
+    for (let day = 0; day < 7; day++) {
+      const date = new Date(selectedWeekStart);
+      date.setDate(selectedWeekStart.getDate() + day);
+      dates.push(date);
     }
     return dates;
   };
@@ -259,21 +258,21 @@ export default function NutritionScreen() {
 
   // Scroll to current day when tab is focused
   useEffect(() => {
-    if (isFocused && scrollViewRef.current) {
-      const weekDates = getWeekDates();
+    if (isFocused) {
       const today = new Date();
-      const todayStr = today.toISOString().split("T")[0];
+      const day = today.getDay();
+      const diff = today.getDate() - day;
+      const sunday = new Date();
+      sunday.setDate(diff);
       
-      // Find today's index in the week dates
-      const todayIndex = weekDates.findIndex(
-        (date) => date.toISOString().split("T")[0] === todayStr
-      );
+      // Update to show the current week
+      setSelectedWeekStart(sunday);
       
-      if (todayIndex !== -1) {
-        // Calculate scroll position to center today
-        const scrollToX = todayIndex * DAY_ITEM_WIDTH;
+      // Scroll to today after a delay
+      if (scrollViewRef.current) {
+        const todayDayOfWeek = today.getDay(); // 0 = Sunday, 6 = Saturday
+        const scrollToX = todayDayOfWeek * DAY_ITEM_WIDTH;
         
-        // Delay to ensure ScrollView is mounted
         setTimeout(() => {
           scrollViewRef.current?.scrollTo({
             x: scrollToX,
@@ -327,13 +326,25 @@ export default function NutritionScreen() {
         </View>
 
         {/* Week Calendar - Horizontal Scroll */}
-        <View className="mb-3">
+        <View className="mb-3 flex-row items-center">
+          {/* Previous Week Button */}
+          <Pressable
+            onPress={() => navigateWeek("prev")}
+            className="pl-3 pr-2 py-2"
+          >
+            <Ionicons 
+              name="chevron-back" 
+              size={24} 
+              color={isDark ? "#9ca3af" : "#6b7280"}
+            />
+          </Pressable>
+          
           <ScrollView
             ref={scrollViewRef}
             horizontal
             showsHorizontalScrollIndicator={false}
-            className="px-4"
-            contentContainerStyle={{ paddingRight: 16 }}
+            className="flex-1"
+            contentContainerStyle={{ paddingHorizontal: 8 }}
             snapToInterval={DAY_ITEM_WIDTH}
             decelerationRate="fast"
             snapToAlignment="start"
@@ -430,6 +441,18 @@ export default function NutritionScreen() {
               );
             })}
           </ScrollView>
+          
+          {/* Next Week Button */}
+          <Pressable
+            onPress={() => navigateWeek("next")}
+            className="pr-3 pl-2 py-2"
+          >
+            <Ionicons 
+              name="chevron-forward" 
+              size={24} 
+              color={isDark ? "#9ca3af" : "#6b7280"}
+            />
+          </Pressable>
         </View>
 
         {/* Calorie Counter Card */}
