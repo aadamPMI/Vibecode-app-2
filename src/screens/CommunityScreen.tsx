@@ -144,13 +144,17 @@ export default function CommunityScreen() {
             }}
             className={cn(
               "rounded-3xl p-6 mb-4",
-              isDark ? "bg-gray-800" : "bg-white"
+              activeView === "my"
+                ? "border-2 border-green-500"
+                : isDark
+                ? "bg-gray-800"
+                : "bg-white"
             )}
             style={{
-              shadowColor: "#000",
+              shadowColor: activeView === "my" ? "#22c55e" : "#000",
               shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 12,
+              shadowOpacity: activeView === "my" ? 0.4 : 0.1,
+              shadowRadius: activeView === "my" ? 16 : 12,
               elevation: 5,
             }}
           >
@@ -207,18 +211,18 @@ export default function CommunityScreen() {
               setActiveView(activeView === "discover" ? null : "discover");
             }}
             className={cn(
-              "flex-1 rounded-3xl p-6 mr-2 border-2",
+              "flex-1 rounded-3xl p-6 mr-2",
               activeView === "discover"
-                ? "border-blue-500"
+                ? "border-2 border-blue-500"
                 : isDark
-                ? "bg-gray-800 border-blue-500"
-                : "bg-white border-blue-500"
+                ? "bg-gray-800"
+                : "bg-white"
             )}
             style={{
-              shadowColor: "#3b82f6",
+              shadowColor: activeView === "discover" ? "#3b82f6" : "#000",
               shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.2,
-              shadowRadius: 12,
+              shadowOpacity: activeView === "discover" ? 0.4 : 0.1,
+              shadowRadius: activeView === "discover" ? 16 : 12,
               elevation: 5,
             }}
           >
@@ -273,13 +277,17 @@ export default function CommunityScreen() {
             }}
             className={cn(
               "flex-1 rounded-3xl p-6 ml-2",
-              isDark ? "bg-gray-800" : "bg-white"
+              activeView === "trending"
+                ? "border-2 border-orange-500"
+                : isDark
+                ? "bg-gray-800"
+                : "bg-white"
             )}
             style={{
-              shadowColor: "#000",
+              shadowColor: activeView === "trending" ? "#f97316" : "#000",
               shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.1,
-              shadowRadius: 12,
+              shadowOpacity: activeView === "trending" ? 0.4 : 0.1,
+              shadowRadius: activeView === "trending" ? 16 : 12,
               elevation: 5,
             }}
           >
