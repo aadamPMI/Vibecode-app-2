@@ -66,6 +66,11 @@ export default function CommunityScreen() {
       setCommunityDescription("");
       setIsCreateModalVisible(false);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      
+      // Extra celebration
+      setTimeout(() => {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }, 100);
     }
   };
 
@@ -99,7 +104,7 @@ export default function CommunityScreen() {
 
   const handleLikePost = (communityId: string, postId: string) => {
     likePost(communityId, postId, currentUserId);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   const isMember = (community: Community) => {
@@ -139,64 +144,69 @@ export default function CommunityScreen() {
         <View className="px-4 pt-4">
           <Pressable
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
               setActiveView(activeView === "my" ? null : "my");
             }}
             className={cn(
               "rounded-3xl p-6 mb-4",
               activeView === "my"
-                ? "border-2 border-green-500"
+                ? "border-4 border-green-500"
                 : isDark
                 ? "bg-gray-800"
                 : "bg-white"
             )}
             style={{
               shadowColor: activeView === "my" ? "#22c55e" : "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: activeView === "my" ? 0.4 : 0.1,
-              shadowRadius: activeView === "my" ? 16 : 12,
-              elevation: 5,
+              shadowOffset: { width: 0, height: activeView === "my" ? 8 : 4 },
+              shadowOpacity: activeView === "my" ? 0.6 : 0.1,
+              shadowRadius: activeView === "my" ? 20 : 12,
+              elevation: activeView === "my" ? 10 : 5,
             }}
           >
             <View
-              className="rounded-2xl p-4 mb-4"
-              style={{ backgroundColor: isDark ? "rgba(34, 197, 94, 0.15)" : "#bbf7d0" }}
+              className="rounded-3xl p-5 mb-4"
+              style={{ 
+                backgroundColor: isDark ? "rgba(34, 197, 94, 0.15)" : "#bbf7d0",
+                shadowColor: "#22c55e",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+              }}
             >
               <Ionicons
                 name="people"
-                size={32}
+                size={40}
                 color={isDark ? "#22c55e" : "#16a34a"}
               />
             </View>
             <Text
               className={cn(
-                "text-2xl font-bold mb-2",
+                "text-3xl font-black mb-2",
                 isDark ? "text-white" : "text-gray-900"
               )}
             >
-              My Communities
+              My Communities 🌟
             </Text>
             <Text
               className={cn(
-                "text-base mb-3",
+                "text-base mb-3 font-semibold",
                 isDark ? "text-gray-400" : "text-gray-600"
               )}
             >
-              Your joined communities
+              Your squad is here!
             </Text>
             <View
-              className={cn(
-                "rounded-full px-4 py-2 self-start",
-                isDark ? "bg-gray-700" : "bg-gray-100"
-              )}
+              className="rounded-full px-4 py-2 self-start"
+              style={{
+                backgroundColor: "#22c55e",
+                shadowColor: "#22c55e",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.4,
+                shadowRadius: 6,
+              }}
             >
-              <Text
-                className={cn(
-                  "text-sm font-semibold",
-                  isDark ? "text-white" : "text-gray-900"
-                )}
-              >
-                {getJoinedCommunities().length} joined
+              <Text className="text-sm font-black text-white">
+                {getJoinedCommunities().length} JOINED ✨
               </Text>
             </View>
           </Pressable>
