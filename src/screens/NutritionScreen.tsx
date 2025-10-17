@@ -31,6 +31,8 @@ export default function NutritionScreen() {
   const isDark = theme === "dark";
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [viewMealsModalVisible, setViewMealsModalVisible] = useState(false);
+  const [isManualEntryVisible, setIsManualEntryVisible] = useState(false);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [viewMode, setViewMode] = useState<"daily" | "weekly">("daily");
   
   // Get current week dates
@@ -50,6 +52,7 @@ export default function NutritionScreen() {
   const [selectedMeal, setSelectedMeal] = useState<
     "breakfast" | "lunch" | "dinner" | "snack"
   >("breakfast");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleAddFood = () => {
     if (
@@ -495,9 +498,179 @@ export default function NutritionScreen() {
         <Ionicons name="add" size={32} color="white" />
       </Pressable>
 
-      {/* Add Food Modal */}
+      {/* Add Food Options Modal - Liquid Glass UI */}
       <Modal
         visible={isAddFoodModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+          <View className="flex-1 px-6">
+            {/* Header */}
+            <View className="pt-6 pb-4">
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setIsAddFoodModalVisible(false);
+                }}
+                className="self-end mb-4"
+              >
+                <Ionicons
+                  name="close"
+                  size={28}
+                  color={isDark ? "#fff" : "#000"}
+                />
+              </Pressable>
+              <Text
+                className={cn(
+                  "text-4xl font-bold mb-2",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                Add Food
+              </Text>
+              <Text
+                className={cn(
+                  "text-lg",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}
+              >
+                How would you like to add food?
+              </Text>
+            </View>
+
+            {/* Options */}
+            <View className="flex-1 justify-center pb-20">
+              {/* Take Photo Option */}
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  // Camera functionality - mockup for now
+                  setIsAddFoodModalVisible(false);
+                  setTimeout(() => {
+                    alert("Camera feature coming soon! AI will analyze your meal automatically.");
+                  }, 300);
+                }}
+                className="rounded-3xl p-6 mb-4 overflow-hidden"
+                style={{
+                  backgroundColor: isDark ? "rgba(59, 130, 246, 0.15)" : "#3b82f6",
+                  shadowColor: "#3b82f6",
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 16,
+                  elevation: 8,
+                }}
+              >
+                <View className="flex-row items-center">
+                  <View
+                    className="w-20 h-20 rounded-3xl items-center justify-center mr-4"
+                    style={{
+                      backgroundColor: isDark
+                        ? "rgba(59, 130, 246, 0.3)"
+                        : "rgba(255, 255, 255, 0.25)",
+                    }}
+                  >
+                    <Ionicons name="camera" size={40} color="#fff" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-white text-2xl font-bold mb-1">
+                      Take Photo
+                    </Text>
+                    <Text className="text-white text-base opacity-90">
+                      AI will analyze your meal automatically
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
+
+              {/* Smart Lookup Option */}
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  setIsAddFoodModalVisible(false);
+                  setIsSearchVisible(true);
+                }}
+                className="rounded-3xl p-6 mb-4 overflow-hidden"
+                style={{
+                  backgroundColor: isDark ? "rgba(168, 85, 247, 0.15)" : "#a855f7",
+                  shadowColor: "#a855f7",
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 16,
+                  elevation: 8,
+                }}
+              >
+                <View className="flex-row items-center">
+                  <View
+                    className="w-20 h-20 rounded-3xl items-center justify-center mr-4"
+                    style={{
+                      backgroundColor: isDark
+                        ? "rgba(168, 85, 247, 0.3)"
+                        : "rgba(255, 255, 255, 0.25)",
+                    }}
+                  >
+                    <Ionicons name="search" size={40} color="#fff" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-white text-2xl font-bold mb-1">
+                      Smart Lookup
+                    </Text>
+                    <Text className="text-white text-base opacity-90">
+                      Search database or add custom food
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
+
+              {/* Scan Barcode Option */}
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  // Barcode scanner - mockup for now
+                  setIsAddFoodModalVisible(false);
+                  setTimeout(() => {
+                    alert("Barcode scanner coming soon! Quick lookup for packaged foods.");
+                  }, 300);
+                }}
+                className="rounded-3xl p-6 overflow-hidden"
+                style={{
+                  backgroundColor: isDark ? "rgba(34, 197, 94, 0.15)" : "#22c55e",
+                  shadowColor: "#22c55e",
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 16,
+                  elevation: 8,
+                }}
+              >
+                <View className="flex-row items-center">
+                  <View
+                    className="w-20 h-20 rounded-3xl items-center justify-center mr-4"
+                    style={{
+                      backgroundColor: isDark
+                        ? "rgba(34, 197, 94, 0.3)"
+                        : "rgba(255, 255, 255, 0.25)",
+                    }}
+                  >
+                    <Ionicons name="scan" size={40} color="#fff" />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-white text-2xl font-bold mb-1">
+                      Scan Barcode
+                    </Text>
+                    <Text className="text-white text-base opacity-90">
+                      Quick lookup for packaged foods
+                    </Text>
+                  </View>
+                </View>
+              </Pressable>
+            </View>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Smart Lookup / Manual Entry Modal */}
+      <Modal
+        visible={isSearchVisible || isManualEntryVisible}
         animationType="slide"
         presentationStyle="pageSheet"
       >
@@ -514,24 +687,27 @@ export default function NutritionScreen() {
                     isDark ? "text-white" : "text-gray-900"
                   )}
                 >
-                  Add Food
+                  {isSearchVisible ? "Search Food" : "Add Food"}
                 </Text>
                 <View className="flex-row">
                   <Pressable
                     onPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      setIsAddFoodModalVisible(false);
+                      setIsSearchVisible(false);
+                      setIsManualEntryVisible(false);
                     }}
                     className="mr-4 px-4 py-2"
                   >
                     <Text className="text-red-500 font-semibold">Cancel</Text>
                   </Pressable>
-                  <Pressable
-                    onPress={handleAddFood}
-                    className="bg-blue-500 px-4 py-2 rounded-full"
-                  >
-                    <Text className="text-white font-semibold">Add</Text>
-                  </Pressable>
+                  {isManualEntryVisible && (
+                    <Pressable
+                      onPress={handleAddFood}
+                      className="bg-blue-500 px-4 py-2 rounded-full"
+                    >
+                      <Text className="text-white font-semibold">Add</Text>
+                    </Pressable>
+                  )}
                 </View>
               </View>
             </View>
@@ -540,167 +716,214 @@ export default function NutritionScreen() {
               className="flex-1 px-4"
               keyboardShouldPersistTaps="handled"
             >
-              <View className="mt-4">
-                <Text
-                  className={cn(
-                    "text-sm font-semibold mb-2",
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  )}
-                >
-                  Food Name
-                </Text>
-                <TextInput
-                  value={foodName}
-                  onChangeText={setFoodName}
-                  placeholder="e.g., Chicken Breast, Oatmeal"
-                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                  className={cn(
-                    "rounded-lg p-3 text-base",
-                    isDark
-                      ? "bg-gray-800 text-white"
-                      : "bg-white text-gray-900"
-                  )}
-                />
-              </View>
+              {isSearchVisible && (
+                <View className="mt-4">
+                  <View className="flex-row items-center mb-4">
+                    <View className="flex-1 mr-2">
+                      <TextInput
+                        value={searchQuery}
+                        onChangeText={setSearchQuery}
+                        placeholder="Search for food..."
+                        placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                        className={cn(
+                          "rounded-lg p-3 text-base",
+                          isDark
+                            ? "bg-gray-800 text-white"
+                            : "bg-white text-gray-900"
+                        )}
+                      />
+                    </View>
+                  </View>
+                  
+                  <Text
+                    className={cn(
+                      "text-sm mb-3",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
+                  >
+                    Search results will appear here
+                  </Text>
 
-              <View className="mt-4">
-                <Text
-                  className={cn(
-                    "text-sm font-semibold mb-2",
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  )}
-                >
-                  Meal
-                </Text>
-                <View className="flex-row flex-wrap">
-                  {(["breakfast", "lunch", "dinner", "snack"] as const).map((meal) => (
-                    <Pressable
-                      key={meal}
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        setSelectedMeal(meal);
-                      }}
+                  <Pressable
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setIsSearchVisible(false);
+                      setIsManualEntryVisible(true);
+                    }}
+                    className="bg-blue-500 py-3 rounded-lg"
+                  >
+                    <Text className="text-white font-semibold text-center">
+                      Add Custom Food
+                    </Text>
+                  </Pressable>
+                </View>
+              )}
+
+              {isManualEntryVisible && (
+                <>
+                  <View className="mt-4">
+                    <Text
                       className={cn(
-                        "px-4 py-2 rounded-full mr-2 mb-2",
-                        selectedMeal === meal
-                          ? "bg-blue-500"
-                          : isDark
-                          ? "bg-gray-800"
-                          : "bg-white"
+                        "text-sm font-semibold mb-2",
+                        isDark ? "text-gray-300" : "text-gray-700"
                       )}
                     >
-                      <Text
-                        className={cn(
-                          "font-semibold capitalize",
-                          selectedMeal === meal
-                            ? "text-white"
-                            : isDark
-                            ? "text-gray-400"
-                            : "text-gray-600"
-                        )}
-                      >
-                        {meal}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
+                      Food Name
+                    </Text>
+                    <TextInput
+                      value={foodName}
+                      onChangeText={setFoodName}
+                      placeholder="e.g., Chicken Breast, Oatmeal"
+                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                      className={cn(
+                        "rounded-lg p-3 text-base",
+                        isDark
+                          ? "bg-gray-800 text-white"
+                          : "bg-white text-gray-900"
+                      )}
+                    />
+                  </View>
 
-              <View className="mt-4">
-                <Text
-                  className={cn(
-                    "text-sm font-semibold mb-2",
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  )}
-                >
-                  Calories
-                </Text>
-                <TextInput
-                  value={calories}
-                  onChangeText={setCalories}
-                  placeholder="0"
-                  keyboardType="numeric"
-                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                  className={cn(
-                    "rounded-lg p-3 text-base",
-                    isDark
-                      ? "bg-gray-800 text-white"
-                      : "bg-white text-gray-900"
-                  )}
-                />
-              </View>
+                  <View className="mt-4">
+                    <Text
+                      className={cn(
+                        "text-sm font-semibold mb-2",
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      )}
+                    >
+                      Meal
+                    </Text>
+                    <View className="flex-row flex-wrap">
+                      {(["breakfast", "lunch", "dinner", "snack"] as const).map((meal) => (
+                        <Pressable
+                          key={meal}
+                          onPress={() => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            setSelectedMeal(meal);
+                          }}
+                          className={cn(
+                            "px-4 py-2 rounded-full mr-2 mb-2",
+                            selectedMeal === meal
+                              ? "bg-blue-500"
+                              : isDark
+                              ? "bg-gray-800"
+                              : "bg-white"
+                          )}
+                        >
+                          <Text
+                            className={cn(
+                              "font-semibold capitalize",
+                              selectedMeal === meal
+                                ? "text-white"
+                                : isDark
+                                ? "text-gray-400"
+                                : "text-gray-600"
+                            )}
+                          >
+                            {meal}
+                          </Text>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
 
-              <View className="mt-4">
-                <Text
-                  className={cn(
-                    "text-sm font-semibold mb-2",
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  )}
-                >
-                  Protein (g)
-                </Text>
-                <TextInput
-                  value={protein}
-                  onChangeText={setProtein}
-                  placeholder="0"
-                  keyboardType="numeric"
-                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                  className={cn(
-                    "rounded-lg p-3 text-base",
-                    isDark
-                      ? "bg-gray-800 text-white"
-                      : "bg-white text-gray-900"
-                  )}
-                />
-              </View>
+                  <View className="mt-4">
+                    <Text
+                      className={cn(
+                        "text-sm font-semibold mb-2",
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      )}
+                    >
+                      Calories
+                    </Text>
+                    <TextInput
+                      value={calories}
+                      onChangeText={setCalories}
+                      placeholder="0"
+                      keyboardType="numeric"
+                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                      className={cn(
+                        "rounded-lg p-3 text-base",
+                        isDark
+                          ? "bg-gray-800 text-white"
+                          : "bg-white text-gray-900"
+                      )}
+                    />
+                  </View>
 
-              <View className="mt-4">
-                <Text
-                  className={cn(
-                    "text-sm font-semibold mb-2",
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  )}
-                >
-                  Carbs (g)
-                </Text>
-                <TextInput
-                  value={carbs}
-                  onChangeText={setCarbs}
-                  placeholder="0"
-                  keyboardType="numeric"
-                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                  className={cn(
-                    "rounded-lg p-3 text-base",
-                    isDark
-                      ? "bg-gray-800 text-white"
-                      : "bg-white text-gray-900"
-                  )}
-                />
-              </View>
+                  <View className="mt-4">
+                    <Text
+                      className={cn(
+                        "text-sm font-semibold mb-2",
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      )}
+                    >
+                      Protein (g)
+                    </Text>
+                    <TextInput
+                      value={protein}
+                      onChangeText={setProtein}
+                      placeholder="0"
+                      keyboardType="numeric"
+                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                      className={cn(
+                        "rounded-lg p-3 text-base",
+                        isDark
+                          ? "bg-gray-800 text-white"
+                          : "bg-white text-gray-900"
+                      )}
+                    />
+                  </View>
 
-              <View className="mt-4 mb-8">
-                <Text
-                  className={cn(
-                    "text-sm font-semibold mb-2",
-                    isDark ? "text-gray-300" : "text-gray-700"
-                  )}
-                >
-                  Fats (g)
-                </Text>
-                <TextInput
-                  value={fats}
-                  onChangeText={setFats}
-                  placeholder="0"
-                  keyboardType="numeric"
-                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                  className={cn(
-                    "rounded-lg p-3 text-base",
-                    isDark
-                      ? "bg-gray-800 text-white"
-                      : "bg-white text-gray-900"
-                  )}
-                />
-              </View>
+                  <View className="mt-4">
+                    <Text
+                      className={cn(
+                        "text-sm font-semibold mb-2",
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      )}
+                    >
+                      Carbs (g)
+                    </Text>
+                    <TextInput
+                      value={carbs}
+                      onChangeText={setCarbs}
+                      placeholder="0"
+                      keyboardType="numeric"
+                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                      className={cn(
+                        "rounded-lg p-3 text-base",
+                        isDark
+                          ? "bg-gray-800 text-white"
+                          : "bg-white text-gray-900"
+                      )}
+                    />
+                  </View>
+
+                  <View className="mt-4 mb-8">
+                    <Text
+                      className={cn(
+                        "text-sm font-semibold mb-2",
+                        isDark ? "text-gray-300" : "text-gray-700"
+                      )}
+                    >
+                      Fats (g)
+                    </Text>
+                    <TextInput
+                      value={fats}
+                      onChangeText={setFats}
+                      placeholder="0"
+                      keyboardType="numeric"
+                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                      className={cn(
+                        "rounded-lg p-3 text-base",
+                        isDark
+                          ? "bg-gray-800 text-white"
+                          : "bg-white text-gray-900"
+                      )}
+                    />
+                  </View>
+                </>
+              )}
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
