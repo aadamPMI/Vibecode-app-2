@@ -817,124 +817,459 @@ export default function WorkoutScreen() {
               exiting={FadeOutUp.duration(200)}
               className="mb-20"
             >
-              <View
-                className="rounded-3xl p-6 mb-4"
-                style={{
-                  backgroundColor: "#3b82f6",
-                  shadowColor: "#3b82f6",
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: 0.4,
-                  shadowRadius: 12,
-                  elevation: 8,
-                }}
-              >
-                <Text className="text-white text-xs font-semibold mb-2 uppercase opacity-90">Total Workouts</Text>
-                <Text className="text-white text-6xl font-bold mb-2">
-                  {workouts.length}
-                </Text>
-                <Text className="text-white text-sm opacity-80">
-                  All time - Keep it up! 💪
-                </Text>
-              </View>
-
+              {/* Top Row - 3 Stat Cards */}
               <View className="flex-row mb-4">
                 <View
                   className={cn(
-                    "flex-1 rounded-3xl p-5 mr-2",
+                    "flex-1 rounded-3xl p-4 mr-2",
                     isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
-                    shadowColor: "#22c55e",
-                    shadowOffset: { width: 0, height: 3 },
+                    shadowColor: "#3b82f6",
+                    shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.2,
                     shadowRadius: 6,
                     elevation: 3,
                   }}
                 >
+                  <Ionicons name="fitness" size={24} color="#3b82f6" />
+                  <Text className="text-3xl font-bold text-blue-500 mt-2">
+                    {workouts.length}
+                  </Text>
                   <Text
                     className={cn(
-                      "text-xs mb-2 font-semibold",
+                      "text-xs mt-1",
                       isDark ? "text-gray-400" : "text-gray-600"
                     )}
                   >
-                    This Week
-                  </Text>
-                  <Text className="text-4xl font-bold text-green-500">
-                    {getThisWeekWorkouts()}
+                    Total Workouts
                   </Text>
                 </View>
+
                 <View
                   className={cn(
-                    "flex-1 rounded-3xl p-5 ml-2",
+                    "flex-1 rounded-3xl p-4 mx-1",
+                    isDark ? "bg-gray-800" : "bg-gray-100"
+                  )}
+                  style={{
+                    shadowColor: "#f97316",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6,
+                    elevation: 3,
+                  }}
+                >
+                  <Ionicons name="flame" size={24} color="#f97316" />
+                  <Text className="text-3xl font-bold text-orange-500 mt-2">
+                    {getWorkoutStreak()}
+                  </Text>
+                  <Text
+                    className={cn(
+                      "text-xs mt-1",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
+                  >
+                    Day Streak
+                  </Text>
+                </View>
+
+                <View
+                  className={cn(
+                    "flex-1 rounded-3xl p-4 ml-2",
                     isDark ? "bg-gray-800" : "bg-gray-100"
                   )}
                   style={{
                     shadowColor: "#f59e0b",
-                    shadowOffset: { width: 0, height: 3 },
+                    shadowOffset: { width: 0, height: 2 },
                     shadowOpacity: 0.2,
                     shadowRadius: 6,
                     elevation: 3,
                   }}
                 >
+                  <Ionicons name="trophy" size={24} color="#f59e0b" />
+                  <Text className="text-3xl font-bold text-yellow-500 mt-2">
+                    {getTotalPRs()}
+                  </Text>
                   <Text
                     className={cn(
-                      "text-xs mb-2 font-semibold",
+                      "text-xs mt-1",
                       isDark ? "text-gray-400" : "text-gray-600"
                     )}
                   >
                     Personal Records
                   </Text>
-                  <Text className="text-4xl font-bold text-yellow-500">
-                    {getTotalPRs()}
+                </View>
+              </View>
+
+              {/* Bottom Row - 3 Stat Cards */}
+              <View className="flex-row mb-4">
+                <View
+                  className={cn(
+                    "flex-1 rounded-3xl p-4 mr-2",
+                    isDark ? "bg-gray-800" : "bg-gray-100"
+                  )}
+                  style={{
+                    shadowColor: "#22c55e",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6,
+                    elevation: 3,
+                  }}
+                >
+                  <Ionicons name="barbell" size={24} color="#22c55e" />
+                  <Text className="text-3xl font-bold text-green-500 mt-2">
+                    {Math.round(getTotalVolume())}
+                  </Text>
+                  <Text
+                    className={cn(
+                      "text-xs mt-1",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
+                  >
+                    Total Volume (kg)
+                  </Text>
+                </View>
+
+                <View
+                  className={cn(
+                    "flex-1 rounded-3xl p-4 mx-1",
+                    isDark ? "bg-gray-800" : "bg-gray-100"
+                  )}
+                  style={{
+                    shadowColor: "#a855f7",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6,
+                    elevation: 3,
+                  }}
+                >
+                  <Ionicons name="repeat" size={24} color="#a855f7" />
+                  <Text className="text-3xl font-bold text-purple-500 mt-2">
+                    {getTotalSets()}
+                  </Text>
+                  <Text
+                    className={cn(
+                      "text-xs mt-1",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
+                  >
+                    Total Sets
+                  </Text>
+                </View>
+
+                <View
+                  className={cn(
+                    "flex-1 rounded-3xl p-4 ml-2",
+                    isDark ? "bg-gray-800" : "bg-gray-100"
+                  )}
+                  style={{
+                    shadowColor: "#ec4899",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 6,
+                    elevation: 3,
+                  }}
+                >
+                  <Ionicons name="time" size={24} color="#ec4899" />
+                  <Text className="text-3xl font-bold text-pink-500 mt-2">
+                    {Math.round(getTotalHours())}
+                  </Text>
+                  <Text
+                    className={cn(
+                      "text-xs mt-1",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
+                  >
+                    Training Hours
                   </Text>
                 </View>
               </View>
 
-              {workouts.length > 0 && (
-                <>
+              {/* Strength Progress Graph */}
+              <View
+                className={cn(
+                  "rounded-3xl p-6 mb-4",
+                  isDark ? "bg-gray-800" : "bg-gray-100"
+                )}
+              >
+                <Text
+                  className={cn(
+                    "text-xl font-bold mb-4",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}
+                >
+                  Strength Progress
+                </Text>
+                <View className="items-center py-12">
+                  <Ionicons
+                    name="trending-up"
+                    size={48}
+                    color={isDark ? "#6b7280" : "#9ca3af"}
+                  />
                   <Text
                     className={cn(
-                      "text-lg font-bold mb-4",
+                      "text-sm mt-4 text-center",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
+                  >
+                    Graph coming soon - Track your strength gains over time
+                  </Text>
+                </View>
+              </View>
+
+              {/* Weight Tracking Section */}
+              <View
+                className={cn(
+                  "rounded-3xl p-6 mb-4",
+                  isDark ? "bg-gray-800" : "bg-gray-100"
+                )}
+              >
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text
+                    className={cn(
+                      "text-xl font-bold",
                       isDark ? "text-white" : "text-gray-900"
                     )}
                   >
-                    Recent Workouts
+                    Weight Tracking
                   </Text>
-                  {workouts.slice(0, 5).map((workout) => (
-                    <View
-                      key={workout.id}
+                  <Pressable
+                    onPress={() => {
+                      const newUnit = bodyWeightUnit === "kg" ? "lbs" : "kg";
+                      const converted = newUnit === "lbs" 
+                        ? bodyWeight * 2.20462 
+                        : bodyWeight / 2.20462;
+                      updateBodyWeight(Math.round(converted * 10) / 10, newUnit);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }}
+                    className={cn(
+                      "px-4 py-2 rounded-full",
+                      isDark ? "bg-gray-700" : "bg-white"
+                    )}
+                  >
+                    <Text
                       className={cn(
-                        "rounded-3xl p-5 mb-3",
-                        isDark ? "bg-gray-800" : "bg-gray-100"
+                        "text-sm font-semibold",
+                        isDark ? "text-white" : "text-gray-900"
                       )}
-                      style={{
-                        shadowColor: "#3b82f6",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.15,
-                        shadowRadius: 4,
-                        elevation: 2,
-                      }}
                     >
-                      <Text
-                        className={cn(
-                          "text-base font-bold mb-2",
-                          isDark ? "text-white" : "text-gray-900"
-                        )}
-                      >
-                        {workout.name}
-                      </Text>
-                      <Text
-                        className={cn(
-                          "text-sm",
-                          isDark ? "text-gray-400" : "text-gray-600"
-                        )}
-                      >
-                        {workout.exercises.length} exercises • {getWorkoutVolume(workout)} lbs total
-                      </Text>
+                      {bodyWeightUnit.toUpperCase()}
+                    </Text>
+                  </Pressable>
+                </View>
+
+                <View className="items-center py-4">
+                  <Text className="text-6xl font-bold text-blue-500 mb-2">
+                    {bodyWeight}
+                  </Text>
+                  <Text
+                    className={cn(
+                      "text-base mb-4",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
+                  >
+                    Current Body Weight
+                  </Text>
+                  <Pressable
+                    onPress={() => {
+                      setTempBodyWeight(bodyWeight.toString());
+                      setIsWeightModalVisible(true);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    }}
+                    className="bg-blue-500 px-6 py-3 rounded-full"
+                  >
+                    <Text className="text-white font-bold">Update Weight</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+              {/* Personal Records Section */}
+              <View
+                className={cn(
+                  "rounded-3xl p-6 mb-4",
+                  isDark ? "bg-gray-800" : "bg-gray-100"
+                )}
+              >
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text
+                    className={cn(
+                      "text-xl font-bold",
+                      isDark ? "text-white" : "text-gray-900"
+                    )}
+                  >
+                    Personal Records
+                  </Text>
+                  <Pressable
+                    onPress={() => {
+                      setIsLogPRModalVisible(true);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    }}
+                    className="bg-yellow-500 px-4 py-2 rounded-full"
+                  >
+                    <Text className="text-white font-bold">Log PR</Text>
+                  </Pressable>
+                </View>
+
+                {personalRecords.length === 0 ? (
+                  <View className="items-center py-8">
+                    <Ionicons
+                      name="trophy-outline"
+                      size={48}
+                      color={isDark ? "#6b7280" : "#9ca3af"}
+                    />
+                    <Text
+                      className={cn(
+                        "text-sm mt-4 text-center",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      No personal records yet. Log your first PR!
+                    </Text>
+                  </View>
+                ) : (
+                  personalRecords.slice(0, 10).map((pr) => (
+                    <View
+                      key={pr.id}
+                      className={cn(
+                        "rounded-2xl p-4 mb-3",
+                        isDark ? "bg-gray-700" : "bg-white"
+                      )}
+                    >
+                      <View className="flex-row justify-between items-center">
+                        <View className="flex-1">
+                          <Text
+                            className={cn(
+                              "text-base font-bold mb-1",
+                              isDark ? "text-white" : "text-gray-900"
+                            )}
+                          >
+                            {pr.exercise}
+                          </Text>
+                          <Text
+                            className={cn(
+                              "text-sm",
+                              isDark ? "text-gray-400" : "text-gray-600"
+                            )}
+                          >
+                            {pr.weight} {pr.unit}
+                          </Text>
+                        </View>
+                        <Pressable
+                          onPress={() => {
+                            deletePersonalRecord(pr.id);
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          }}
+                          className="p-2"
+                        >
+                          <Ionicons
+                            name="trash-outline"
+                            size={20}
+                            color={isDark ? "#ef4444" : "#dc2626"}
+                          />
+                        </Pressable>
+                      </View>
                     </View>
-                  ))}
-                </>
-              )}
+                  ))
+                )}
+              </View>
+
+              {/* Featured PRs Section */}
+              <View
+                className={cn(
+                  "rounded-3xl p-6 mb-4",
+                  isDark ? "bg-gray-800" : "bg-gray-100"
+                )}
+              >
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text
+                    className={cn(
+                      "text-xl font-bold",
+                      isDark ? "text-white" : "text-gray-900"
+                    )}
+                  >
+                    Featured PRs
+                  </Text>
+                  <Pressable
+                    onPress={() => {
+                      setIsFeaturedPRModalVisible(true);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    }}
+                    className={cn(
+                      "px-4 py-2 rounded-full",
+                      isDark ? "bg-gray-700" : "bg-white"
+                    )}
+                  >
+                    <Text
+                      className={cn(
+                        "text-sm font-semibold",
+                        isDark ? "text-white" : "text-gray-900"
+                      )}
+                    >
+                      Select
+                    </Text>
+                  </Pressable>
+                </View>
+                <Text
+                  className={cn(
+                    "text-xs mb-4",
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  )}
+                >
+                  Choose up to 5 PRs to feature on your public profile
+                </Text>
+
+                {featuredPRs.length === 0 ? (
+                  <View className="items-center py-8">
+                    <Ionicons
+                      name="star-outline"
+                      size={48}
+                      color={isDark ? "#6b7280" : "#9ca3af"}
+                    />
+                    <Text
+                      className={cn(
+                        "text-sm mt-4 text-center",
+                        isDark ? "text-gray-400" : "text-gray-600"
+                      )}
+                    >
+                      No featured PRs selected
+                    </Text>
+                  </View>
+                ) : (
+                  featuredPRs.map((prId) => {
+                    const pr = personalRecords.find((p) => p.id === prId);
+                    if (!pr) return null;
+                    return (
+                      <View
+                        key={pr.id}
+                        className={cn(
+                          "rounded-2xl p-4 mb-3",
+                          isDark ? "bg-gray-700" : "bg-white"
+                        )}
+                      >
+                        <View className="flex-row items-center">
+                          <Ionicons name="star" size={20} color="#f59e0b" />
+                          <Text
+                            className={cn(
+                              "text-base font-bold ml-2 flex-1",
+                              isDark ? "text-white" : "text-gray-900"
+                            )}
+                          >
+                            {pr.exercise}
+                          </Text>
+                          <Text
+                            className={cn(
+                              "text-lg font-bold",
+                              isDark ? "text-white" : "text-gray-900"
+                            )}
+                          >
+                            {pr.weight} {pr.unit}
+                          </Text>
+                        </View>
+                      </View>
+                    );
+                  })
+                )}
+              </View>
             </Animated.View>
           )}
         </ScrollView>
@@ -1171,6 +1506,306 @@ export default function WorkoutScreen() {
                 )}
               </View>
             ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Log PR Modal */}
+      <Modal
+        visible={isLogPRModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
+        >
+          <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+            <View className="px-4 pt-4 pb-2 border-b border-gray-200">
+              <View className="flex-row justify-between items-center">
+                <Text
+                  className={cn(
+                    "text-2xl font-bold",
+                    isDark ? "text-white" : "text-gray-900"
+                  )}
+                >
+                  Log Personal Record
+                </Text>
+                <Pressable
+                  onPress={() => {
+                    setIsLogPRModalVisible(false);
+                    setSelectedExercise("");
+                    setPrWeight("");
+                    setExerciseSearchQuery("");
+                  }}
+                >
+                  <Ionicons name="close" size={28} color={isDark ? "#fff" : "#000"} />
+                </Pressable>
+              </View>
+            </View>
+
+            <ScrollView className="flex-1 px-4 pt-4">
+              {/* Exercise Search */}
+              <Text
+                className={cn(
+                  "text-sm font-semibold mb-2",
+                  isDark ? "text-gray-300" : "text-gray-700"
+                )}
+              >
+                Select Exercise
+              </Text>
+              <TextInput
+                value={exerciseSearchQuery}
+                onChangeText={setExerciseSearchQuery}
+                placeholder="Search exercises..."
+                placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                className={cn(
+                  "rounded-lg p-3 text-base mb-4",
+                  isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+                )}
+              />
+
+              {/* Exercise List */}
+              <ScrollView className="max-h-64 mb-4">
+                {filteredExercises.map((exercise) => (
+                  <Pressable
+                    key={exercise}
+                    onPress={() => {
+                      setSelectedExercise(exercise);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }}
+                    className={cn(
+                      "rounded-xl p-3 mb-2",
+                      selectedExercise === exercise
+                        ? "bg-blue-500"
+                        : isDark
+                        ? "bg-gray-800"
+                        : "bg-gray-100"
+                    )}
+                  >
+                    <Text
+                      className={cn(
+                        "text-base",
+                        selectedExercise === exercise
+                          ? "text-white font-bold"
+                          : isDark
+                          ? "text-white"
+                          : "text-gray-900"
+                      )}
+                    >
+                      {exercise}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+
+              {/* Weight Input */}
+              <Text
+                className={cn(
+                  "text-sm font-semibold mb-2",
+                  isDark ? "text-gray-300" : "text-gray-700"
+                )}
+              >
+                PR Weight
+              </Text>
+              <View className="flex-row mb-4">
+                <TextInput
+                  value={prWeight}
+                  onChangeText={setPrWeight}
+                  placeholder="0"
+                  keyboardType="numeric"
+                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                  className={cn(
+                    "flex-1 rounded-lg p-3 text-base mr-2",
+                    isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+                  )}
+                />
+                <Pressable
+                  onPress={() => {
+                    setPrUnit(prUnit === "kg" ? "lbs" : "kg");
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  className={cn(
+                    "px-6 rounded-lg items-center justify-center",
+                    isDark ? "bg-gray-800" : "bg-gray-100"
+                  )}
+                >
+                  <Text
+                    className={cn(
+                      "text-base font-bold",
+                      isDark ? "text-white" : "text-gray-900"
+                    )}
+                  >
+                    {prUnit.toUpperCase()}
+                  </Text>
+                </Pressable>
+              </View>
+
+              <Pressable
+                onPress={handleLogPR}
+                disabled={!selectedExercise || !prWeight}
+                className={cn(
+                  "py-4 rounded-full items-center",
+                  !selectedExercise || !prWeight
+                    ? "bg-gray-400"
+                    : "bg-yellow-500"
+                )}
+              >
+                <Text className="text-white font-bold text-base">Log PR</Text>
+              </Pressable>
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Update Weight Modal */}
+      <Modal
+        visible={isWeightModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+          <View className="px-4 pt-4 pb-2 border-b border-gray-200">
+            <View className="flex-row justify-between items-center">
+              <Text
+                className={cn(
+                  "text-2xl font-bold",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                Update Weight
+              </Text>
+              <Pressable
+                onPress={() => setIsWeightModalVisible(false)}
+              >
+                <Ionicons name="close" size={28} color={isDark ? "#fff" : "#000"} />
+              </Pressable>
+            </View>
+          </View>
+
+          <View className="flex-1 justify-center items-center px-4">
+            <TextInput
+              value={tempBodyWeight}
+              onChangeText={setTempBodyWeight}
+              placeholder="Enter weight"
+              keyboardType="numeric"
+              placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+              className={cn(
+                "rounded-lg p-4 text-4xl font-bold text-center w-full mb-6",
+                isDark ? "bg-gray-800 text-white" : "bg-gray-100 text-gray-900"
+              )}
+            />
+            
+            <Text
+              className={cn(
+                "text-2xl font-bold mb-8",
+                isDark ? "text-gray-400" : "text-gray-600"
+              )}
+            >
+              {bodyWeightUnit.toUpperCase()}
+            </Text>
+
+            <Pressable
+              onPress={handleUpdateWeight}
+              className="bg-blue-500 px-12 py-4 rounded-full"
+            >
+              <Text className="text-white font-bold text-lg">Save Weight</Text>
+            </Pressable>
+          </View>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Featured PRs Selection Modal */}
+      <Modal
+        visible={isFeaturedPRModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+      >
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
+          <View className="px-4 pt-4 pb-2 border-b border-gray-200">
+            <View className="flex-row justify-between items-center">
+              <Text
+                className={cn(
+                  "text-2xl font-bold",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                Featured PRs
+              </Text>
+              <Pressable
+                onPress={() => setIsFeaturedPRModalVisible(false)}
+              >
+                <Ionicons name="close" size={28} color={isDark ? "#fff" : "#000"} />
+              </Pressable>
+            </View>
+          </View>
+
+          <ScrollView className="flex-1 px-4 pt-4">
+            <Text
+              className={cn(
+                "text-sm mb-4",
+                isDark ? "text-gray-400" : "text-gray-600"
+              )}
+            >
+              Select up to 5 PRs to feature on your profile ({featuredPRs.length}/5)
+            </Text>
+
+            {personalRecords.map((pr) => {
+              const isFeatured = featuredPRs.includes(pr.id);
+              return (
+                <Pressable
+                  key={pr.id}
+                  onPress={() => {
+                    if (isFeatured) {
+                      setFeaturedPRs(featuredPRs.filter((id) => id !== pr.id));
+                    } else if (featuredPRs.length < 5) {
+                      setFeaturedPRs([...featuredPRs, pr.id]);
+                    }
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }}
+                  className={cn(
+                    "rounded-2xl p-4 mb-3 flex-row items-center",
+                    isFeatured
+                      ? "bg-yellow-500"
+                      : isDark
+                      ? "bg-gray-800"
+                      : "bg-gray-100"
+                  )}
+                >
+                  <Ionicons
+                    name={isFeatured ? "star" : "star-outline"}
+                    size={24}
+                    color={isFeatured ? "#fff" : isDark ? "#9ca3af" : "#6b7280"}
+                  />
+                  <View className="flex-1 ml-3">
+                    <Text
+                      className={cn(
+                        "text-base font-bold",
+                        isFeatured
+                          ? "text-white"
+                          : isDark
+                          ? "text-white"
+                          : "text-gray-900"
+                      )}
+                    >
+                      {pr.exercise}
+                    </Text>
+                    <Text
+                      className={cn(
+                        "text-sm",
+                        isFeatured
+                          ? "text-white opacity-90"
+                          : isDark
+                          ? "text-gray-400"
+                          : "text-gray-600"
+                      )}
+                    >
+                      {pr.weight} {pr.unit}
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            })}
           </ScrollView>
         </SafeAreaView>
       </Modal>
