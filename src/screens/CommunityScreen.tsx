@@ -40,6 +40,7 @@ export default function CommunityScreen() {
   );
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] =
     useState(false);
+  const [activeView, setActiveView] = useState<"my" | "discover" | "trending" | null>(null);
 
   // Create community form
   const [communityName, setCommunityName] = useState("");
@@ -136,7 +137,11 @@ export default function CommunityScreen() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* My Communities Card */}
         <View className="px-4 pt-4">
-          <View
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              setActiveView(activeView === "my" ? null : "my");
+            }}
             className={cn(
               "rounded-3xl p-6 mb-4",
               isDark ? "bg-gray-800" : "bg-white"
@@ -190,7 +195,7 @@ export default function CommunityScreen() {
                 {getJoinedCommunities().length} joined
               </Text>
             </View>
-          </View>
+          </Pressable>
         </View>
 
         {/* Discover and Trending Row */}
@@ -199,10 +204,15 @@ export default function CommunityScreen() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              setActiveView(activeView === "discover" ? null : "discover");
             }}
             className={cn(
               "flex-1 rounded-3xl p-6 mr-2 border-2",
-              isDark ? "bg-gray-800 border-blue-500" : "bg-white border-blue-500"
+              activeView === "discover"
+                ? "border-blue-500"
+                : isDark
+                ? "bg-gray-800 border-blue-500"
+                : "bg-white border-blue-500"
             )}
             style={{
               shadowColor: "#3b82f6",
@@ -259,6 +269,7 @@ export default function CommunityScreen() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              setActiveView(activeView === "trending" ? null : "trending");
             }}
             className={cn(
               "flex-1 rounded-3xl p-6 ml-2",
@@ -388,8 +399,174 @@ export default function CommunityScreen() {
           </View>
         </View>
 
-        {/* Communities List */}
-        {getJoinedCommunities().length > 0 && (
+        {/* Community Details Panel - Shows when activeView is "my", "discover", or "trending" */}
+        {activeView && getJoinedCommunities().length > 0 && activeView === "my" && (
+          <View className="px-4 mb-4">
+            {getJoinedCommunities().map((community) => (
+              <View
+                key={community.id}
+                className="rounded-3xl overflow-hidden mb-4"
+                style={{
+                  backgroundColor: isDark ? "rgba(236, 72, 153, 0.15)" : "#fce7f3",
+                  shadowColor: "#ec4899",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 12,
+                  elevation: 5,
+                }}
+              >
+                {/* Header with gradient background */}
+                <View
+                  className="p-6"
+                  style={{
+                    backgroundColor: isDark ? "#ec4899" : "#f9a8d4",
+                  }}
+                >
+                  <View className="flex-row items-center justify-between mb-4">
+                    <View
+                      className="w-20 h-20 rounded-full items-center justify-center border-4"
+                      style={{
+                        backgroundColor: isDark
+                          ? "rgba(255, 255, 255, 0.2)"
+                          : "rgba(255, 255, 255, 0.4)",
+                        borderColor: isDark ? "#fce7f3" : "#ffffff",
+                      }}
+                    >
+                      <Ionicons name="people" size={40} color="#fff" />
+                    </View>
+                    <View className="flex-row">
+                      <Pressable
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        }}
+                        className="mr-2"
+                      >
+                        <View
+                          className="w-12 h-12 rounded-2xl items-center justify-center"
+                          style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
+                        >
+                          <Ionicons name="star" size={24} color="#fbbf24" />
+                        </View>
+                      </Pressable>
+                      <Pressable
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        }}
+                      >
+                        <View
+                          className="w-12 h-12 rounded-2xl items-center justify-center"
+                          style={{ backgroundColor: "rgba(255, 255, 255, 0.3)" }}
+                        >
+                          <Ionicons name="globe" size={24} color="#22c55e" />
+                        </View>
+                      </Pressable>
+                    </View>
+                  </View>
+                  <Text className="text-white text-3xl font-bold">
+                    {community.name}
+                  </Text>
+                </View>
+
+                {/* Content section */}
+                <View className={cn("p-6", isDark ? "bg-gray-800" : "bg-white")}>
+                  <Text
+                    className={cn(
+                      "text-base mb-4",
+                      isDark ? "text-gray-300" : "text-gray-700"
+                    )}
+                  >
+                    {community.description || "A community for fitness lovers to share their journey"}
+                  </Text>
+
+                  <View className="flex-row mb-4">
+                    <View
+                      className={cn(
+                        "rounded-full px-4 py-2 mr-2 flex-row items-center",
+                        isDark ? "bg-gray-700" : "bg-gray-100"
+                      )}
+                    >
+                      <Ionicons
+                        name="people"
+                        size={16}
+                        color={isDark ? "#9ca3af" : "#6b7280"}
+                      />
+                      <Text
+                        className={cn(
+                          "text-sm font-semibold ml-1",
+                          isDark ? "text-white" : "text-gray-900"
+                        )}
+                      >
+                        {community.members.length} members
+                      </Text>
+                    </View>
+                    <View
+                      className={cn(
+                        "rounded-full px-4 py-2 flex-row items-center",
+                        isDark ? "bg-gray-700" : "bg-gray-100"
+                      )}
+                    >
+                      <Ionicons
+                        name="pulse"
+                        size={16}
+                        color={isDark ? "#22c55e" : "#16a34a"}
+                      />
+                      <Text
+                        className={cn(
+                          "text-sm font-semibold ml-1",
+                          isDark ? "text-white" : "text-gray-900"
+                        )}
+                      >
+                        Active today
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="flex-row items-center">
+                    <Pressable
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        setSelectedCommunity(community);
+                      }}
+                      className="flex-1 bg-blue-500 py-4 rounded-2xl mr-2 flex-row items-center justify-center"
+                    >
+                      <Ionicons name="trophy" size={20} color="white" />
+                      <Text className="text-white font-bold text-base ml-2">
+                        View
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }}
+                      className={cn(
+                        "w-14 h-14 rounded-2xl items-center justify-center mr-2",
+                        isDark ? "bg-gray-700" : "bg-gray-100"
+                      )}
+                    >
+                      <Ionicons
+                        name="copy-outline"
+                        size={24}
+                        color={isDark ? "#fff" : "#000"}
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        handleLeaveCommunity(community.id);
+                      }}
+                      className="w-14 h-14 bg-red-500 rounded-2xl items-center justify-center"
+                    >
+                      <Ionicons name="close" size={24} color="white" />
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Discover Communities - Shows when activeView is "discover" */}
+        {activeView === "discover" && getAvailableCommunities().length > 0 && (
           <View className="px-4 mb-4">
             <Text
               className={cn(
@@ -397,75 +574,7 @@ export default function CommunityScreen() {
                 isDark ? "text-white" : "text-gray-900"
               )}
             >
-              Your Communities
-            </Text>
-            {getJoinedCommunities().map((community) => (
-              <Pressable
-                key={community.id}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  setSelectedCommunity(community);
-                }}
-                className={cn(
-                  "rounded-2xl p-4 mb-3",
-                  isDark ? "bg-gray-800" : "bg-gray-100"
-                )}
-              >
-                <Text
-                  className={cn(
-                    "text-lg font-bold mb-1",
-                    isDark ? "text-white" : "text-gray-900"
-                  )}
-                >
-                  {community.name}
-                </Text>
-                <Text
-                  className={cn(
-                    "text-sm mb-2",
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  )}
-                >
-                  {community.description || "No description"}
-                </Text>
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center">
-                    <Ionicons
-                      name="people"
-                      size={16}
-                      color={isDark ? "#9ca3af" : "#6b7280"}
-                    />
-                    <Text
-                      className={cn(
-                        "text-sm ml-1",
-                        isDark ? "text-gray-400" : "text-gray-600"
-                      )}
-                    >
-                      {community.members.length} members
-                    </Text>
-                  </View>
-                  <Pressable
-                    onPress={() => handleLeaveCommunity(community.id)}
-                    className="bg-red-500 px-3 py-1.5 rounded-full"
-                  >
-                    <Text className="text-white font-semibold text-xs">
-                      Leave
-                    </Text>
-                  </Pressable>
-                </View>
-              </Pressable>
-            ))}
-          </View>
-        )}
-
-        {getAvailableCommunities().length > 0 && (
-          <View className="px-4 mb-20">
-            <Text
-              className={cn(
-                "text-xl font-bold mb-3",
-                isDark ? "text-white" : "text-gray-900"
-              )}
-            >
-              Discover Communities
+              Available Communities
             </Text>
             {getAvailableCommunities().map((community) => (
               <Pressable
@@ -521,6 +630,85 @@ export default function CommunityScreen() {
                 </View>
               </Pressable>
             ))}
+          </View>
+        )}
+
+        {/* Trending Communities - Shows when activeView is "trending" */}
+        {activeView === "trending" && (
+          <View className="px-4 mb-20">
+            <Text
+              className={cn(
+                "text-xl font-bold mb-3",
+                isDark ? "text-white" : "text-gray-900"
+              )}
+            >
+              Trending Communities
+            </Text>
+            <View className="items-center py-12">
+              <Ionicons
+                name="flame-outline"
+                size={64}
+                color={isDark ? "#6b7280" : "#9ca3af"}
+              />
+              <Text
+                className={cn(
+                  "text-lg mt-4",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}
+              >
+                No trending communities
+              </Text>
+              <Text
+                className={cn(
+                  "text-sm mt-2 text-center",
+                  isDark ? "text-gray-500" : "text-gray-500"
+                )}
+              >
+                Check back later for hot communities
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* Old Communities List - Remove this section */}
+        {!activeView && getJoinedCommunities().length > 0 && (
+          <View className="px-4 mb-20">
+            <Text
+              className={cn(
+                "text-base text-center",
+                isDark ? "text-gray-400" : "text-gray-600"
+              )}
+            >
+              Tap a card above to view communities
+            </Text>
+          </View>
+        )}
+
+        {!activeView && getAvailableCommunities().length === 0 && getJoinedCommunities().length === 0 && (
+          <View className="px-4 mb-20">
+            <View className="items-center py-12">
+              <Ionicons
+                name="people-outline"
+                size={64}
+                color={isDark ? "#6b7280" : "#9ca3af"}
+              />
+              <Text
+                className={cn(
+                  "text-lg mt-4",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}
+              >
+                No communities yet
+              </Text>
+              <Text
+                className={cn(
+                  "text-sm mt-2 text-center",
+                  isDark ? "text-gray-500" : "text-gray-500"
+                )}
+              >
+                Create one to get started
+              </Text>
+            </View>
           </View>
         )}
       </ScrollView>
