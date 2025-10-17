@@ -223,22 +223,22 @@ export default function NutritionScreen() {
     <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-4 pt-4 pb-2 flex-row justify-between items-center">
+        <View className="px-4 pt-4 pb-2">
           <Text
             className={cn(
-              "text-2xl font-bold",
+              "text-3xl font-bold",
               isDark ? "text-white" : "text-gray-900"
             )}
           >
-            {viewMode === "daily" ? "Calories" : "Weekly Calories"}
+            GainAI
           </Text>
           <Text
             className={cn(
-              "text-base",
+              "text-sm mt-1",
               isDark ? "text-gray-400" : "text-gray-600"
             )}
           >
-            {viewMode === "daily" ? formatDate(selectedDate) : ""}
+            Nutrition
           </Text>
         </View>
 

@@ -679,47 +679,26 @@ export default function SettingsScreen() {
     <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
       <ScrollView className="flex-1">
         {/* Header */}
-        <View className="px-4 pt-4 pb-4">
-          <View className="flex-row items-center justify-between mb-2">
-            <View className="flex-row items-center">
-              <View className="w-12 h-12 bg-blue-500 rounded-2xl items-center justify-center mr-3">
-                <Ionicons name="fitness" size={24} color="white" />
-              </View>
-              <View>
-                <Text
-                  className={cn(
-                    "text-2xl font-bold",
-                    isDark ? "text-white" : "text-gray-900"
-                  )}
-                >
-                  GainAI
-                </Text>
-                <Text
-                  className={cn(
-                    "text-sm",
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  )}
-                >
-                  Settings
-                </Text>
-              </View>
-            </View>
-            <Pressable className="w-12 h-12 rounded-full items-center justify-center border-2 border-blue-500">
-              <Text className="text-blue-500 text-lg font-bold">A</Text>
-            </Pressable>
-          </View>
-        </View>
-
-        <View className="px-4 pt-4">
+        <View className="px-4 pt-4 pb-2">
           <Text
             className={cn(
-              "text-3xl font-bold mb-6",
+              "text-3xl font-bold",
               isDark ? "text-white" : "text-gray-900"
+            )}
+          >
+            GainAI
+          </Text>
+          <Text
+            className={cn(
+              "text-sm mt-1 mb-4",
+              isDark ? "text-gray-400" : "text-gray-600"
             )}
           >
             Settings
           </Text>
+        </View>
 
+        <View className="px-4">
           {/* Profile Settings Card */}
           <Pressable
             onPress={() => {

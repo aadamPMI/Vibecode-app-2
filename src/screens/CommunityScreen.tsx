@@ -135,8 +135,28 @@ export default function CommunityScreen() {
   return (
     <SafeAreaView className={cn("flex-1", isDark ? "bg-gray-900" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* Header */}
+        <View className="px-4 pt-4 pb-2">
+          <Text
+            className={cn(
+              "text-3xl font-bold",
+              isDark ? "text-white" : "text-gray-900"
+            )}
+          >
+            GainAI
+          </Text>
+          <Text
+            className={cn(
+              "text-sm mt-1 mb-4",
+              isDark ? "text-gray-400" : "text-gray-600"
+            )}
+          >
+            Community
+          </Text>
+        </View>
+
         {/* My Communities Card */}
-        <View className="px-4 pt-4">
+        <View className="px-4">
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
