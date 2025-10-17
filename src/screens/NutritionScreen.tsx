@@ -249,7 +249,7 @@ export default function NutritionScreen() {
               const dayTotals = getDayTotals(date);
               const hasData = dayTotals.calories > 0;
               const metGoal = dayTotals.calories >= targetCalories;
-              const isPastDate = date < new Date(new Date().setHours(0, 0, 0, 0));
+              const missedGoal = hasData && !metGoal; // Has data but didn't meet goal
               
               return (
                 <Pressable
@@ -266,13 +266,19 @@ export default function NutritionScreen() {
                     {date.toLocaleDateString("en-US", { weekday: "short" })}
                   </Text>
                   <View className="relative items-center justify-center">
-                    {/* Outer dotted circle */}
+                    {/* Outer dotted/solid circle */}
                     <View
                       className="absolute w-14 h-14 rounded-full items-center justify-center"
                       style={{
                         borderWidth: 2,
-                        borderStyle: "dashed",
-                        borderColor: isDark ? "#4b5563" : "#d1d5db",
+                        borderStyle: missedGoal ? "solid" : "dashed",
+                        borderColor: missedGoal
+                          ? "#ef4444"
+                          : metGoal
+                          ? "#22c55e"
+                          : isDark
+                          ? "#4b5563"
+                          : "#d1d5db",
                       }}
                     />
                     {/* Inner solid circle */}
@@ -281,12 +287,8 @@ export default function NutritionScreen() {
                         "w-12 h-12 rounded-full items-center justify-center",
                         isSelected
                           ? "bg-blue-500"
-                          : hasData
-                          ? metGoal
-                            ? "bg-green-500"
-                            : "bg-red-500"
-                          : isPastDate && !hasData
-                          ? "bg-red-500 opacity-60"
+                          : metGoal
+                          ? "bg-green-500"
                           : isDark
                           ? "bg-gray-800"
                           : "bg-gray-100"
@@ -294,10 +296,8 @@ export default function NutritionScreen() {
                       style={{
                         shadowColor: isSelected
                           ? "#3b82f6"
-                          : hasData
-                          ? metGoal
-                            ? "#22c55e"
-                            : "#ef4444"
+                          : metGoal
+                          ? "#22c55e"
                           : "transparent",
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.3,
@@ -308,7 +308,7 @@ export default function NutritionScreen() {
                       <Text
                         className={cn(
                           "text-xl font-bold",
-                          isSelected || hasData || (isPastDate && !hasData)
+                          isSelected || metGoal
                             ? "text-white"
                             : isDark
                             ? "text-white"
