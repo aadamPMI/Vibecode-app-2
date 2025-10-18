@@ -35,6 +35,7 @@ export default function WeightTrackingScreen() {
 
   const { entries, addEntry, deleteEntry } = useWeightStore();
   const targetWeight = useSettingsStore((s) => s.fitnessGoals.targetWeight);
+  // Sort entries by actual weight date (timestamp), not by creation time
   const sortedEntries = [...entries].sort((a, b) => a.timestamp - b.timestamp);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -339,6 +340,7 @@ export default function WeightTrackingScreen() {
             <Text className={cn("text-xl font-bold mb-4", isDark ? "text-white" : "text-black")}>
               History
             </Text>
+            {/* Display in reverse chronological order (newest date first) */}
             {[...sortedEntries].reverse().map((entry) => (
               <Animated.View
                 key={entry.id}
