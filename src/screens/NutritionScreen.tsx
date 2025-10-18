@@ -43,6 +43,10 @@ export default function NutritionScreen() {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   
+  // Calendar constants
+  const DAY_WIDTH = 52; // Width of each day item
+  const VISIBLE_DAYS = 7; // Always show 7 days
+  
   // Form state
   const [foodName, setFoodName] = useState("");
   const [calories, setCalories] = useState("");
@@ -121,9 +125,9 @@ export default function NutritionScreen() {
   };
 
   // Get 7 days centered around the selected date
-  const getWeekDates = () => {
+  const getVisibleDays = () => {
     const dates = [];
-    const centerOffset = 3; // Show 3 days before and 3 days after selected date
+    const centerOffset = 3; // Show 3 days before and 3 days after
     
     for (let i = -centerOffset; i <= centerOffset; i++) {
       const date = new Date(selectedDate);
@@ -133,6 +137,8 @@ export default function NutritionScreen() {
     
     return dates;
   };
+
+  const getWeekDates = getVisibleDays;
 
   const getDayTotals = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
@@ -230,13 +236,6 @@ export default function NutritionScreen() {
     setSelectedDate(date);
   };
 
-  const navigateDay = (direction: "prev" | "next") => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const newDate = new Date(selectedDate);
-    newDate.setDate(selectedDate.getDate() + (direction === "next" ? 1 : -1));
-    setSelectedDate(newDate);
-  };
-
   return (
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
       <PremiumBackground theme={theme} variant="nutrition" />
@@ -280,133 +279,111 @@ export default function NutritionScreen() {
           </View>
         </View>
 
-        {/* Week Calendar - 7 Days Fixed */}
-        <View className="mb-3 px-4">
-          <View className="flex-row justify-between items-center">
-            {/* Left Arrow */}
-            <Pressable
-              onPress={() => navigateDay("prev")}
-              className="p-2"
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Ionicons 
-                name="chevron-back" 
-                size={24} 
-                color={isDark ? "#9ca3af" : "#6b7280"} 
-              />
-            </Pressable>
-
-            {/* Days */}
-            <View className="flex-1 flex-row justify-between px-2">
-              {getWeekDates().map((date, index) => {
-                const isToday =
-                  date.toISOString().split("T")[0] ===
-                  new Date().toISOString().split("T")[0];
-                const isSelected = 
-                  date.toISOString().split("T")[0] ===
-                  selectedDate.toISOString().split("T")[0];
-                const dayTotals = getDayTotals(date);
-                const hasData = dayTotals.calories > 0;
-                const metGoal = dayTotals.calories >= targetCalories;
-                const missedGoal = hasData && !metGoal;
-                
-                return (
-                  <Pressable
-                    key={index}
-                    onPress={() => handleDayPress(date)}
-                    className="items-center"
-                    style={{ width: 48 }}
+        {/* Week Calendar - Smooth Swipe */}
+        <View className="mb-3">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            pagingEnabled
+            snapToInterval={DAY_WIDTH}
+            decelerationRate="fast"
+            contentContainerStyle={{ paddingHorizontal: 24 }}
+          >
+            {getWeekDates().map((date, index) => {
+              const isToday =
+                date.toISOString().split("T")[0] ===
+                new Date().toISOString().split("T")[0];
+              const isSelected = 
+                date.toISOString().split("T")[0] ===
+                selectedDate.toISOString().split("T")[0];
+              const dayTotals = getDayTotals(date);
+              const hasData = dayTotals.calories > 0;
+              const metGoal = dayTotals.calories >= targetCalories;
+              const missedGoal = hasData && !metGoal;
+              
+              return (
+                <Pressable
+                  key={index}
+                  onPress={() => handleDayPress(date)}
+                  className="items-center"
+                  style={{ width: DAY_WIDTH }}
+                >
+                  <Text
+                    className={cn(
+                      "text-xs mb-1 font-medium",
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    )}
                   >
-                    <Text
+                    {date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 3)}
+                  </Text>
+                  <View className="relative items-center justify-center">
+                    {/* Outer ring */}
+                    <View
+                      className="absolute w-12 h-12 rounded-full items-center justify-center"
+                      style={{
+                        borderWidth: 2,
+                        borderStyle: missedGoal ? "solid" : "dashed",
+                        borderColor: missedGoal
+                          ? "#ef4444"
+                          : metGoal
+                          ? "#22c55e"
+                          : isToday
+                          ? "#3b82f6"
+                          : isDark
+                          ? "#4b5563"
+                          : "#d1d5db",
+                      }}
+                    />
+                    {/* Inner circle */}
+                    <View
                       className={cn(
-                        "text-xs mb-1 font-medium",
-                        isDark ? "text-gray-400" : "text-gray-600"
+                        "w-10 h-10 rounded-full items-center justify-center",
+                        isSelected
+                          ? "bg-blue-500"
+                          : metGoal
+                          ? "bg-green-500"
+                          : isDark
+                          ? "bg-[#1a1a1a]"
+                          : "bg-white"
                       )}
+                      style={{
+                        shadowColor: isSelected
+                          ? "#3b82f6"
+                          : metGoal
+                          ? "#22c55e"
+                          : "transparent",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.3,
+                        shadowRadius: 4,
+                        elevation: 3,
+                      }}
                     >
-                      {date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 3)}
-                    </Text>
-                    <View className="relative items-center justify-center">
-                      {/* Outer ring */}
-                      <View
-                        className="absolute w-12 h-12 rounded-full items-center justify-center"
-                        style={{
-                          borderWidth: 2,
-                          borderStyle: missedGoal ? "solid" : "dashed",
-                          borderColor: missedGoal
-                            ? "#ef4444"
-                            : metGoal
-                            ? "#22c55e"
-                            : isToday
-                            ? "#3b82f6"
-                            : isDark
-                            ? "#4b5563"
-                            : "#d1d5db",
-                        }}
-                      />
-                      {/* Inner circle */}
-                      <View
+                      <Text
                         className={cn(
-                          "w-10 h-10 rounded-full items-center justify-center",
-                          isSelected
-                            ? "bg-blue-500"
-                            : metGoal
-                            ? "bg-green-500"
+                          "text-base font-bold",
+                          isSelected || metGoal
+                            ? "text-white"
                             : isDark
-                            ? "bg-[#1a1a1a]"
-                            : "bg-white"
+                            ? "text-white"
+                            : "text-gray-900"
                         )}
-                        style={{
-                          shadowColor: isSelected
-                            ? "#3b82f6"
-                            : metGoal
-                            ? "#22c55e"
-                            : "transparent",
-                          shadowOffset: { width: 0, height: 2 },
-                          shadowOpacity: 0.3,
-                          shadowRadius: 4,
-                          elevation: 3,
-                        }}
                       >
-                        <Text
-                          className={cn(
-                            "text-base font-bold",
-                            isSelected || metGoal
-                              ? "text-white"
-                              : isDark
-                              ? "text-white"
-                              : "text-gray-900"
-                          )}
-                        >
-                          {date.getDate()}
-                        </Text>
-                      </View>
+                        {date.getDate()}
+                      </Text>
                     </View>
-                    <Text
-                      className={cn(
-                        "text-xs mt-1 font-medium",
-                        isDark ? "text-gray-500" : "text-gray-500"
-                      )}
-                    >
-                      {date.toLocaleDateString("en-US", { month: "short" })}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </View>
-
-            {/* Right Arrow */}
-            <Pressable
-              onPress={() => navigateDay("next")}
-              className="p-2"
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Ionicons 
-                name="chevron-forward" 
-                size={24} 
-                color={isDark ? "#9ca3af" : "#6b7280"} 
-              />
-            </Pressable>
-          </View>
+                  </View>
+                  <Text
+                    className={cn(
+                      "text-xs mt-1 font-medium",
+                      isDark ? "text-gray-500" : "text-gray-500"
+                    )}
+                  >
+                    {date.toLocaleDateString("en-US", { month: "short" })}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
         </View>
 
         {/* Calorie Counter Card */}
