@@ -10,6 +10,7 @@ import {
   Platform,
   Image,
   useColorScheme,
+  Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -38,6 +39,9 @@ export default function SettingsScreen() {
   const [activeSection, setActiveSection] = useState<
     "profile" | "privacy" | "display" | "goals" | "notifications" | "weight" | "language" | null
   >(null);
+
+  // Profile modal state
+  const [isProfileModalVisible, setIsProfileModalVisible] = useState(false);
 
   // Triple-tap counter for debug reset
   const [tapCount, setTapCount] = useState(0);
@@ -82,6 +86,22 @@ export default function SettingsScreen() {
     });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setActiveSection(null);
+  };
+
+  const handleSaveProfileModal = () => {
+    updateProfileSettings({
+      name,
+      age: age ? parseInt(age) : undefined,
+      email: email || undefined,
+    });
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setIsProfileModalVisible(false);
+  };
+
+  const handleSignOut = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    resetOnboarding(); // This will trigger the onboarding flow again
+    setIsProfileModalVisible(false);
   };
 
   const handleSaveGoals = () => {
@@ -292,7 +312,11 @@ export default function SettingsScreen() {
 
         <View className="px-6">
           {/* Profile Card */}
-          <View
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setIsProfileModalVisible(true);
+            }}
             className={cn("rounded-3xl p-6 mb-6 flex-row items-center", isDark ? "bg-white/5" : "bg-white")}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
@@ -321,7 +345,10 @@ export default function SettingsScreen() {
                 {profileSettings.age || "18"} years old
               </Text>
             </View>
-          </View>
+
+            {/* Chevron Icon */}
+            <Ionicons name="chevron-forward" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
+          </Pressable>
 
           {/* Invite Friends Card */}
           <View
@@ -696,6 +723,114 @@ export default function SettingsScreen() {
           </View>
         </View>
       </ScrollView>
+
+      {/* Profile Modal */}
+      <Modal
+        visible={isProfileModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setIsProfileModalVisible(false)}
+      >
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            className="flex-1"
+          >
+            <View className="flex-1">
+              {/* Header */}
+              <View className="flex-row items-center justify-between px-6 py-4 border-b" style={{ borderBottomColor: isDark ? "#1f1f1f" : "#e5e7eb" }}>
+                <Pressable
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setIsProfileModalVisible(false);
+                  }}
+                >
+                  <Ionicons name="close" size={28} color={isDark ? "#fff" : "#000"} />
+                </Pressable>
+                <Text className={cn("text-xl font-bold", isDark ? "text-white" : "text-black")}>
+                  Profile
+                </Text>
+                <View style={{ width: 28 }} />
+              </View>
+
+              <ScrollView className="flex-1 px-6 pt-6">
+                {/* Avatar Section */}
+                <View className="items-center mb-8">
+                  <View
+                    className="w-32 h-32 rounded-full items-center justify-center mb-4"
+                    style={{ backgroundColor: "#4A6FA5" }}
+                  >
+                    <Text className="text-white text-5xl font-bold">
+                      {name ? name[0].toUpperCase() : "A"}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Name Input */}
+                <View className="mb-6">
+                  <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
+                    Name
+                  </Text>
+                  <TextInput
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="Enter your name"
+                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-[#1a1a1a] text-white" : "bg-gray-100 text-gray-900")}
+                  />
+                </View>
+
+                {/* Age Input */}
+                <View className="mb-6">
+                  <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
+                    Age
+                  </Text>
+                  <TextInput
+                    value={age}
+                    onChangeText={setAge}
+                    placeholder="Enter your age"
+                    keyboardType="numeric"
+                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-[#1a1a1a] text-white" : "bg-gray-100 text-gray-900")}
+                  />
+                </View>
+
+                {/* Email Input */}
+                <View className="mb-6">
+                  <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
+                    Email
+                  </Text>
+                  <TextInput
+                    value={email}
+                    onChangeText={setEmail}
+                    placeholder="Enter your email"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-[#1a1a1a] text-white" : "bg-gray-100 text-gray-900")}
+                  />
+                </View>
+
+                {/* Save Button */}
+                <Pressable 
+                  onPress={handleSaveProfileModal} 
+                  className="bg-blue-500 py-4 rounded-2xl mb-4"
+                >
+                  <Text className="text-white font-bold text-center text-base">Save Changes</Text>
+                </Pressable>
+
+                {/* Sign Out Button */}
+                <Pressable 
+                  onPress={handleSignOut} 
+                  className="bg-red-500 py-4 rounded-2xl mb-6"
+                >
+                  <Text className="text-white font-bold text-center text-base">Sign Out</Text>
+                </Pressable>
+              </ScrollView>
+            </View>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
