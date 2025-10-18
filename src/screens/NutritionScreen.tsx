@@ -1616,8 +1616,8 @@ function MacroRow({
           <View
             className="w-4 h-4 rounded-full mr-3"
             style={{ 
-              backgroundColor: isDark ? "#ffffff" : color,
-              shadowColor: isDark ? "#ffffff" : color,
+              backgroundColor: color,
+              shadowColor: color,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.4,
               shadowRadius: 4,
@@ -1659,7 +1659,7 @@ function MacroRow({
           isDark ? "bg-[#1a1a1a]" : "bg-gray-200"
         )}
         style={{
-          shadowColor: isComplete ? (isDark ? "#ffffff" : color) : "transparent",
+          shadowColor: isComplete ? color : "transparent",
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.3,
           shadowRadius: 6,
@@ -1671,8 +1671,8 @@ function MacroRow({
           style={[
             animatedStyle, 
             { 
-              backgroundColor: isDark ? "#ffffff" : color,
-              shadowColor: isDark ? "#ffffff" : color,
+              backgroundColor: color,
+              shadowColor: color,
               shadowOffset: { width: 0, height: 0 },
               shadowOpacity: 0.5,
               shadowRadius: 6,
