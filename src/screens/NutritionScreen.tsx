@@ -322,7 +322,7 @@ export default function NutritionScreen() {
   }, [isFocused]);
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
       <PremiumBackground theme={theme} variant="nutrition" />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}

@@ -96,7 +96,7 @@ export default function SettingsScreen() {
   // If a section is open, show detail view (keeping existing detail views)
   if (activeSection && activeSection !== null) {
     return (
-      <SafeAreaView className="flex-1">
+      <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
         <PremiumBackground theme={theme} variant="settings" />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -245,7 +245,7 @@ export default function SettingsScreen() {
 
   // Main Settings Screen - Redesigned to match image
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
       <PremiumBackground theme={theme} variant="settings" />
       <ScrollView className="flex-1">
         {/* Header */}
