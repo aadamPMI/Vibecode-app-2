@@ -140,7 +140,48 @@ export default function WeightTrackingScreen() {
       yIntervals.push({ weight, y });
     }
 
-    return { points, minWeight, maxWeight, targetY, projectionPoints, yIntervals };
+    // Calculate X-axis date labels
+    const xIntervals: Array<{ date: string; x: number; timestamp: number }> = [];
+    const totalVisiblePoints = sortedEntries.length + (projectionPoints.length > 0 ? projectionPoints.length : 0);
+    
+    // Determine number of X-axis labels based on data points
+    let numXLabels = 4;
+    if (totalVisiblePoints < 4) numXLabels = totalVisiblePoints;
+    else if (totalVisiblePoints < 7) numXLabels = 3;
+    
+    // Generate evenly spaced date labels
+    if (projectionPoints.length > 0) {
+      // Include projection dates
+      const firstDate = sortedEntries[0].timestamp;
+      const lastDate = projectionPoints[projectionPoints.length - 1].date;
+      
+      for (let i = 0; i < numXLabels; i++) {
+        const ratio = i / (numXLabels - 1);
+        const timestamp = firstDate + (lastDate - firstDate) * ratio;
+        const totalPoints = sortedEntries.length + projectionPoints.length;
+        const xPos = GRAPH_PADDING + (ratio * (totalPoints - 1) / (totalPoints - 1)) * (GRAPH_WIDTH - GRAPH_PADDING * 2);
+        
+        const date = new Date(timestamp);
+        const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        xIntervals.push({ date: dateStr, x: xPos, timestamp });
+      }
+    } else {
+      // Only actual data points
+      const firstDate = sortedEntries[0].timestamp;
+      const lastDate = sortedEntries[sortedEntries.length - 1].timestamp;
+      
+      for (let i = 0; i < numXLabels; i++) {
+        const ratio = i / (numXLabels - 1);
+        const timestamp = firstDate + (lastDate - firstDate) * ratio;
+        const xPos = GRAPH_PADDING + ratio * (GRAPH_WIDTH - GRAPH_PADDING * 2);
+        
+        const date = new Date(timestamp);
+        const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        xIntervals.push({ date: dateStr, x: xPos, timestamp });
+      }
+    }
+
+    return { points, minWeight, maxWeight, targetY, projectionPoints, yIntervals, xIntervals };
   };
 
   const graphData = getGraphData();
@@ -388,6 +429,21 @@ export default function WeightTrackingScreen() {
                       strokeWidth="2"
                       opacity="0.7"
                     />
+                  ))}
+
+                  {/* X-axis date labels */}
+                  {graphData.xIntervals.map((interval, i) => (
+                    <SvgText
+                      key={`x-label-${i}`}
+                      x={interval.x}
+                      y={GRAPH_HEIGHT - 10}
+                      fill={isDark ? "#9ca3af" : "#6b7280"}
+                      fontSize="11"
+                      fontWeight="500"
+                      textAnchor="middle"
+                    >
+                      {interval.date}
+                    </SvgText>
                   ))}
                 </Svg>
 
