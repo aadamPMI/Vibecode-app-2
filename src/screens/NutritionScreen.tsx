@@ -520,7 +520,7 @@ export default function NutritionScreen() {
                   isDark ? "bg-[#1a1a1a]" : "bg-gray-200"
                 )}
                 style={{
-                  shadowColor: "#3b82f6",
+                  shadowColor: isDark ? "#ffffff" : "#3b82f6",
                   shadowOffset: { width: 0, height: 0 },
                   shadowOpacity: 0.6,
                   shadowRadius: 15,
@@ -531,8 +531,8 @@ export default function NutritionScreen() {
                   className="h-full rounded-full"
                   style={{
                     width: `${Math.min((totals.calories / targetCalories) * 100, 100)}%`,
-                    backgroundColor: "#3b82f6",
-                    shadowColor: "#3b82f6",
+                    backgroundColor: isDark ? "#ffffff" : "#3b82f6",
+                    shadowColor: isDark ? "#ffffff" : "#3b82f6",
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: 1,
                     shadowRadius: 20,
@@ -543,7 +543,7 @@ export default function NutritionScreen() {
                 <View
                   className="absolute inset-0 rounded-full"
                   style={{
-                    shadowColor: "#3b82f6",
+                    shadowColor: isDark ? "#ffffff" : "#3b82f6",
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: 0.8,
                     shadowRadius: 25,
@@ -553,7 +553,7 @@ export default function NutritionScreen() {
                 <View
                   className="absolute inset-0 rounded-full"
                   style={{
-                    shadowColor: "#3b82f6",
+                    shadowColor: isDark ? "#ffffff" : "#3b82f6",
                     shadowOffset: { width: 0, height: 0 },
                     shadowOpacity: 0.5,
                     shadowRadius: 30,
@@ -1616,8 +1616,8 @@ function MacroRow({
           <View
             className="w-4 h-4 rounded-full mr-3"
             style={{ 
-              backgroundColor: color,
-              shadowColor: color,
+              backgroundColor: isDark ? "#ffffff" : color,
+              shadowColor: isDark ? "#ffffff" : color,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.4,
               shadowRadius: 4,
@@ -1659,7 +1659,7 @@ function MacroRow({
           isDark ? "bg-[#1a1a1a]" : "bg-gray-200"
         )}
         style={{
-          shadowColor: isComplete ? color : "transparent",
+          shadowColor: isComplete ? (isDark ? "#ffffff" : color) : "transparent",
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.3,
           shadowRadius: 6,
@@ -1671,8 +1671,8 @@ function MacroRow({
           style={[
             animatedStyle, 
             { 
-              backgroundColor: color,
-              shadowColor: color,
+              backgroundColor: isDark ? "#ffffff" : color,
+              shadowColor: isDark ? "#ffffff" : color,
               shadowOffset: { width: 0, height: 0 },
               shadowOpacity: 0.5,
               shadowRadius: 6,
