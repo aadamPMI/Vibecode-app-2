@@ -1655,15 +1655,15 @@ function MacroRow({
       </View>
       <View
         className={cn(
-          "h-3 rounded-full overflow-hidden",
+          "h-3 rounded-full overflow-visible",
           isDark ? "bg-[#1a1a1a]" : "bg-gray-200"
         )}
         style={{
-          shadowColor: isComplete ? color : "transparent",
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.3,
-          shadowRadius: 6,
-          elevation: isComplete ? 2 : 0,
+          shadowColor: color,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.4,
+          shadowRadius: 8,
+          elevation: 3,
         }}
       >
         <Animated.View
@@ -1674,8 +1674,9 @@ function MacroRow({
               backgroundColor: color,
               shadowColor: color,
               shadowOffset: { width: 0, height: 0 },
-              shadowOpacity: 0.5,
-              shadowRadius: 6,
+              shadowOpacity: 0.8,
+              shadowRadius: 10,
+              elevation: 5,
             }
           ]}
         />
