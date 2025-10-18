@@ -15,12 +15,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
+import { useNavigation } from "@react-navigation/native";
 import { useSettingsStore } from "../state/settingsStore";
 import { useAuthStore } from "../state/authStore";
 import { cn } from "../utils/cn";
 import { PremiumBackground } from "../components/PremiumBackground";
 
 export default function SettingsScreen() {
+  const navigation = useNavigation<any>();
   const theme = useSettingsStore((s) => s.theme);
   const setTheme = useSettingsStore((s) => s.setTheme);
   const profileSettings = useSettingsStore((s) => s.profileSettings);
@@ -441,6 +443,7 @@ export default function SettingsScreen() {
             <Pressable
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                navigation.navigate("WeightTracking");
               }}
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >

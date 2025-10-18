@@ -8,6 +8,7 @@ import NutritionScreen from "../screens/NutritionScreen";
 import CommunityScreen from "../screens/CommunityScreen";
 import MyCommunitiesScreen from "../screens/MyCommunitiesScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import WeightTrackingScreen from "../screens/WeightTrackingScreen";
 import { useSettingsStore } from "../state/settingsStore";
 import { useAuthStore } from "../state/authStore";
 import OnboardingNavigator from "./OnboardingNavigator";
@@ -35,7 +36,7 @@ export type RootTabParamList = {
   Workout: undefined;
   Nutrition: undefined;
   CommunityStack: undefined;
-  Settings: undefined;
+  SettingsStack: undefined;
 };
 
 export type CommunityStackParamList = {
@@ -43,8 +44,14 @@ export type CommunityStackParamList = {
   MyCommunities: undefined;
 };
 
+export type SettingsStackParamList = {
+  Settings: undefined;
+  WeightTracking: undefined;
+};
+
 const Tab = createBottomTabNavigator<RootTabParamList>();
 const CommunityStack = createNativeStackNavigator<CommunityStackParamList>();
+const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 
 function CommunityStackNavigator() {
   return (
@@ -65,6 +72,28 @@ function CommunityStackNavigator() {
 const AnimatedCommunityStack = () => (
   <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
     <CommunityStackNavigator />
+  </Animated.View>
+);
+
+function SettingsStackNavigator() {
+  return (
+    <SettingsStack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: "fade",
+        animationDuration: 200,
+      }}
+    >
+      <SettingsStack.Screen name="Settings" component={SettingsScreen} />
+      <SettingsStack.Screen name="WeightTracking" component={WeightTrackingScreen} />
+    </SettingsStack.Navigator>
+  );
+}
+
+// Animated wrapper for settings stack
+const AnimatedSettingsStack = () => (
+  <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
+    <SettingsStackNavigator />
   </Animated.View>
 );
 
@@ -91,7 +120,7 @@ export default function AppNavigator() {
             iconName = focused ? "nutrition" : "nutrition-outline";
           } else if (route.name === "CommunityStack") {
             iconName = focused ? "people" : "people-outline";
-          } else if (route.name === "Settings") {
+          } else if (route.name === "SettingsStack") {
             iconName = focused ? "settings" : "settings-outline";
           }
 
@@ -116,7 +145,13 @@ export default function AppNavigator() {
           tabBarLabel: "Community",
         }}
       />
-      <Tab.Screen name="Settings" component={AnimatedSettingsScreen} />
+      <Tab.Screen 
+        name="SettingsStack" 
+        component={AnimatedSettingsStack}
+        options={{
+          tabBarLabel: "Settings",
+        }}
+      />
     </Tab.Navigator>
   );
 }
