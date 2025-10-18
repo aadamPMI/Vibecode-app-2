@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   Switch,
+  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -41,7 +42,9 @@ export default function CommunityScreen({ navigation, route }: any) {
   const currentUserId = useCommunityStore((s) => s.currentUserId);
   const currentUserName = useCommunityStore((s) => s.currentUserName);
 
-  const isDark = theme === "dark";
+  const systemColorScheme = useColorScheme();
+  const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
+  const isDark = resolvedTheme === "dark";
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [isJoinPrivateModalVisible, setIsJoinPrivateModalVisible] = useState(false);
   const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(

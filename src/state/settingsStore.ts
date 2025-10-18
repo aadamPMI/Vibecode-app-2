@@ -51,7 +51,7 @@ interface SettingsStore {
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
-      theme: "light",
+      theme: "system",
       profileSettings: {
         name: "User",
       },

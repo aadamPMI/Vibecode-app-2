@@ -4,6 +4,7 @@ import {
   Text,
   Pressable,
   ScrollView,
+  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -23,7 +24,9 @@ export default function MyCommunitiesScreen({ navigation }: any) {
   const communities = useCommunityStore((s) => s.communities);
   const currentUserId = useCommunityStore((s) => s.currentUserId);
 
-  const isDark = theme === "dark";
+  const systemColorScheme = useColorScheme();
+  const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
+  const isDark = resolvedTheme === "dark";
 
   const getJoinedCommunities = () => {
     return communities.filter((c) => c.members.includes(currentUserId));
