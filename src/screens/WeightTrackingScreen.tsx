@@ -45,6 +45,7 @@ export default function WeightTrackingScreen() {
   const [targetWeightInput, setTargetWeightInput] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedPoint, setSelectedPoint] = useState<{ weight: number; date: string; x: number; y: number } | null>(null);
 
   const handleLogWeight = () => {
     const weight = parseFloat(weightInput);
@@ -96,12 +97,50 @@ export default function WeightTrackingScreen() {
       return { x, y, entry };
     });
 
+    // Calculate projection (2-3 weeks ahead)
+    let projectionPoints: Array<{ x: number; y: number; weight: number; date: number }> = [];
+    if (sortedEntries.length >= 2) {
+      const lastEntry = sortedEntries[sortedEntries.length - 1];
+      const firstEntry = sortedEntries[0];
+      
+      // Calculate weight change rate (kg per day)
+      const daysDiff = (lastEntry.timestamp - firstEntry.timestamp) / (1000 * 60 * 60 * 24);
+      const weightDiff = lastEntry.weight - firstEntry.weight;
+      const ratePerDay = daysDiff > 0 ? weightDiff / daysDiff : 0;
+      
+      // Project 3 weeks ahead (21 days)
+      const projectionDays = 21;
+      const projectionIntervals = 3; // Number of projection points
+      
+      for (let i = 1; i <= projectionIntervals; i++) {
+        const daysAhead = (projectionDays / projectionIntervals) * i;
+        const projectedWeight = lastEntry.weight + (ratePerDay * daysAhead);
+        const projectedDate = lastEntry.timestamp + (daysAhead * 24 * 60 * 60 * 1000);
+        
+        // Calculate position (extend beyond the last actual point)
+        const totalPoints = sortedEntries.length + projectionIntervals;
+        const xPos = GRAPH_PADDING + ((sortedEntries.length - 1 + i) / (totalPoints - 1)) * (GRAPH_WIDTH - GRAPH_PADDING * 2);
+        const yPos = GRAPH_HEIGHT - GRAPH_PADDING - ((projectedWeight - minWeight) / (maxWeight - minWeight)) * (GRAPH_HEIGHT - GRAPH_PADDING * 2);
+        
+        projectionPoints.push({ x: xPos, y: yPos, weight: projectedWeight, date: projectedDate });
+      }
+    }
+
     // Target weight line Y position
     const targetY = targetWeight
       ? GRAPH_HEIGHT - GRAPH_PADDING - ((targetWeight - minWeight) / (maxWeight - minWeight)) * (GRAPH_HEIGHT - GRAPH_PADDING * 2)
       : null;
 
-    return { points, minWeight, maxWeight, targetY };
+    // Calculate Y-axis intervals (5 evenly spaced labels)
+    const yIntervals = [];
+    const numIntervals = 5;
+    for (let i = 0; i < numIntervals; i++) {
+      const weight = minWeight + ((maxWeight - minWeight) / (numIntervals - 1)) * i;
+      const y = GRAPH_HEIGHT - GRAPH_PADDING - ((weight - minWeight) / (maxWeight - minWeight)) * (GRAPH_HEIGHT - GRAPH_PADDING * 2);
+      yIntervals.push({ weight, y });
+    }
+
+    return { points, minWeight, maxWeight, targetY, projectionPoints, yIntervals };
   };
 
   const graphData = getGraphData();
@@ -264,6 +303,20 @@ export default function WeightTrackingScreen() {
                     />
                   ))}
 
+                  {/* Y-axis interval labels */}
+                  {graphData.yIntervals.map((interval, i) => (
+                    <SvgText
+                      key={`y-label-${i}`}
+                      x="5"
+                      y={interval.y + 4}
+                      fill={isDark ? "#9ca3af" : "#6b7280"}
+                      fontSize="12"
+                      fontWeight="500"
+                    >
+                      {interval.weight.toFixed(1)}
+                    </SvgText>
+                  ))}
+
                   {/* Target weight line */}
                   {graphData.targetY && (
                     <Line
@@ -277,7 +330,7 @@ export default function WeightTrackingScreen() {
                     />
                   )}
 
-                  {/* Weight line */}
+                  {/* Actual weight line */}
                   {graphData.points.length > 1 && (
                     <Polyline
                       points={graphData.points.map((p) => `${p.x},${p.y}`).join(" ")}
@@ -287,48 +340,105 @@ export default function WeightTrackingScreen() {
                     />
                   )}
 
-                  {/* Data points */}
+                  {/* Projection line (dashed, different color) */}
+                  {graphData.projectionPoints.length > 0 && (
+                    <Polyline
+                      points={[
+                        `${graphData.points[graphData.points.length - 1].x},${graphData.points[graphData.points.length - 1].y}`,
+                        ...graphData.projectionPoints.map((p) => `${p.x},${p.y}`)
+                      ].join(" ")}
+                      fill="none"
+                      stroke="#f59e0b"
+                      strokeWidth="3"
+                      strokeDasharray="8,4"
+                    />
+                  )}
+
+                  {/* Actual data points (tappable) */}
                   {graphData.points.map((point, index) => (
                     <Circle
                       key={`point-${index}`}
                       cx={point.x}
                       cy={point.y}
-                      r="6"
+                      r="8"
                       fill="#10b981"
                       stroke={isDark ? "#0a0a0a" : "#ffffff"}
                       strokeWidth="2"
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        setSelectedPoint({
+                          weight: point.entry.weight,
+                          date: point.entry.date,
+                          x: point.x,
+                          y: point.y
+                        });
+                      }}
                     />
                   ))}
 
-                  {/* Y-axis labels */}
-                  <SvgText
-                    x="5"
-                    y={GRAPH_PADDING}
-                    fill={isDark ? "#9ca3af" : "#6b7280"}
-                    fontSize="12"
-                  >
-                    {graphData.maxWeight.toFixed(0)}
-                  </SvgText>
-                  <SvgText
-                    x="5"
-                    y={GRAPH_HEIGHT - GRAPH_PADDING + 5}
-                    fill={isDark ? "#9ca3af" : "#6b7280"}
-                    fontSize="12"
-                  >
-                    {graphData.minWeight.toFixed(0)}
-                  </SvgText>
+                  {/* Projection points (smaller, different color) */}
+                  {graphData.projectionPoints.map((point, index) => (
+                    <Circle
+                      key={`proj-${index}`}
+                      cx={point.x}
+                      cy={point.y}
+                      r="6"
+                      fill="#f59e0b"
+                      stroke={isDark ? "#0a0a0a" : "#ffffff"}
+                      strokeWidth="2"
+                      opacity="0.7"
+                    />
+                  ))}
                 </Svg>
 
+                {/* Selected Point Tooltip */}
+                {selectedPoint && (
+                  <Pressable
+                    onPress={() => setSelectedPoint(null)}
+                    className={cn("mt-4 rounded-2xl p-4", isDark ? "bg-green-500/10" : "bg-green-50")}
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-1">
+                        <Text className={cn("text-2xl font-bold mb-1", isDark ? "text-white" : "text-black")}>
+                          {selectedPoint.weight.toFixed(1)} kg
+                        </Text>
+                        <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                          {new Date(selectedPoint.date).toLocaleDateString("en-US", {
+                            weekday: "short",
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </Text>
+                      </View>
+                      <Pressable
+                        onPress={() => setSelectedPoint(null)}
+                        className="ml-2"
+                      >
+                        <Ionicons name="close-circle" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
+                      </Pressable>
+                    </View>
+                  </Pressable>
+                )}
+
                 {/* Legend */}
-                <View className="flex-row items-center justify-center mt-4 space-x-4">
-                  <View className="flex-row items-center">
+                <View className="flex-row items-center justify-center mt-4 flex-wrap">
+                  <View className="flex-row items-center mr-4 mb-2">
                     <View className="w-4 h-4 rounded-full bg-green-500 mr-2" />
                     <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                       Your Weight
                     </Text>
                   </View>
+                  {graphData.projectionPoints.length > 0 && (
+                    <View className="flex-row items-center mr-4 mb-2">
+                      <View className="w-4 h-1 bg-orange-500 mr-2" style={{ borderStyle: "dashed" }} />
+                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                        Projected (3 weeks)
+                      </Text>
+                    </View>
+                  )}
                   {targetWeight && (
-                    <View className="flex-row items-center">
+                    <View className="flex-row items-center mb-2">
                       <View className="w-4 h-1 bg-blue-500 mr-2" style={{ borderStyle: "dashed" }} />
                       <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
                         Target
