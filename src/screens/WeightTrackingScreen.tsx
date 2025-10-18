@@ -9,6 +9,7 @@ import {
   useColorScheme,
   Dimensions,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -383,7 +384,11 @@ export default function WeightTrackingScreen() {
         onRequestClose={() => setIsModalVisible(false)}
       >
         <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
-          <View className="flex-1">
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            className="flex-1"
+            keyboardVerticalOffset={0}
+          >
             {/* Header */}
             <View
               className="flex-row items-center justify-between px-6 py-4 border-b"
@@ -393,6 +398,7 @@ export default function WeightTrackingScreen() {
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   setIsModalVisible(false);
+                  setShowDatePicker(false);
                 }}
               >
                 <Ionicons name="close" size={28} color={isDark ? "#fff" : "#000"} />
@@ -403,7 +409,7 @@ export default function WeightTrackingScreen() {
               <View style={{ width: 28 }} />
             </View>
 
-            <View className="flex-1 px-6 pt-8">
+            <ScrollView className="flex-1 px-6 pt-8" keyboardShouldPersistTaps="handled">
               {/* Weight Input */}
               <View className="mb-6">
                 <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
@@ -472,8 +478,10 @@ export default function WeightTrackingScreen() {
                   )}
                 </View>
               )}
+            </ScrollView>
 
-              {/* Log Button */}
+            {/* Log Button - Fixed at bottom */}
+            <View className="px-6 pb-6 pt-4" style={{ borderTopWidth: 1, borderTopColor: isDark ? "#1f1f1f" : "#e5e7eb" }}>
               <Pressable
                 onPress={handleLogWeight}
                 className="bg-blue-500 py-4 rounded-2xl"
@@ -485,7 +493,7 @@ export default function WeightTrackingScreen() {
                 <Text className="text-white font-bold text-center text-lg">Log Weight</Text>
               </Pressable>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
