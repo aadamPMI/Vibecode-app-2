@@ -10,7 +10,7 @@ export interface FitnessGoals {
   targetFats?: number;
   weeklyWorkouts?: number;
   fitnessLevel?: "beginner" | "intermediate" | "advanced";
-  goal?: "lose_weight" | "gain_muscle" | "maintain" | "general_fitness";
+  goal?: "lose_weight" | "build_muscle" | "improve_endurance" | "general_fitness" | "strength_training";
 }
 
 export interface ProfileSettings {

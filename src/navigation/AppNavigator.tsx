@@ -8,6 +8,8 @@ import CommunityScreen from "../screens/CommunityScreen";
 import MyCommunitiesScreen from "../screens/MyCommunitiesScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import { useSettingsStore } from "../state/settingsStore";
+import { useAuthStore } from "../state/authStore";
+import OnboardingNavigator from "./OnboardingNavigator";
 
 export type RootTabParamList = {
   Workout: undefined;
@@ -40,7 +42,14 @@ function CommunityStackNavigator() {
 export default function AppNavigator() {
   const theme = useSettingsStore((s) => s.theme);
   const isDark = theme === "dark";
+  const hasCompletedOnboarding = useAuthStore((s) => s.hasCompletedOnboarding);
 
+  // Show onboarding flow if user has not completed it
+  if (!hasCompletedOnboarding) {
+    return <OnboardingNavigator />;
+  }
+
+  // Show main app navigation after onboarding is complete
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({

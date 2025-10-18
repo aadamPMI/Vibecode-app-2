@@ -15,6 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useSettingsStore } from "../state/settingsStore";
+import { useAuthStore } from "../state/authStore";
 import { cn } from "../utils/cn";
 import { PremiumBackground } from "../components/PremiumBackground";
 
@@ -29,6 +30,7 @@ export default function SettingsScreen() {
   const updatePrivacySettings = useSettingsStore((s) => s.updatePrivacySettings);
   const updatePreferencesSettings = useSettingsStore((s) => s.updatePreferencesSettings);
   const updateFitnessGoals = useSettingsStore((s) => s.updateFitnessGoals);
+  const resetOnboarding = useAuthStore((s) => s.resetOnboarding);
 
   const systemColorScheme = useColorScheme();
   const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
@@ -36,6 +38,10 @@ export default function SettingsScreen() {
   const [activeSection, setActiveSection] = useState<
     "profile" | "privacy" | "display" | "goals" | "notifications" | "weight" | "language" | null
   >(null);
+
+  // Triple-tap counter for debug reset
+  const [tapCount, setTapCount] = useState(0);
+  const [tapTimeout, setTapTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // Profile form state
   const [name, setName] = useState(profileSettings.name);
@@ -91,6 +97,33 @@ export default function SettingsScreen() {
     });
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setActiveSection(null);
+  };
+
+  // Triple-tap handler for debug reset
+  const handleHeaderTap = () => {
+    const newTapCount = tapCount + 1;
+    setTapCount(newTapCount);
+
+    // Clear existing timeout
+    if (tapTimeout) {
+      clearTimeout(tapTimeout);
+    }
+
+    // Reset tap count after 1 second
+    const timeout = setTimeout(() => {
+      setTapCount(0);
+    }, 1000);
+    setTapTimeout(timeout);
+
+    // If triple-tapped, reset onboarding
+    if (newTapCount === 3) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      resetOnboarding();
+      setTapCount(0);
+      if (tapTimeout) {
+        clearTimeout(tapTimeout);
+      }
+    }
   };
 
   // If a section is open, show detail view (keeping existing detail views)
@@ -250,9 +283,11 @@ export default function SettingsScreen() {
       <ScrollView className="flex-1">
         {/* Header */}
         <View className="px-6 pt-6 pb-6">
-          <Text className={cn("text-5xl font-bold", isDark ? "text-white" : "text-black")}>
-            Settings
-          </Text>
+          <Pressable onPress={handleHeaderTap}>
+            <Text className={cn("text-5xl font-bold", isDark ? "text-white" : "text-black")}>
+              Settings
+            </Text>
+          </Pressable>
         </View>
 
         <View className="px-6">
