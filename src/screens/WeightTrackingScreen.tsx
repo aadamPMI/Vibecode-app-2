@@ -91,35 +91,47 @@ export default function WeightTrackingScreen() {
     const minWeight = Math.min(...weights, targetWeight || Infinity) - 5;
     const maxWeight = Math.max(...weights, targetWeight || -Infinity) + 5;
 
-    const points = sortedEntries.map((entry, index) => {
-      const x = GRAPH_PADDING + (index / Math.max(sortedEntries.length - 1, 1)) * (GRAPH_WIDTH - GRAPH_PADDING * 2);
+    // Calculate time range for X-axis
+    const firstEntry = sortedEntries[0];
+    const lastEntry = sortedEntries[sortedEntries.length - 1];
+    
+    // Calculate weight change rate (kg per day) for projections
+    const daysDiff = sortedEntries.length >= 2 
+      ? (lastEntry.timestamp - firstEntry.timestamp) / (1000 * 60 * 60 * 24)
+      : 0;
+    const weightDiff = sortedEntries.length >= 2 ? lastEntry.weight - firstEntry.weight : 0;
+    const ratePerDay = daysDiff > 0 ? weightDiff / daysDiff : 0;
+    
+    // Calculate projection (3 weeks ahead)
+    const projectionDays = 21;
+    const projectionIntervals = 3;
+    let projectionPoints: Array<{ x: number; y: number; weight: number; date: number }> = [];
+    
+    // Determine time range (first data point to last projection or last data point)
+    const startTime = firstEntry.timestamp;
+    const endTime = sortedEntries.length >= 2 
+      ? lastEntry.timestamp + (projectionDays * 24 * 60 * 60 * 1000)
+      : lastEntry.timestamp;
+    const timeRange = endTime - startTime;
+    
+    // Position actual data points based on time
+    const points = sortedEntries.map((entry) => {
+      const timeRatio = timeRange > 0 ? (entry.timestamp - startTime) / timeRange : 0;
+      const x = GRAPH_PADDING + timeRatio * (GRAPH_WIDTH - GRAPH_PADDING * 2);
       const y = GRAPH_HEIGHT - GRAPH_PADDING - ((entry.weight - minWeight) / (maxWeight - minWeight)) * (GRAPH_HEIGHT - GRAPH_PADDING * 2);
       return { x, y, entry };
     });
 
-    // Calculate projection (2-3 weeks ahead)
-    let projectionPoints: Array<{ x: number; y: number; weight: number; date: number }> = [];
+    // Generate projection points based on time
     if (sortedEntries.length >= 2) {
-      const lastEntry = sortedEntries[sortedEntries.length - 1];
-      const firstEntry = sortedEntries[0];
-      
-      // Calculate weight change rate (kg per day)
-      const daysDiff = (lastEntry.timestamp - firstEntry.timestamp) / (1000 * 60 * 60 * 24);
-      const weightDiff = lastEntry.weight - firstEntry.weight;
-      const ratePerDay = daysDiff > 0 ? weightDiff / daysDiff : 0;
-      
-      // Project 3 weeks ahead (21 days)
-      const projectionDays = 21;
-      const projectionIntervals = 3; // Number of projection points
-      
       for (let i = 1; i <= projectionIntervals; i++) {
         const daysAhead = (projectionDays / projectionIntervals) * i;
         const projectedWeight = lastEntry.weight + (ratePerDay * daysAhead);
         const projectedDate = lastEntry.timestamp + (daysAhead * 24 * 60 * 60 * 1000);
         
-        // Calculate position (extend beyond the last actual point)
-        const totalPoints = sortedEntries.length + projectionIntervals;
-        const xPos = GRAPH_PADDING + ((sortedEntries.length - 1 + i) / (totalPoints - 1)) * (GRAPH_WIDTH - GRAPH_PADDING * 2);
+        // Position based on time
+        const timeRatio = (projectedDate - startTime) / timeRange;
+        const xPos = GRAPH_PADDING + timeRatio * (GRAPH_WIDTH - GRAPH_PADDING * 2);
         const yPos = GRAPH_HEIGHT - GRAPH_PADDING - ((projectedWeight - minWeight) / (maxWeight - minWeight)) * (GRAPH_HEIGHT - GRAPH_PADDING * 2);
         
         projectionPoints.push({ x: xPos, y: yPos, weight: projectedWeight, date: projectedDate });
@@ -140,45 +152,18 @@ export default function WeightTrackingScreen() {
       yIntervals.push({ weight, y });
     }
 
-    // Calculate X-axis date labels
+    // Calculate X-axis date labels (evenly distributed across time range)
     const xIntervals: Array<{ date: string; x: number; timestamp: number }> = [];
-    const totalVisiblePoints = sortedEntries.length + (projectionPoints.length > 0 ? projectionPoints.length : 0);
+    const numXLabels = projectionPoints.length > 0 ? 4 : Math.min(sortedEntries.length, 4);
     
-    // Determine number of X-axis labels based on data points
-    let numXLabels = 4;
-    if (totalVisiblePoints < 4) numXLabels = totalVisiblePoints;
-    else if (totalVisiblePoints < 7) numXLabels = 3;
-    
-    // Generate evenly spaced date labels
-    if (projectionPoints.length > 0) {
-      // Include projection dates
-      const firstDate = sortedEntries[0].timestamp;
-      const lastDate = projectionPoints[projectionPoints.length - 1].date;
+    for (let i = 0; i < numXLabels; i++) {
+      const ratio = i / (numXLabels - 1);
+      const timestamp = startTime + (timeRange * ratio);
+      const xPos = GRAPH_PADDING + ratio * (GRAPH_WIDTH - GRAPH_PADDING * 2);
       
-      for (let i = 0; i < numXLabels; i++) {
-        const ratio = i / (numXLabels - 1);
-        const timestamp = firstDate + (lastDate - firstDate) * ratio;
-        const totalPoints = sortedEntries.length + projectionPoints.length;
-        const xPos = GRAPH_PADDING + (ratio * (totalPoints - 1) / (totalPoints - 1)) * (GRAPH_WIDTH - GRAPH_PADDING * 2);
-        
-        const date = new Date(timestamp);
-        const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-        xIntervals.push({ date: dateStr, x: xPos, timestamp });
-      }
-    } else {
-      // Only actual data points
-      const firstDate = sortedEntries[0].timestamp;
-      const lastDate = sortedEntries[sortedEntries.length - 1].timestamp;
-      
-      for (let i = 0; i < numXLabels; i++) {
-        const ratio = i / (numXLabels - 1);
-        const timestamp = firstDate + (lastDate - firstDate) * ratio;
-        const xPos = GRAPH_PADDING + ratio * (GRAPH_WIDTH - GRAPH_PADDING * 2);
-        
-        const date = new Date(timestamp);
-        const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-        xIntervals.push({ date: dateStr, x: xPos, timestamp });
-      }
+      const date = new Date(timestamp);
+      const dateStr = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      xIntervals.push({ date: dateStr, x: xPos, timestamp });
     }
 
     return { points, minWeight, maxWeight, targetY, projectionPoints, yIntervals, xIntervals };
