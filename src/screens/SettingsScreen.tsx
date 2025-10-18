@@ -505,77 +505,8 @@ export default function SettingsScreen() {
               </View>
             </Pressable>
 
-            {/* Badge celebrations */}
-            <View className="px-5 py-4 border-b border-gray-200/10">
-              <View className="flex-row justify-between items-center">
-                <View className="flex-1 mr-4">
-                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
-                    Badge celebrations
-                  </Text>
-                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                    Show a full-screen badge animation when you unlock a new badge
-                  </Text>
-                </View>
-                <Switch
-                  value={preferencesSettings.badgeCelebrations}
-                  onValueChange={(value) => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    updatePreferencesSettings({ badgeCelebrations: value });
-                  }}
-                  trackColor={{ false: "#767577", true: "#3b82f6" }}
-                  thumbColor="#ffffff"
-                />
-              </View>
-            </View>
-
-            {/* Live activity */}
-            <View className="px-5 py-4 border-b border-gray-200/10">
-              <View className="flex-row justify-between items-center">
-                <View className="flex-1 mr-4">
-                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
-                    Live activity
-                  </Text>
-                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                    Show your daily calories and macros on your lock screen and dynamic island
-                  </Text>
-                </View>
-                <Switch
-                  value={preferencesSettings.liveActivity}
-                  onValueChange={(value) => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    updatePreferencesSettings({ liveActivity: value });
-                  }}
-                  trackColor={{ false: "#767577", true: "#3b82f6" }}
-                  thumbColor="#ffffff"
-                />
-              </View>
-            </View>
-
-            {/* Add burned calories */}
-            <View className="px-5 py-4 border-b border-gray-200/10">
-              <View className="flex-row justify-between items-center">
-                <View className="flex-1 mr-4">
-                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
-                    Add burned calories
-                  </Text>
-                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                    Add burned calories back to daily goal
-                  </Text>
-                </View>
-                <Switch
-                  value={preferencesSettings.addBurnedCalories}
-                  onValueChange={(value) => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    updatePreferencesSettings({ addBurnedCalories: value });
-                  }}
-                  trackColor={{ false: "#767577", true: "#3b82f6" }}
-                  thumbColor="#ffffff"
-                />
-              </View>
-            </View>
-
             {/* Rollover calories */}
-            <View className="px-5 py-4 border-b border-gray-200/10">
+            <View className="px-5 py-4">
               <View className="flex-row justify-between items-center">
                 <View className="flex-1 mr-4">
                   <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
@@ -590,29 +521,6 @@ export default function SettingsScreen() {
                   onValueChange={(value) => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     updatePreferencesSettings({ rolloverCalories: value });
-                  }}
-                  trackColor={{ false: "#767577", true: "#3b82f6" }}
-                  thumbColor="#ffffff"
-                />
-              </View>
-            </View>
-
-            {/* Auto adjust macros */}
-            <View className="px-5 py-4">
-              <View className="flex-row justify-between items-center">
-                <View className="flex-1 mr-4">
-                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
-                    Auto adjust macros
-                  </Text>
-                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                    When editing calories or macronutrients, automatically adjust the other values proportionally
-                  </Text>
-                </View>
-                <Switch
-                  value={preferencesSettings.autoAdjustMacros}
-                  onValueChange={(value) => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    updatePreferencesSettings({ autoAdjustMacros: value });
                   }}
                   trackColor={{ false: "#767577", true: "#3b82f6" }}
                   thumbColor="#ffffff"
