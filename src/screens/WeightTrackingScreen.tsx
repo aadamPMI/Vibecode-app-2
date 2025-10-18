@@ -8,12 +8,14 @@ import {
   Modal,
   useColorScheme,
   Dimensions,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Svg, Line, Circle, Text as SvgText, Polyline } from "react-native-svg";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useWeightStore } from "../state/weightStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { cn } from "../utils/cn";
@@ -37,6 +39,7 @@ export default function WeightTrackingScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [weightInput, setWeightInput] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleLogWeight = () => {
     const weight = parseFloat(weightInput);
@@ -46,6 +49,16 @@ export default function WeightTrackingScreen() {
       setWeightInput("");
       setSelectedDate(new Date());
       setIsModalVisible(false);
+    }
+  };
+
+  const handleDateChange = (event: any, date?: Date) => {
+    if (Platform.OS === "android") {
+      setShowDatePicker(false);
+    }
+    if (date) {
+      setSelectedDate(date);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
@@ -407,13 +420,17 @@ export default function WeightTrackingScreen() {
                 />
               </View>
 
-              {/* Date Display */}
+              {/* Date Picker */}
               <View className="mb-6">
                 <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
                   Date
                 </Text>
-                <View
-                  className={cn("rounded-xl p-4", isDark ? "bg-[#1a1a1a]" : "bg-gray-100")}
+                <Pressable
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setShowDatePicker(true);
+                  }}
+                  className={cn("rounded-xl p-4 flex-row items-center justify-between", isDark ? "bg-[#1a1a1a]" : "bg-gray-100")}
                 >
                   <Text className={cn("text-base", isDark ? "text-white" : "text-gray-900")}>
                     {selectedDate.toLocaleDateString("en-US", {
@@ -423,11 +440,38 @@ export default function WeightTrackingScreen() {
                       year: "numeric",
                     })}
                   </Text>
-                </View>
+                  <Ionicons name="calendar-outline" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+                </Pressable>
                 <Text className={cn("text-xs mt-2", isDark ? "text-gray-500" : "text-gray-500")}>
-                  Automatically set to today
+                  Tap to change date
                 </Text>
               </View>
+
+              {/* Date Picker Modal/Inline */}
+              {showDatePicker && (
+                <View className="mb-6">
+                  <DateTimePicker
+                    value={selectedDate}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "spinner" : "default"}
+                    onChange={handleDateChange}
+                    maximumDate={new Date()}
+                    textColor={isDark ? "#ffffff" : "#000000"}
+                    themeVariant={isDark ? "dark" : "light"}
+                  />
+                  {Platform.OS === "ios" && (
+                    <Pressable
+                      onPress={() => {
+                        setShowDatePicker(false);
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }}
+                      className="bg-blue-500 py-3 rounded-2xl mt-4"
+                    >
+                      <Text className="text-white font-bold text-center text-base">Done</Text>
+                    </Pressable>
+                  )}
+                </View>
+              )}
 
               {/* Log Button */}
               <Pressable
