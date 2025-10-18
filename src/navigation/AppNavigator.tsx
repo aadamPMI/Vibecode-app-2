@@ -26,9 +26,9 @@ const AnimatedNutritionScreen = () => (
   </Animated.View>
 );
 
-const AnimatedSettingsScreen = () => (
+const AnimatedWeightTrackingScreen = () => (
   <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
-    <SettingsScreen />
+    <WeightTrackingScreen />
   </Animated.View>
 );
 
@@ -36,6 +36,7 @@ export type RootTabParamList = {
   Workout: undefined;
   Nutrition: undefined;
   CommunityStack: undefined;
+  WeightTracking: undefined;
   SettingsStack: undefined;
 };
 
@@ -120,6 +121,8 @@ export default function AppNavigator() {
             iconName = focused ? "nutrition" : "nutrition-outline";
           } else if (route.name === "CommunityStack") {
             iconName = focused ? "people" : "people-outline";
+          } else if (route.name === "WeightTracking") {
+            iconName = focused ? "trending-up" : "trending-up-outline";
           } else if (route.name === "SettingsStack") {
             iconName = focused ? "settings" : "settings-outline";
           }
@@ -143,6 +146,13 @@ export default function AppNavigator() {
         component={AnimatedCommunityStack}
         options={{
           tabBarLabel: "Community",
+        }}
+      />
+      <Tab.Screen 
+        name="WeightTracking" 
+        component={AnimatedWeightTrackingScreen}
+        options={{
+          tabBarLabel: "Stats",
         }}
       />
       <Tab.Screen 

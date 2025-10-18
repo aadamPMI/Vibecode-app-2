@@ -15,14 +15,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { useNavigation } from "@react-navigation/native";
 import { useSettingsStore } from "../state/settingsStore";
 import { useAuthStore } from "../state/authStore";
 import { cn } from "../utils/cn";
 import { PremiumBackground } from "../components/PremiumBackground";
 
 export default function SettingsScreen() {
-  const navigation = useNavigation<any>();
   const theme = useSettingsStore((s) => s.theme);
   const setTheme = useSettingsStore((s) => s.setTheme);
   const profileSettings = useSettingsStore((s) => s.profileSettings);
@@ -439,28 +437,13 @@ export default function SettingsScreen() {
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
             </Pressable>
 
-            {/* Weight history */}
-            <Pressable
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                navigation.navigate("WeightTracking");
-              }}
-              className="flex-row items-center p-5 border-b border-gray-200/10"
-            >
-              <Ionicons name="trending-up-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
-                Weight history
-              </Text>
-              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
-            </Pressable>
-
             {/* Language */}
             <Pressable
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setActiveSection("language");
               }}
-              className="flex-row items-center p-5"
+              className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="language-outline" size={24} color={isDark ? "#fff" : "#000"} />
               <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
