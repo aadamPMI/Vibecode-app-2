@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Dimensions,
   useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,7 +18,6 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
-import { useIsFocused } from "@react-navigation/native";
 import { useNutritionStore, FoodItem } from "../state/nutritionStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { cn } from "../utils/cn";
@@ -37,8 +35,6 @@ export default function NutritionScreen() {
   const systemColorScheme = useColorScheme();
   const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
   const isDark = resolvedTheme === "dark";
-  const isFocused = useIsFocused();
-  const scrollViewRef = useRef<ScrollView>(null);
   
   const [isAddFoodModalVisible, setIsAddFoodModalVisible] = useState(false);
   const [viewMealsModalVisible, setViewMealsModalVisible] = useState(false);
@@ -47,26 +43,6 @@ export default function NutritionScreen() {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   
-  // Get week dates - start from 1 year ago
-  const [selectedWeekStart, setSelectedWeekStart] = useState(() => {
-    const today = new Date();
-    const day = today.getDay();
-    // Go back 1 year to the Sunday of that week
-    const pastDate = new Date(today);
-    pastDate.setFullYear(pastDate.getFullYear() - 1);
-    const pastDay = pastDate.getDay();
-    const diff = pastDate.getDate() - pastDay;
-    const startSunday = new Date(pastDate);
-    startSunday.setDate(diff);
-    return startSunday;
-  });
-
-  // Constants for snapping
-  const DAY_ITEM_WIDTH = 60; // 48px circle + 12px margin-right
-  const WEEK_WIDTH = DAY_ITEM_WIDTH * 7; // Width of one full week (420px)
-  const SCREEN_WIDTH = Dimensions.get("window").width;
-  const PADDING_HORIZONTAL = 16; // px-4 = 16px
-
   // Form state
   const [foodName, setFoodName] = useState("");
   const [calories, setCalories] = useState("");
@@ -122,7 +98,7 @@ export default function NutritionScreen() {
       carbs &&
       fats
     ) {
-      const today = new Date().toISOString().split("T")[0];
+      const dateStr = selectedDate.toISOString().split("T")[0];
       const newFood: FoodItem = {
         id: Date.now().toString(),
         name: foodName,
@@ -130,7 +106,7 @@ export default function NutritionScreen() {
         protein: parseFloat(protein),
         carbs: parseFloat(carbs),
         fats: parseFloat(fats),
-        date: today,
+        date: dateStr,
         meal: selectedMeal,
       };
       addFoodItem(newFood);
@@ -144,43 +120,15 @@ export default function NutritionScreen() {
     }
   };
 
+  // Get 7 days centered around the selected date
   const getWeekDates = () => {
     const dates = [];
-    const today = new Date();
+    const centerOffset = 3; // Show 3 days before and 3 days after selected date
     
-    // Calculate the max date (7 days from today)
-    const maxDate = new Date(today);
-    maxDate.setDate(maxDate.getDate() + 7);
-    const maxDateStr = maxDate.toISOString().split("T")[0];
-    
-    // Generate weeks from selectedWeekStart until we hit the 7-day future limit
-    let weekIndex = 0;
-    let shouldContinue = true;
-    
-    while (shouldContinue && weekIndex < 100) { // Max 100 weeks (~2 years) as safety
-      let weekHasValidDate = false;
-      
-      for (let day = 0; day < 7; day++) {
-        const date = new Date(selectedWeekStart);
-        date.setDate(selectedWeekStart.getDate() + (weekIndex * 7) + day);
-        const dateStr = date.toISOString().split("T")[0];
-        
-        // Check if this date is within the allowed range
-        if (dateStr <= maxDateStr) {
-          weekHasValidDate = true;
-        }
-        
-        dates.push(date);
-      }
-      
-      // If this entire week is beyond the 7-day future limit, stop
-      if (!weekHasValidDate) {
-        // Remove the last 7 dates we just added
-        dates.splice(-7, 7);
-        shouldContinue = false;
-      }
-      
-      weekIndex++;
+    for (let i = -centerOffset; i <= centerOffset; i++) {
+      const date = new Date(selectedDate);
+      date.setDate(selectedDate.getDate() + i);
+      dates.push(date);
     }
     
     return dates;
@@ -277,49 +225,17 @@ export default function NutritionScreen() {
   const targetCarbs = fitnessGoals.targetCarbs || 200;
   const targetFats = fitnessGoals.targetFats || 67;
 
-  const navigateWeek = (direction: "prev" | "next") => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const newDate = new Date(selectedWeekStart);
-    newDate.setDate(newDate.getDate() + (direction === "next" ? 7 : -7));
-    setSelectedWeekStart(newDate);
-  };
-
   const handleDayPress = (date: Date) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSelectedDate(date);
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    });
+  const navigateDay = (direction: "prev" | "next") => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const newDate = new Date(selectedDate);
+    newDate.setDate(selectedDate.getDate() + (direction === "next" ? 1 : -1));
+    setSelectedDate(newDate);
   };
-
-  // Scroll to current week when tab is focused
-  useEffect(() => {
-    if (isFocused && scrollViewRef.current) {
-      const today = new Date();
-      const todaySunday = new Date(today);
-      const day = todaySunday.getDay();
-      todaySunday.setDate(todaySunday.getDate() - day); // Get Sunday of current week
-      
-      // Calculate number of weeks between selectedWeekStart and today's week
-      const timeDiff = todaySunday.getTime() - selectedWeekStart.getTime();
-      const weeksDiff = Math.floor(timeDiff / (7 * 24 * 60 * 60 * 1000));
-      
-      const scrollToX = weeksDiff * WEEK_WIDTH;
-      
-      // Delay to ensure ScrollView is mounted
-      setTimeout(() => {
-        scrollViewRef.current?.scrollTo({
-          x: scrollToX,
-          animated: true,
-        });
-      }, 100);
-    }
-  }, [isFocused]);
 
   return (
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
@@ -364,110 +280,133 @@ export default function NutritionScreen() {
           </View>
         </View>
 
-        {/* Week Calendar - Horizontal Scroll */}
-        <View className="mb-3">
-          <ScrollView
-            ref={scrollViewRef}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="px-4"
-            contentContainerStyle={{ paddingRight: 16 }}
-            snapToInterval={WEEK_WIDTH}
-            decelerationRate="fast"
-            snapToAlignment="start"
-          >
-            {getWeekDates().map((date, index) => {
-              const isToday =
-                date.toISOString().split("T")[0] ===
-                new Date().toISOString().split("T")[0];
-              const isSelected = 
-                date.toISOString().split("T")[0] ===
-                selectedDate.toISOString().split("T")[0];
-              const dayTotals = getDayTotals(date);
-              const hasData = dayTotals.calories > 0;
-              const metGoal = dayTotals.calories >= targetCalories;
-              const missedGoal = hasData && !metGoal; // Has data but didn't meet goal
-              
-              return (
-                <Pressable
-                  key={index}
-                  onPress={() => handleDayPress(date)}
-                  className="items-center mr-3"
-                >
-                  <Text
-                    className={cn(
-                      "text-xs mb-1",
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    )}
+        {/* Week Calendar - 7 Days Fixed */}
+        <View className="mb-3 px-4">
+          <View className="flex-row justify-between items-center">
+            {/* Left Arrow */}
+            <Pressable
+              onPress={() => navigateDay("prev")}
+              className="p-2"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons 
+                name="chevron-back" 
+                size={24} 
+                color={isDark ? "#9ca3af" : "#6b7280"} 
+              />
+            </Pressable>
+
+            {/* Days */}
+            <View className="flex-1 flex-row justify-between px-2">
+              {getWeekDates().map((date, index) => {
+                const isToday =
+                  date.toISOString().split("T")[0] ===
+                  new Date().toISOString().split("T")[0];
+                const isSelected = 
+                  date.toISOString().split("T")[0] ===
+                  selectedDate.toISOString().split("T")[0];
+                const dayTotals = getDayTotals(date);
+                const hasData = dayTotals.calories > 0;
+                const metGoal = dayTotals.calories >= targetCalories;
+                const missedGoal = hasData && !metGoal;
+                
+                return (
+                  <Pressable
+                    key={index}
+                    onPress={() => handleDayPress(date)}
+                    className="items-center"
+                    style={{ width: 48 }}
                   >
-                    {date.toLocaleDateString("en-US", { weekday: "short" })}
-                  </Text>
-                  <View className="relative items-center justify-center">
-                    {/* Outer dotted/solid circle */}
-                    <View
-                      className="absolute w-12 h-12 rounded-full items-center justify-center"
-                      style={{
-                        borderWidth: 2,
-                        borderStyle: missedGoal ? "solid" : "dashed",
-                        borderColor: missedGoal
-                          ? "#ef4444"
-                          : metGoal
-                          ? "#22c55e"
-                          : isDark
-                          ? "#4b5563"
-                          : "#d1d5db",
-                      }}
-                    />
-                    {/* Inner solid circle */}
-                    <View
+                    <Text
                       className={cn(
-                        "w-10 h-10 rounded-full items-center justify-center",
-                        isSelected
-                          ? "bg-blue-500"
-                          : metGoal
-                          ? "bg-green-500"
-                          : isDark
-                          ? "bg-[#1a1a1a]"
-                          : "bg-gray-100"
+                        "text-xs mb-1 font-medium",
+                        isDark ? "text-gray-400" : "text-gray-600"
                       )}
-                      style={{
-                        shadowColor: isSelected
-                          ? "#3b82f6"
-                          : metGoal
-                          ? "#22c55e"
-                          : "transparent",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.3,
-                        shadowRadius: 4,
-                        elevation: 3,
-                      }}
                     >
-                      <Text
-                        className={cn(
-                          "text-lg font-bold",
-                          isSelected || metGoal
-                            ? "text-white"
+                      {date.toLocaleDateString("en-US", { weekday: "short" }).slice(0, 3)}
+                    </Text>
+                    <View className="relative items-center justify-center">
+                      {/* Outer ring */}
+                      <View
+                        className="absolute w-12 h-12 rounded-full items-center justify-center"
+                        style={{
+                          borderWidth: 2,
+                          borderStyle: missedGoal ? "solid" : "dashed",
+                          borderColor: missedGoal
+                            ? "#ef4444"
+                            : metGoal
+                            ? "#22c55e"
+                            : isToday
+                            ? "#3b82f6"
                             : isDark
-                            ? "text-white"
-                            : "text-gray-900"
+                            ? "#4b5563"
+                            : "#d1d5db",
+                        }}
+                      />
+                      {/* Inner circle */}
+                      <View
+                        className={cn(
+                          "w-10 h-10 rounded-full items-center justify-center",
+                          isSelected
+                            ? "bg-blue-500"
+                            : metGoal
+                            ? "bg-green-500"
+                            : isDark
+                            ? "bg-[#1a1a1a]"
+                            : "bg-white"
                         )}
+                        style={{
+                          shadowColor: isSelected
+                            ? "#3b82f6"
+                            : metGoal
+                            ? "#22c55e"
+                            : "transparent",
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                          elevation: 3,
+                        }}
                       >
-                        {date.getDate()}
-                      </Text>
+                        <Text
+                          className={cn(
+                            "text-base font-bold",
+                            isSelected || metGoal
+                              ? "text-white"
+                              : isDark
+                              ? "text-white"
+                              : "text-gray-900"
+                          )}
+                        >
+                          {date.getDate()}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                  <Text
-                    className={cn(
-                      "text-xs mt-1",
-                      isDark ? "text-gray-500" : "text-gray-500"
-                    )}
-                  >
-                    {date.toLocaleDateString("en-US", { month: "short" })}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </ScrollView>
+                    <Text
+                      className={cn(
+                        "text-xs mt-1 font-medium",
+                        isDark ? "text-gray-500" : "text-gray-500"
+                      )}
+                    >
+                      {date.toLocaleDateString("en-US", { month: "short" })}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            {/* Right Arrow */}
+            <Pressable
+              onPress={() => navigateDay("next")}
+              className="p-2"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons 
+                name="chevron-forward" 
+                size={24} 
+                color={isDark ? "#9ca3af" : "#6b7280"} 
+              />
+            </Pressable>
+          </View>
         </View>
 
         {/* Calorie Counter Card */}
