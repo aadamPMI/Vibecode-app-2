@@ -27,14 +27,24 @@ export interface PrivacySettings {
   publicProfile: boolean;
 }
 
+export interface PreferencesSettings {
+  badgeCelebrations: boolean;
+  liveActivity: boolean;
+  addBurnedCalories: boolean;
+  rolloverCalories: boolean;
+  autoAdjustMacros: boolean;
+}
+
 interface SettingsStore {
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
   profileSettings: ProfileSettings;
   privacySettings: PrivacySettings;
+  preferencesSettings: PreferencesSettings;
   fitnessGoals: FitnessGoals;
-  setTheme: (theme: "light" | "dark") => void;
+  setTheme: (theme: "light" | "dark" | "system") => void;
   updateProfileSettings: (settings: Partial<ProfileSettings>) => void;
   updatePrivacySettings: (settings: Partial<PrivacySettings>) => void;
+  updatePreferencesSettings: (settings: Partial<PreferencesSettings>) => void;
   updateFitnessGoals: (goals: Partial<FitnessGoals>) => void;
 }
 
@@ -48,6 +58,13 @@ export const useSettingsStore = create<SettingsStore>()(
       privacySettings: {
         shareProgress: true,
         publicProfile: true,
+      },
+      preferencesSettings: {
+        badgeCelebrations: false,
+        liveActivity: false,
+        addBurnedCalories: false,
+        rolloverCalories: true,
+        autoAdjustMacros: true,
       },
       fitnessGoals: {
         targetCalories: 2000,
@@ -64,6 +81,10 @@ export const useSettingsStore = create<SettingsStore>()(
       updatePrivacySettings: (settings) =>
         set((state) => ({
           privacySettings: { ...state.privacySettings, ...settings },
+        })),
+      updatePreferencesSettings: (settings) =>
+        set((state) => ({
+          preferencesSettings: { ...state.preferencesSettings, ...settings },
         })),
       updateFitnessGoals: (goals) =>
         set((state) => ({

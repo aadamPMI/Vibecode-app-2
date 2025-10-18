@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,12 +23,16 @@ export default function SettingsScreen() {
   const setTheme = useSettingsStore((s) => s.setTheme);
   const profileSettings = useSettingsStore((s) => s.profileSettings);
   const privacySettings = useSettingsStore((s) => s.privacySettings);
+  const preferencesSettings = useSettingsStore((s) => s.preferencesSettings);
   const fitnessGoals = useSettingsStore((s) => s.fitnessGoals);
   const updateProfileSettings = useSettingsStore((s) => s.updateProfileSettings);
   const updatePrivacySettings = useSettingsStore((s) => s.updatePrivacySettings);
+  const updatePreferencesSettings = useSettingsStore((s) => s.updatePreferencesSettings);
   const updateFitnessGoals = useSettingsStore((s) => s.updateFitnessGoals);
 
-  const isDark = theme === "dark";
+  const systemColorScheme = useColorScheme();
+  const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
+  const isDark = resolvedTheme === "dark";
   const [activeSection, setActiveSection] = useState<
     "profile" | "privacy" | "display" | "goals" | "notifications" | "weight" | "language" | null
   >(null);
@@ -398,6 +403,174 @@ export default function SettingsScreen() {
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
             </Pressable>
+          </View>
+
+          {/* Preferences Card */}
+          <View
+            className={cn("rounded-3xl overflow-hidden mb-6", isDark ? "bg-white/5" : "bg-white")}
+            style={{
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 12,
+              elevation: 4,
+            }}
+          >
+            {/* Preferences Header */}
+            <View className="flex-row items-center p-5 border-b border-gray-200/10">
+              <Ionicons name="settings-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-xl font-bold ml-3", isDark ? "text-white" : "text-black")}>
+                Preferences
+              </Text>
+            </View>
+
+            {/* Appearance */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // Cycle through theme options
+                if (theme === "light") {
+                  setTheme("dark");
+                } else if (theme === "dark") {
+                  setTheme("system");
+                } else {
+                  setTheme("light");
+                }
+              }}
+              className="px-5 py-4 border-b border-gray-200/10"
+            >
+              <View className="flex-row justify-between items-center">
+                <View className="flex-1">
+                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                    Appearance
+                  </Text>
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Choose light, dark, or system appearance
+                  </Text>
+                </View>
+                <View className="flex-row items-center">
+                  <Text className={cn("text-base mr-2", isDark ? "text-white" : "text-black")}>
+                    {theme === "light" ? "Light" : theme === "dark" ? "Dark" : "System"}
+                  </Text>
+                  <Ionicons name="chevron-down" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+                </View>
+              </View>
+            </Pressable>
+
+            {/* Badge celebrations */}
+            <View className="px-5 py-4 border-b border-gray-200/10">
+              <View className="flex-row justify-between items-center">
+                <View className="flex-1 mr-4">
+                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                    Badge celebrations
+                  </Text>
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Show a full-screen badge animation when you unlock a new badge
+                  </Text>
+                </View>
+                <Switch
+                  value={preferencesSettings.badgeCelebrations}
+                  onValueChange={(value) => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    updatePreferencesSettings({ badgeCelebrations: value });
+                  }}
+                  trackColor={{ false: "#767577", true: "#3b82f6" }}
+                  thumbColor="#ffffff"
+                />
+              </View>
+            </View>
+
+            {/* Live activity */}
+            <View className="px-5 py-4 border-b border-gray-200/10">
+              <View className="flex-row justify-between items-center">
+                <View className="flex-1 mr-4">
+                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                    Live activity
+                  </Text>
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Show your daily calories and macros on your lock screen and dynamic island
+                  </Text>
+                </View>
+                <Switch
+                  value={preferencesSettings.liveActivity}
+                  onValueChange={(value) => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    updatePreferencesSettings({ liveActivity: value });
+                  }}
+                  trackColor={{ false: "#767577", true: "#3b82f6" }}
+                  thumbColor="#ffffff"
+                />
+              </View>
+            </View>
+
+            {/* Add burned calories */}
+            <View className="px-5 py-4 border-b border-gray-200/10">
+              <View className="flex-row justify-between items-center">
+                <View className="flex-1 mr-4">
+                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                    Add burned calories
+                  </Text>
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Add burned calories back to daily goal
+                  </Text>
+                </View>
+                <Switch
+                  value={preferencesSettings.addBurnedCalories}
+                  onValueChange={(value) => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    updatePreferencesSettings({ addBurnedCalories: value });
+                  }}
+                  trackColor={{ false: "#767577", true: "#3b82f6" }}
+                  thumbColor="#ffffff"
+                />
+              </View>
+            </View>
+
+            {/* Rollover calories */}
+            <View className="px-5 py-4 border-b border-gray-200/10">
+              <View className="flex-row justify-between items-center">
+                <View className="flex-1 mr-4">
+                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                    Rollover calories
+                  </Text>
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Add up to 200 left over calories from yesterday into {"today's"} daily goal
+                  </Text>
+                </View>
+                <Switch
+                  value={preferencesSettings.rolloverCalories}
+                  onValueChange={(value) => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    updatePreferencesSettings({ rolloverCalories: value });
+                  }}
+                  trackColor={{ false: "#767577", true: "#3b82f6" }}
+                  thumbColor="#ffffff"
+                />
+              </View>
+            </View>
+
+            {/* Auto adjust macros */}
+            <View className="px-5 py-4">
+              <View className="flex-row justify-between items-center">
+                <View className="flex-1 mr-4">
+                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                    Auto adjust macros
+                  </Text>
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    When editing calories or macronutrients, automatically adjust the other values proportionally
+                  </Text>
+                </View>
+                <Switch
+                  value={preferencesSettings.autoAdjustMacros}
+                  onValueChange={(value) => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    updatePreferencesSettings({ autoAdjustMacros: value });
+                  }}
+                  trackColor={{ false: "#767577", true: "#3b82f6" }}
+                  thumbColor="#ffffff"
+                />
+              </View>
+            </View>
           </View>
         </View>
       </ScrollView>

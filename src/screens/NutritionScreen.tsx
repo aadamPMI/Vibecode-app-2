@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   Dimensions,
+  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -33,7 +34,9 @@ export default function NutritionScreen() {
   const deleteFoodItem = useNutritionStore((s) => s.deleteFoodItem);
   const updateFoodItem = useNutritionStore((s) => s.updateFoodItem);
   
-  const isDark = theme === "dark";
+  const systemColorScheme = useColorScheme();
+  const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
+  const isDark = resolvedTheme === "dark";
   const isFocused = useIsFocused();
   const scrollViewRef = useRef<ScrollView>(null);
   

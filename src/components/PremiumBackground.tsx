@@ -1,14 +1,18 @@
 import React from "react";
-import { View } from "react-native";
+import { View, useColorScheme } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface PremiumBackgroundProps {
-  theme: "dark" | "light";
+  theme: "dark" | "light" | "system";
   variant?: "workout" | "nutrition" | "community" | "settings";
 }
 
 export function PremiumBackground({ theme, variant = "workout" }: PremiumBackgroundProps) {
-  const isDark = theme === "dark";
+  const systemColorScheme = useColorScheme();
+  
+  // Resolve theme: if system, use device preference; otherwise use explicit theme
+  const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
+  const isDark = resolvedTheme === "dark";
 
   const getGradientColors = () => {
     if (isDark) {

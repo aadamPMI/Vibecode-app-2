@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  useColorScheme,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -48,7 +49,9 @@ export default function WorkoutScreen() {
   const currentUserId = useCommunityStore((s) => s.currentUserId);
   const currentUserName = useCommunityStore((s) => s.currentUserName);
   
-  const isDark = theme === "dark";
+  const systemColorScheme = useColorScheme();
+  const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
+  const isDark = resolvedTheme === "dark";
   const [activeView, setActiveView] = useState<"active" | "programs" | "history" | "stats" | null>(null);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
   const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
