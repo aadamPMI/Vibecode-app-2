@@ -8,12 +8,14 @@ import {
   Switch,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useSettingsStore } from "../state/settingsStore";
 import { cn } from "../utils/cn";
+import { PremiumBackground } from "../components/PremiumBackground";
 
 export default function SettingsScreen() {
   const theme = useSettingsStore((s) => s.theme);
@@ -27,7 +29,7 @@ export default function SettingsScreen() {
 
   const isDark = theme === "dark";
   const [activeSection, setActiveSection] = useState<
-    "profile" | "privacy" | "display" | "goals" | "notifications" | null
+    "profile" | "privacy" | "display" | "goals" | "notifications" | "weight" | "language" | null
   >(null);
 
   // Profile form state
@@ -86,16 +88,17 @@ export default function SettingsScreen() {
     setActiveSection(null);
   };
 
-  // If a section is open, show its detail view
-  if (activeSection) {
+  // If a section is open, show detail view (keeping existing detail views)
+  if (activeSection && activeSection !== null) {
     return (
-      <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
+      <SafeAreaView className="flex-1">
+        <PremiumBackground theme={theme} variant="settings" />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
           {/* Header */}
-          <View className="px-4 pt-4 pb-3 border-b border-gray-200">
+          <View className="px-4 pt-4 pb-3 border-b border-gray-200/20">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center flex-1">
                 <Pressable
@@ -117,33 +120,24 @@ export default function SettingsScreen() {
                     isDark ? "text-white" : "text-gray-900"
                   )}
                 >
-                  {activeSection === "profile" && "Profile Settings"}
-                  {activeSection === "privacy" && "Privacy Settings"}
-                  {activeSection === "display" && "Display Settings"}
-                  {activeSection === "goals" && "Goals Settings"}
-                  {activeSection === "notifications" && "Notifications"}
+                  {activeSection === "profile" && "Personal details"}
+                  {activeSection === "goals" && "Edit nutrition goals"}
+                  {activeSection === "weight" && "Goals & current weight"}
+                  {activeSection === "language" && "Language"}
                 </Text>
               </View>
             </View>
           </View>
 
           <ScrollView className="flex-1 px-4 pt-4" keyboardShouldPersistTaps="handled">
-            {/* Profile Settings Content */}
+            {/* Existing detail view content */}
             {activeSection === "profile" && (
-              <View
-                className={cn(
-                  "rounded-3xl p-6 mb-6",
-                  isDark ? "bg-[#0a0a0a]/50 border border-gray-700/50" : "bg-gray-100 border border-gray-200"
-                )}
-              >
-                {/* Username */}
+              <View className={cn(
+                "rounded-3xl p-6 mb-6",
+                isDark ? "bg-white/5" : "bg-white"
+              )}>
                 <View className="mb-6">
-                  <Text
-                    className={cn(
-                      "text-base font-semibold mb-3",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
+                  <Text className={cn("text-base font-semibold mb-3", isDark ? "text-gray-300" : "text-gray-700")}>
                     Username
                   </Text>
                   <TextInput
@@ -151,293 +145,34 @@ export default function SettingsScreen() {
                     onChangeText={setName}
                     placeholder="Enter username"
                     placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-2xl p-4 text-lg",
-                      isDark
-                        ? "bg-black/40 text-white border border-gray-700/30"
-                        : "bg-white text-gray-900 border border-gray-300"
-                    )}
+                    className={cn("rounded-2xl p-4 text-lg", isDark ? "bg-black/40 text-white border border-gray-700/30" : "bg-white text-gray-900 border border-gray-300")}
                   />
                 </View>
-
-                {/* Email */}
+                
                 <View className="mb-6">
-                  <Text
-                    className={cn(
-                      "text-base font-semibold mb-3",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
-                    Email
+                  <Text className={cn("text-base font-semibold mb-3", isDark ? "text-gray-300" : "text-gray-700")}>
+                    Age
                   </Text>
                   <TextInput
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="Enter email"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
+                    value={age}
+                    onChangeText={setAge}
+                    placeholder="25"
+                    keyboardType="numeric"
                     placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-2xl p-4 text-lg",
-                      isDark
-                        ? "bg-black/40 text-white border border-gray-700/30"
-                        : "bg-white text-gray-900 border border-gray-300"
-                    )}
+                    className={cn("rounded-2xl p-4 text-lg", isDark ? "bg-black/40 text-white border border-gray-700/30" : "bg-white text-gray-900 border border-gray-300")}
                   />
                 </View>
 
-                {/* Height and Age Row */}
-                <View className="flex-row mb-6">
-                  <View className="flex-1 mr-3">
-                    <Text
-                      className={cn(
-                        "text-base font-semibold mb-3",
-                        isDark ? "text-gray-300" : "text-gray-700"
-                      )}
-                    >
-                      Height (cm)
-                    </Text>
-                    <TextInput
-                      value={height}
-                      onChangeText={setHeight}
-                      placeholder="170"
-                      keyboardType="numeric"
-                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                      className={cn(
-                        "rounded-2xl p-4 text-lg",
-                        isDark
-                          ? "bg-black/40 text-white border border-gray-700/30"
-                          : "bg-white text-gray-900 border border-gray-300"
-                      )}
-                    />
-                  </View>
-
-                  <View className="flex-1 ml-3">
-                    <Text
-                      className={cn(
-                        "text-base font-semibold mb-3",
-                        isDark ? "text-gray-300" : "text-gray-700"
-                      )}
-                    >
-                      Age
-                    </Text>
-                    <TextInput
-                      value={age}
-                      onChangeText={setAge}
-                      placeholder="25"
-                      keyboardType="numeric"
-                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                      className={cn(
-                        "rounded-2xl p-4 text-lg",
-                        isDark
-                          ? "bg-black/40 text-white border border-gray-700/30"
-                          : "bg-white text-gray-900 border border-gray-300"
-                      )}
-                    />
-                  </View>
-                </View>
-
-                {/* Gender */}
-                <View className="mb-6">
-                  <Text
-                    className={cn(
-                      "text-base font-semibold mb-3",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
-                    Gender
-                  </Text>
-                  <View
-                    className={cn(
-                      "rounded-2xl p-4 flex-row justify-between items-center",
-                      isDark
-                        ? "bg-black/40 border border-gray-700/30"
-                        : "bg-white border border-gray-300"
-                    )}
-                  >
-                    <Text
-                      className={cn(
-                        "text-lg",
-                        isDark ? "text-white" : "text-gray-900"
-                      )}
-                    >
-                      {profileSettings.gender === "male" ? "Male" : profileSettings.gender === "female" ? "Female" : "Other"}
-                    </Text>
-                    <Ionicons name="chevron-down" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
-                  </View>
-                </View>
-
-                {/* Save Button */}
-                <Pressable
-                  onPress={handleSaveProfile}
-                  className="bg-blue-500 py-4 rounded-2xl"
-                  style={{
-                    shadowColor: "#3b82f6",
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 8,
-                    elevation: 8,
-                  }}
-                >
-                  <Text className="text-white font-bold text-center text-lg">
-                    Save Profile Changes
-                  </Text>
+                <Pressable onPress={handleSaveProfile} className="bg-blue-500 py-4 rounded-2xl">
+                  <Text className="text-white font-bold text-center text-lg">Save Changes</Text>
                 </Pressable>
               </View>
             )}
 
-            {/* Privacy Settings Content */}
-            {activeSection === "privacy" && (
-              <View>
-                <View
-                  className={cn(
-                    "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
-                  )}
-                >
-                  <Text
-                    className={cn(
-                      "text-base font-semibold flex-1",
-                      isDark ? "text-white" : "text-gray-900"
-                    )}
-                  >
-                    Share Progress
-                  </Text>
-                  <Switch
-                    value={privacySettings.shareProgress}
-                    onValueChange={(value) => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      updatePrivacySettings({ shareProgress: value });
-                    }}
-                    trackColor={{ false: "#767577", true: "#3b82f6" }}
-                    thumbColor="#ffffff"
-                  />
-                </View>
-
-                <View
-                  className={cn(
-                    "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
-                  )}
-                >
-                  <Text
-                    className={cn(
-                      "text-base font-semibold flex-1",
-                      isDark ? "text-white" : "text-gray-900"
-                    )}
-                  >
-                    Public Profile
-                  </Text>
-                  <Switch
-                    value={privacySettings.publicProfile}
-                    onValueChange={(value) => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      updatePrivacySettings({ publicProfile: value });
-                    }}
-                    trackColor={{ false: "#767577", true: "#3b82f6" }}
-                    thumbColor="#ffffff"
-                  />
-                </View>
-              </View>
-            )}
-
-            {/* Display Settings Content */}
-            {activeSection === "display" && (
-              <View>
-                <View
-                  className={cn(
-                    "rounded-2xl p-4 mb-4 flex-row justify-between items-center",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
-                  )}
-                >
-                  <Text
-                    className={cn(
-                      "text-base font-semibold flex-1",
-                      isDark ? "text-white" : "text-gray-900"
-                    )}
-                  >
-                    Dark Mode
-                  </Text>
-                  <Switch
-                    value={isDark}
-                    onValueChange={(value) => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                      setTheme(value ? "dark" : "light");
-                    }}
-                    trackColor={{ false: "#767577", true: "#3b82f6" }}
-                    thumbColor="#ffffff"
-                  />
-                </View>
-
-                <Text
-                  className={cn(
-                    "text-sm px-2 mt-2",
-                    isDark ? "text-gray-400" : "text-gray-600"
-                  )}
-                >
-                  Theme and appearance options
-                </Text>
-              </View>
-            )}
-
-            {/* Goals Settings Content */}
             {activeSection === "goals" && (
               <View>
                 <View className="mb-4">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
-                    Fitness Goal
-                  </Text>
-                  <View className="flex-row flex-wrap">
-                    {[
-                      { key: "lose_weight" as const, label: "Lose Weight" },
-                      { key: "gain_muscle" as const, label: "Gain Muscle" },
-                      { key: "maintain" as const, label: "Maintain" },
-                      { key: "general_fitness" as const, label: "General Fitness" },
-                    ].map((goal) => (
-                      <Pressable
-                        key={goal.key}
-                        onPress={() => {
-                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                          setSelectedGoal(goal.key);
-                        }}
-                        className={cn(
-                          "px-4 py-2 rounded-full mr-2 mb-2",
-                          selectedGoal === goal.key
-                            ? "bg-blue-500"
-                            : isDark
-                            ? "bg-[#1a1a1a]"
-                            : "bg-gray-100"
-                        )}
-                      >
-                        <Text
-                          className={cn(
-                            "text-sm font-semibold",
-                            selectedGoal === goal.key
-                              ? "text-white"
-                              : isDark
-                              ? "text-gray-300"
-                              : "text-gray-700"
-                          )}
-                        >
-                          {goal.label}
-                        </Text>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
-
-                <View className="mb-4">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
+                  <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
                     Daily Calorie Target
                   </Text>
                   <TextInput
@@ -446,22 +181,12 @@ export default function SettingsScreen() {
                     placeholder="2000"
                     keyboardType="numeric"
                     placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-xl p-4 text-base",
-                      isDark
-                        ? "bg-[#0a0a0a] text-white"
-                        : "bg-gray-100 text-gray-900"
-                    )}
+                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-white/5 text-white" : "bg-gray-100 text-gray-900")}
                   />
                 </View>
 
                 <View className="mb-4">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
+                  <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
                     Daily Protein Target (g)
                   </Text>
                   <TextInput
@@ -470,22 +195,12 @@ export default function SettingsScreen() {
                     placeholder="150"
                     keyboardType="numeric"
                     placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-xl p-4 text-base",
-                      isDark
-                        ? "bg-[#0a0a0a] text-white"
-                        : "bg-gray-100 text-gray-900"
-                    )}
+                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-white/5 text-white" : "bg-gray-100 text-gray-900")}
                   />
                 </View>
 
                 <View className="mb-4">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
+                  <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
                     Daily Carbs Target (g)
                   </Text>
                   <TextInput
@@ -494,22 +209,12 @@ export default function SettingsScreen() {
                     placeholder="200"
                     keyboardType="numeric"
                     placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-xl p-4 text-base",
-                      isDark
-                        ? "bg-[#0a0a0a] text-white"
-                        : "bg-gray-100 text-gray-900"
-                    )}
+                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-white/5 text-white" : "bg-gray-100 text-gray-900")}
                   />
                 </View>
 
-                <View className="mb-4">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
+                <View className="mb-6">
+                  <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
                     Daily Fats Target (g)
                   </Text>
                   <TextInput
@@ -518,154 +223,13 @@ export default function SettingsScreen() {
                     placeholder="65"
                     keyboardType="numeric"
                     placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-xl p-4 text-base",
-                      isDark
-                        ? "bg-[#0a0a0a] text-white"
-                        : "bg-gray-100 text-gray-900"
-                    )}
+                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-white/5 text-white" : "bg-gray-100 text-gray-900")}
                   />
                 </View>
 
-                <View className="mb-6">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
-                    Weekly Workout Goal
-                  </Text>
-                  <TextInput
-                    value={weeklyWorkouts}
-                    onChangeText={setWeeklyWorkouts}
-                    placeholder="4"
-                    keyboardType="numeric"
-                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn(
-                      "rounded-xl p-4 text-base",
-                      isDark
-                        ? "bg-[#0a0a0a] text-white"
-                        : "bg-gray-100 text-gray-900"
-                    )}
-                  />
-                </View>
-
-                <Pressable
-                  onPress={handleSaveGoals}
-                  className="bg-blue-500 py-4 rounded-2xl mb-6"
-                >
-                  <Text className="text-white font-bold text-center text-base">
-                    Save Goals
-                  </Text>
+                <Pressable onPress={handleSaveGoals} className="bg-blue-500 py-4 rounded-2xl mb-6">
+                  <Text className="text-white font-bold text-center text-base">Save Goals</Text>
                 </Pressable>
-              </View>
-            )}
-
-            {/* Notifications Content */}
-            {activeSection === "notifications" && (
-              <View>
-                <View
-                  className={cn(
-                    "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
-                  )}
-                >
-                  <View className="flex-row justify-between items-center mb-4">
-                    <Text
-                      className={cn(
-                        "text-base font-semibold flex-1",
-                        isDark ? "text-white" : "text-gray-900"
-                      )}
-                    >
-                      Workout Reminders
-                    </Text>
-                    <Switch
-                      value={true}
-                      onValueChange={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      }}
-                      trackColor={{ false: "#767577", true: "#3b82f6" }}
-                      thumbColor="#ffffff"
-                    />
-                  </View>
-                  <Text
-                    className={cn(
-                      "text-sm",
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    )}
-                  >
-                    Get notified about your scheduled workouts
-                  </Text>
-                </View>
-
-                <View
-                  className={cn(
-                    "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
-                  )}
-                >
-                  <View className="flex-row justify-between items-center mb-4">
-                    <Text
-                      className={cn(
-                        "text-base font-semibold flex-1",
-                        isDark ? "text-white" : "text-gray-900"
-                      )}
-                    >
-                      Meal Tracking
-                    </Text>
-                    <Switch
-                      value={true}
-                      onValueChange={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      }}
-                      trackColor={{ false: "#767577", true: "#3b82f6" }}
-                      thumbColor="#ffffff"
-                    />
-                  </View>
-                  <Text
-                    className={cn(
-                      "text-sm",
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    )}
-                  >
-                    Reminders to log your meals
-                  </Text>
-                </View>
-
-                <View
-                  className={cn(
-                    "rounded-2xl p-4 mb-4",
-                    isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
-                  )}
-                >
-                  <View className="flex-row justify-between items-center mb-4">
-                    <Text
-                      className={cn(
-                        "text-base font-semibold flex-1",
-                        isDark ? "text-white" : "text-gray-900"
-                      )}
-                    >
-                      Community Updates
-                    </Text>
-                    <Switch
-                      value={false}
-                      onValueChange={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                      }}
-                      trackColor={{ false: "#767577", true: "#3b82f6" }}
-                      thumbColor="#ffffff"
-                    />
-                  </View>
-                  <Text
-                    className={cn(
-                      "text-sm",
-                      isDark ? "text-gray-400" : "text-gray-600"
-                    )}
-                  >
-                    Get notified about community posts and activity
-                  </Text>
-                </View>
               </View>
             )}
           </ScrollView>
@@ -674,305 +238,167 @@ export default function SettingsScreen() {
     );
   }
 
-  // Main Settings Menu
+  // Main Settings Screen - Redesigned to match image
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
+    <SafeAreaView className="flex-1">
+      <PremiumBackground theme={theme} variant="settings" />
       <ScrollView className="flex-1">
         {/* Header */}
-        <View className="px-4 pt-4 pb-4">
-          <Text
-            className={cn(
-              "text-3xl font-bold",
-              isDark ? "text-white" : "text-gray-900"
-            )}
-          >
-            GainAI
-          </Text>
-          <Text
-            className={cn(
-              "text-sm mt-1",
-              isDark ? "text-gray-400" : "text-gray-600"
-            )}
-          >
+        <View className="px-6 pt-6 pb-6">
+          <Text className={cn("text-5xl font-bold", isDark ? "text-white" : "text-black")}>
             Settings
           </Text>
         </View>
 
-        <View className="px-4">
-          {/* Profile Settings Card */}
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveSection("profile");
-            }}
-            className={cn(
-              "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
-            )}
+        <View className="px-6">
+          {/* Profile Card */}
+          <View
+            className={cn("rounded-3xl p-6 mb-6 flex-row items-center", isDark ? "bg-white/5" : "bg-white")}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
               shadowRadius: 12,
-              elevation: 8,
+              elevation: 4,
             }}
           >
-            <View 
-              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-blue-100"
-              style={{
-                shadowColor: "#3b82f6",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4,
-              }}
+            {/* Avatar Circle */}
+            <View
+              className="w-20 h-20 rounded-full mr-4 items-center justify-center"
+              style={{ backgroundColor: "#4A6FA5" }}
             >
-              <Ionicons name="person" size={28} color="#3b82f6" />
+              <Text className="text-white text-2xl font-bold">
+                {profileSettings.name ? profileSettings.name[0].toUpperCase() : "A"}
+              </Text>
             </View>
+            
+            {/* Name and Age */}
             <View className="flex-1">
-              <Text
-                className={cn(
-                  "text-xl font-bold mb-1",
-                  isDark ? "text-white" : "text-gray-900"
-                )}
-              >
-                Profile Settings
+              <Text className={cn("text-2xl font-bold mb-1", isDark ? "text-white" : "text-black")}>
+                {profileSettings.name || "Aadam"}
               </Text>
-              <Text
-                className={cn(
-                  "text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                Manage your personal information
+              <Text className={cn("text-base", isDark ? "text-gray-400" : "text-gray-600")}>
+                {profileSettings.age || "18"} years old
               </Text>
             </View>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={isDark ? "#9ca3af" : "#6b7280"}
-            />
-          </Pressable>
+          </View>
 
-          {/* Privacy Settings Card */}
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveSection("privacy");
-            }}
-            className={cn(
-              "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
-            )}
+          {/* Invite Friends Card */}
+          <View
+            className={cn("rounded-3xl p-6 mb-6", isDark ? "bg-white/5" : "bg-white")}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
               shadowRadius: 12,
-              elevation: 8,
+              elevation: 4,
             }}
           >
-            <View 
-              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-purple-100"
-              style={{
-                shadowColor: "#a855f7",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4,
-              }}
-            >
-              <Ionicons name="shield-checkmark" size={28} color="#a855f7" />
-            </View>
-            <View className="flex-1">
-              <Text
-                className={cn(
-                  "text-xl font-bold mb-1",
-                  isDark ? "text-white" : "text-gray-900"
-                )}
-              >
-                Privacy Settings
-              </Text>
-              <Text
-                className={cn(
-                  "text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                Control your data and visibility
+            <View className="flex-row items-center mb-4">
+              <Ionicons name="people-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg font-semibold ml-2", isDark ? "text-white" : "text-black")}>
+                Invite friends
               </Text>
             </View>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={isDark ? "#9ca3af" : "#6b7280"}
-            />
-          </Pressable>
 
-          {/* Display Settings Card */}
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveSection("display");
-            }}
-            className={cn(
-              "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
-            )}
-            style={{
-              shadowColor: isDark ? "#000" : "#1f2937",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: isDark ? 0.6 : 0.25,
-              shadowRadius: 12,
-              elevation: 8,
-            }}
-          >
-            <View 
-              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-cyan-100"
-              style={{
-                shadowColor: "#06b6d4",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4,
-              }}
-            >
-              <Ionicons name="color-palette" size={28} color="#06b6d4" />
-            </View>
-            <View className="flex-1">
-              <Text
-                className={cn(
-                  "text-xl font-bold mb-1",
-                  isDark ? "text-white" : "text-gray-900"
-                )}
-              >
-                Display Settings
+            {/* Image Banner */}
+            <View className="rounded-2xl overflow-hidden bg-gray-800 h-48 items-center justify-center">
+              <Text className="text-white text-xl font-bold text-center px-6 mb-2">
+                The journey is easier together
               </Text>
-              <Text
-                className={cn(
-                  "text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                Theme and appearance options
-              </Text>
+              <View className="bg-white rounded-full px-6 py-3 mt-2">
+                <Text className="text-black font-semibold">
+                  Earn $10 for each friend referred
+                </Text>
+              </View>
             </View>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={isDark ? "#9ca3af" : "#6b7280"}
-            />
-          </Pressable>
+          </View>
 
-          {/* Goals Settings Card */}
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveSection("goals");
-            }}
-            className={cn(
-              "rounded-3xl p-5 mb-4 flex-row items-center",
-              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
-            )}
+          {/* Settings Menu Card */}
+          <View
+            className={cn("rounded-3xl overflow-hidden mb-6", isDark ? "bg-white/5" : "bg-white")}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
               shadowRadius: 12,
-              elevation: 8,
+              elevation: 4,
             }}
           >
-            <View 
-              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-green-100"
-              style={{
-                shadowColor: "#22c55e",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4,
+            {/* Personal details */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setActiveSection("profile");
               }}
+              className="flex-row items-center p-5 border-b border-gray-200/10"
             >
-              <Ionicons name="trophy" size={28} color="#22c55e" />
-            </View>
-            <View className="flex-1">
-              <Text
-                className={cn(
-                  "text-xl font-bold mb-1",
-                  isDark ? "text-white" : "text-gray-900"
-                )}
-              >
-                Goals Settings
+              <Ionicons name="id-card-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Personal details
               </Text>
-              <Text
-                className={cn(
-                  "text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                Nutrition and fitness targets
-              </Text>
-            </View>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={isDark ? "#9ca3af" : "#6b7280"}
-            />
-          </Pressable>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
 
-          {/* Notifications Card */}
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveSection("notifications");
-            }}
-            className={cn(
-              "rounded-3xl p-5 mb-6 flex-row items-center",
-              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
-            )}
-            style={{
-              shadowColor: isDark ? "#000" : "#1f2937",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: isDark ? 0.6 : 0.25,
-              shadowRadius: 12,
-              elevation: 8,
-            }}
-          >
-            <View 
-              className="w-14 h-14 rounded-2xl items-center justify-center mr-4 bg-orange-100"
-              style={{
-                shadowColor: "#f97316",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 8,
-                elevation: 4,
+            {/* Edit nutrition goals */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setActiveSection("goals");
               }}
+              className="flex-row items-center p-5 border-b border-gray-200/10"
             >
-              <Ionicons name="notifications" size={28} color="#f97316" />
-            </View>
-            <View className="flex-1">
-              <Text
-                className={cn(
-                  "text-xl font-bold mb-1",
-                  isDark ? "text-white" : "text-gray-900"
-                )}
-              >
-                Notifications
+              <Ionicons name="nutrition-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Edit nutrition goals
               </Text>
-              <Text
-                className={cn(
-                  "text-sm",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                Manage alerts and reminders
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+
+            {/* Goals & current weight */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setActiveSection("weight");
+              }}
+              className="flex-row items-center p-5 border-b border-gray-200/10"
+            >
+              <Ionicons name="flag-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Goals & current weight
               </Text>
-            </View>
-            <Ionicons
-              name="chevron-forward"
-              size={24}
-              color={isDark ? "#9ca3af" : "#6b7280"}
-            />
-          </Pressable>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+
+            {/* Weight history */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              }}
+              className="flex-row items-center p-5 border-b border-gray-200/10"
+            >
+              <Ionicons name="trending-up-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Weight history
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+
+            {/* Language */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setActiveSection("language");
+              }}
+              className="flex-row items-center p-5"
+            >
+              <Ionicons name="language-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Language
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
