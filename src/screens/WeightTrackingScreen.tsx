@@ -35,11 +35,14 @@ export default function WeightTrackingScreen() {
 
   const { entries, addEntry, deleteEntry } = useWeightStore();
   const targetWeight = useSettingsStore((s) => s.fitnessGoals.targetWeight);
+  const updateFitnessGoals = useSettingsStore((s) => s.updateFitnessGoals);
   // Sort entries by actual weight date (timestamp), not by creation time
   const sortedEntries = [...entries].sort((a, b) => a.timestamp - b.timestamp);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isTargetWeightModalVisible, setIsTargetWeightModalVisible] = useState(false);
   const [weightInput, setWeightInput] = useState("");
+  const [targetWeightInput, setTargetWeightInput] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -51,6 +54,16 @@ export default function WeightTrackingScreen() {
       setWeightInput("");
       setSelectedDate(new Date());
       setIsModalVisible(false);
+    }
+  };
+
+  const handleUpdateTargetWeight = () => {
+    const weight = parseFloat(targetWeightInput);
+    if (!isNaN(weight) && weight > 0) {
+      updateFitnessGoals({ targetWeight: weight });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setTargetWeightInput("");
+      setIsTargetWeightModalVisible(false);
     }
   };
 
@@ -115,33 +128,16 @@ export default function WeightTrackingScreen() {
           <View className="px-6 mb-4">
             <View className="flex-row space-x-3">
               {/* Current Weight */}
-              <Animated.View
-                entering={FadeInDown.delay(100)}
-                className={cn("flex-1 rounded-3xl p-4", isDark ? "bg-[#1a1a1a]" : "bg-white")}
-                style={{
-                  shadowColor: isDark ? "#000" : "#1f2937",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 8,
-                  elevation: 4,
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  setIsModalVisible(true);
                 }}
+                className="flex-1"
               >
-                <Text className={cn("text-sm mb-1", isDark ? "text-gray-400" : "text-gray-600")}>
-                  Current
-                </Text>
-                <Text className={cn("text-3xl font-bold", isDark ? "text-white" : "text-black")}>
-                  {currentWeight.toFixed(1)}
-                </Text>
-                <Text className={cn("text-xs", isDark ? "text-gray-500" : "text-gray-500")}>
-                  kg
-                </Text>
-              </Animated.View>
-
-              {/* Target Weight */}
-              {targetWeight && (
                 <Animated.View
-                  entering={FadeInDown.delay(200)}
-                  className={cn("flex-1 rounded-3xl p-4", isDark ? "bg-[#1a1a1a]" : "bg-white")}
+                  entering={FadeInDown.delay(100)}
+                  className={cn("rounded-3xl p-4", isDark ? "bg-[#1a1a1a]" : "bg-white")}
                   style={{
                     shadowColor: isDark ? "#000" : "#1f2937",
                     shadowOffset: { width: 0, height: 4 },
@@ -150,16 +146,56 @@ export default function WeightTrackingScreen() {
                     elevation: 4,
                   }}
                 >
-                  <Text className={cn("text-sm mb-1", isDark ? "text-gray-400" : "text-gray-600")}>
-                    Target
-                  </Text>
+                  <View className="flex-row items-center justify-between mb-1">
+                    <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                      Current
+                    </Text>
+                    <Ionicons name="create-outline" size={16} color={isDark ? "#6b7280" : "#9ca3af"} />
+                  </View>
                   <Text className={cn("text-3xl font-bold", isDark ? "text-white" : "text-black")}>
-                    {targetWeight.toFixed(1)}
+                    {currentWeight.toFixed(1)}
                   </Text>
                   <Text className={cn("text-xs", isDark ? "text-gray-500" : "text-gray-500")}>
                     kg
                   </Text>
                 </Animated.View>
+              </Pressable>
+
+              {/* Target Weight */}
+              {targetWeight && (
+                <Pressable
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    setTargetWeightInput(targetWeight.toString());
+                    setIsTargetWeightModalVisible(true);
+                  }}
+                  className="flex-1"
+                >
+                  <Animated.View
+                    entering={FadeInDown.delay(200)}
+                    className={cn("rounded-3xl p-4", isDark ? "bg-[#1a1a1a]" : "bg-white")}
+                    style={{
+                      shadowColor: isDark ? "#000" : "#1f2937",
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: isDark ? 0.3 : 0.1,
+                      shadowRadius: 8,
+                      elevation: 4,
+                    }}
+                  >
+                    <View className="flex-row items-center justify-between mb-1">
+                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                        Target
+                      </Text>
+                      <Ionicons name="create-outline" size={16} color={isDark ? "#6b7280" : "#9ca3af"} />
+                    </View>
+                    <Text className={cn("text-3xl font-bold", isDark ? "text-white" : "text-black")}>
+                      {targetWeight.toFixed(1)}
+                    </Text>
+                    <Text className={cn("text-xs", isDark ? "text-gray-500" : "text-gray-500")}>
+                      kg
+                    </Text>
+                  </Animated.View>
+                </Pressable>
               )}
 
               {/* Weight Change */}
@@ -493,6 +529,82 @@ export default function WeightTrackingScreen() {
                 }}
               >
                 <Text className="text-white font-bold text-center text-lg">Log Weight</Text>
+              </Pressable>
+            </View>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Update Target Weight Modal */}
+      <Modal
+        visible={isTargetWeightModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setIsTargetWeightModalVisible(false)}
+      >
+        <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-gray-50")}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            className="flex-1"
+            keyboardVerticalOffset={0}
+          >
+            {/* Header */}
+            <View
+              className="flex-row items-center justify-between px-6 py-4 border-b"
+              style={{ borderBottomColor: isDark ? "#1f1f1f" : "#e5e7eb" }}
+            >
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setIsTargetWeightModalVisible(false);
+                }}
+              >
+                <Ionicons name="close" size={28} color={isDark ? "#fff" : "#000"} />
+              </Pressable>
+              <Text className={cn("text-xl font-bold", isDark ? "text-white" : "text-black")}>
+                Update Target Weight
+              </Text>
+              <View style={{ width: 28 }} />
+            </View>
+
+            <ScrollView className="flex-1 px-6 pt-8" keyboardShouldPersistTaps="handled">
+              {/* Target Weight Input */}
+              <View className="mb-6">
+                <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
+                  Target Weight (kg)
+                </Text>
+                <TextInput
+                  value={targetWeightInput}
+                  onChangeText={setTargetWeightInput}
+                  placeholder="Enter your target weight"
+                  keyboardType="decimal-pad"
+                  placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                  className={cn("rounded-xl p-4 text-2xl font-bold", isDark ? "bg-[#1a1a1a] text-white" : "bg-gray-100 text-gray-900")}
+                  autoFocus
+                />
+              </View>
+
+              <View className={cn("rounded-xl p-4 mb-6", isDark ? "bg-blue-500/10" : "bg-blue-50")}>
+                <View className="flex-row items-start">
+                  <Ionicons name="information-circle" size={20} color="#3b82f6" style={{ marginTop: 2, marginRight: 8 }} />
+                  <Text className={cn("text-sm flex-1", isDark ? "text-blue-300" : "text-blue-700")}>
+                    Your target weight will be synced across the entire app and used for progress tracking.
+                  </Text>
+                </View>
+              </View>
+            </ScrollView>
+
+            {/* Update Button - Fixed at bottom */}
+            <View className="px-6 pb-6 pt-4" style={{ borderTopWidth: 1, borderTopColor: isDark ? "#1f1f1f" : "#e5e7eb" }}>
+              <Pressable
+                onPress={handleUpdateTargetWeight}
+                className="bg-blue-500 py-4 rounded-2xl"
+                disabled={!targetWeightInput || parseFloat(targetWeightInput) <= 0}
+                style={{
+                  opacity: !targetWeightInput || parseFloat(targetWeightInput) <= 0 ? 0.5 : 1,
+                }}
+              >
+                <Text className="text-white font-bold text-center text-lg">Update Target Weight</Text>
               </Pressable>
             </View>
           </KeyboardAvoidingView>
