@@ -475,7 +475,7 @@ export default function NutritionScreen() {
           <View
             className={cn(
               "rounded-3xl p-4 items-center",
-              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
+              isDark ? "bg-[#1a1a1a]" : "bg-white/60"
             )}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
@@ -569,7 +569,7 @@ export default function NutritionScreen() {
           <View
             className={cn(
               "rounded-3xl p-4",
-              isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
+              isDark ? "bg-[#1a1a1a]" : "bg-white/60"
             )}
             style={{
               shadowColor: isDark ? "#000" : "#1f2937",
@@ -652,7 +652,7 @@ export default function NutritionScreen() {
                 key={item.id}
                 className={cn(
                   "rounded-3xl p-5 mb-3",
-                  isDark ? "bg-[#0a0a0a]/40" : "bg-white/60"
+                  isDark ? "bg-[#1a1a1a]" : "bg-white/60"
                 )}
                 style={{
                   shadowColor: isDark ? "#000" : "#1f2937",
@@ -1011,7 +1011,7 @@ export default function NutritionScreen() {
                         className={cn(
                           "rounded-lg p-3 text-base",
                           isDark
-                            ? "bg-[#0a0a0a] text-white"
+                            ? "bg-[#1a1a1a] text-white"
                             : "bg-white text-gray-900"
                         )}
                       />
@@ -1061,7 +1061,7 @@ export default function NutritionScreen() {
                       className={cn(
                         "rounded-lg p-3 text-base",
                         isDark
-                          ? "bg-[#0a0a0a] text-white"
+                          ? "bg-[#1a1a1a] text-white"
                           : "bg-white text-gray-900"
                       )}
                     />
@@ -1128,7 +1128,7 @@ export default function NutritionScreen() {
                       className={cn(
                         "rounded-lg p-3 text-base",
                         isDark
-                          ? "bg-[#0a0a0a] text-white"
+                          ? "bg-[#1a1a1a] text-white"
                           : "bg-white text-gray-900"
                       )}
                     />
@@ -1152,7 +1152,7 @@ export default function NutritionScreen() {
                       className={cn(
                         "rounded-lg p-3 text-base",
                         isDark
-                          ? "bg-[#0a0a0a] text-white"
+                          ? "bg-[#1a1a1a] text-white"
                           : "bg-white text-gray-900"
                       )}
                     />
@@ -1176,7 +1176,7 @@ export default function NutritionScreen() {
                       className={cn(
                         "rounded-lg p-3 text-base",
                         isDark
-                          ? "bg-[#0a0a0a] text-white"
+                          ? "bg-[#1a1a1a] text-white"
                           : "bg-white text-gray-900"
                       )}
                     />
@@ -1200,7 +1200,7 @@ export default function NutritionScreen() {
                       className={cn(
                         "rounded-lg p-3 text-base",
                         isDark
-                          ? "bg-[#0a0a0a] text-white"
+                          ? "bg-[#1a1a1a] text-white"
                           : "bg-white text-gray-900"
                       )}
                     />
