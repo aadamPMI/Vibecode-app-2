@@ -496,20 +496,13 @@ export default function NutritionScreen() {
             >
               {Math.round(totals.calories)}
             </Text>
-            {totals.calories >= targetCalories && (
-              <Text className="text-xl mt-1">🎉</Text>
-            )}
             <Text
               className={cn(
                 "text-sm mt-1",
-                totals.calories >= targetCalories
-                  ? "text-green-500 font-semibold"
-                  : isDark ? "text-gray-400" : "text-gray-600"
+                isDark ? "text-gray-400" : "text-gray-600"
               )}
             >
-              {totals.calories >= targetCalories 
-                ? "Goal reached! Keep it up 💪" 
-                : `of ${targetCalories} calories`}
+              / {targetCalories} calories
             </Text>
 
             {/* Progress Bar - Blue & Glowy Dopamine Inducing */}
