@@ -14,28 +14,28 @@ export function PremiumBackground({ theme, variant = "workout" }: PremiumBackgro
     if (isDark) {
       switch (variant) {
         case "workout":
-          return ["#000000", "#0a0a0a", "#050505"];
+          return ["#0f0f0f", "#1a0f0a", "#0f0f0f", "#0a0a0a"];
         case "nutrition":
-          return ["#000000", "#0a0f0a", "#050505"];
+          return ["#0f0f0f", "#0a1a1f", "#0f0f0f", "#0a0a0a"];
         case "community":
-          return ["#000000", "#0a0a0f", "#050505"];
+          return ["#0f0f0f", "#1a0f1f", "#0f0f0f", "#0a0a0a"];
         case "settings":
-          return ["#000000", "#0a0f0f", "#050505"];
+          return ["#0f0f0f", "#0a0f1a", "#0f0f0f", "#0a0a0a"];
         default:
-          return ["#000000", "#0a0a0a", "#050505"];
+          return ["#0f0f0f", "#1a0f0a", "#0f0f0f", "#0a0a0a"];
       }
     } else {
       switch (variant) {
         case "workout":
-          return ["#ffffff", "#fef5f3", "#fff7ed", "#fef3c7", "#ffffff"];
+          return ["#fef3e6", "#fff7ed", "#fef3e6", "#fff"];
         case "nutrition":
-          return ["#ffffff", "#f0fdf4", "#fef3c7", "#fef5f3", "#ffffff"];
+          return ["#e6f7ff", "#f0f9ff", "#e6f7ff", "#fff"];
         case "community":
-          return ["#ffffff", "#faf5ff", "#ede9fe", "#f5f3ff", "#ffffff"];
+          return ["#f3e6ff", "#faf5ff", "#f3e6ff", "#fff"];
         case "settings":
-          return ["#ffffff", "#f8fafc", "#f1f5f9", "#ffffff"];
+          return ["#f0f4f8", "#f8fafc", "#f0f4f8", "#fff"];
         default:
-          return ["#ffffff", "#f5f3ff", "#fff7ed", "#ffffff"];
+          return ["#fef3e6", "#fff7ed", "#fef3e6", "#fff"];
       }
     }
   };
@@ -43,15 +43,15 @@ export function PremiumBackground({ theme, variant = "workout" }: PremiumBackgro
   const getGlowColor = () => {
     switch (variant) {
       case "workout":
-        return isDark ? "rgba(251, 146, 60, 0.06)" : "rgba(251, 146, 60, 0.08)";
+        return isDark ? "rgba(251, 146, 60, 0.15)" : "rgba(251, 146, 60, 0.12)";
       case "nutrition":
-        return isDark ? "rgba(74, 222, 128, 0.06)" : "rgba(74, 222, 128, 0.08)";
+        return isDark ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.12)";
       case "community":
-        return isDark ? "rgba(168, 85, 247, 0.06)" : "rgba(168, 85, 247, 0.08)";
+        return isDark ? "rgba(168, 85, 247, 0.15)" : "rgba(168, 85, 247, 0.12)";
       case "settings":
-        return isDark ? "rgba(59, 130, 246, 0.06)" : "rgba(59, 130, 246, 0.08)";
+        return isDark ? "rgba(59, 130, 246, 0.15)" : "rgba(59, 130, 246, 0.12)";
       default:
-        return isDark ? "rgba(251, 146, 60, 0.06)" : "rgba(251, 146, 60, 0.08)";
+        return isDark ? "rgba(251, 146, 60, 0.15)" : "rgba(251, 146, 60, 0.12)";
     }
   };
 
@@ -60,27 +60,38 @@ export function PremiumBackground({ theme, variant = "workout" }: PremiumBackgro
       {/* Base gradient */}
       <LinearGradient
         colors={getGradientColors() as any}
-        locations={isDark ? [0, 0.33, 0.66, 1] : [0, 0.25, 0.5, 0.75, 1]}
+        locations={[0, 0.3, 0.7, 1]}
         className="absolute inset-0"
       />
 
-      {/* Ambient glow layer */}
-      <View className="absolute inset-0" style={{ opacity: isDark ? 0.5 : 0.4 }}>
+      {/* Ambient glow layer - top */}
+      <View className="absolute inset-0" style={{ opacity: isDark ? 0.4 : 0.3 }}>
         <LinearGradient
           colors={["transparent", getGlowColor(), "transparent"]}
-          locations={[0, 0.5, 1]}
+          locations={[0, 0.4, 1]}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
+          end={{ x: 1, y: 0.5 }}
           className="flex-1"
         />
       </View>
 
-      {/* Subtle noise texture overlay for depth */}
+      {/* Bottom ambient glow */}
+      <View className="absolute inset-0" style={{ opacity: isDark ? 0.3 : 0.25 }}>
+        <LinearGradient
+          colors={["transparent", getGlowColor(), "transparent"]}
+          locations={[0, 0.6, 1]}
+          start={{ x: 1, y: 0.5 }}
+          end={{ x: 0, y: 1 }}
+          className="flex-1"
+        />
+      </View>
+
+      {/* Subtle noise texture overlay for premium depth */}
       <View
         className="absolute inset-0"
         style={{
-          backgroundColor: isDark ? "rgba(255, 255, 255, 0.01)" : "rgba(0, 0, 0, 0.01)",
-          opacity: 0.3,
+          backgroundColor: isDark ? "rgba(255, 255, 255, 0.015)" : "rgba(0, 0, 0, 0.015)",
+          opacity: 0.5,
         }}
       />
     </>

@@ -22,6 +22,8 @@ import { useIsFocused } from "@react-navigation/native";
 import { useNutritionStore, FoodItem } from "../state/nutritionStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { cn } from "../utils/cn";
+import { PremiumBackground } from "../components/PremiumBackground";
+
 
 export default function NutritionScreen() {
   const theme = useSettingsStore((s) => s.theme);
@@ -317,7 +319,8 @@ export default function NutritionScreen() {
   }, [isFocused]);
 
   return (
-    <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
+    <SafeAreaView className="flex-1">
+      <PremiumBackground theme={theme} variant="nutrition" />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="px-4 pt-4 mb-6 flex-row justify-between items-start">

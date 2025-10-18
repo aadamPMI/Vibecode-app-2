@@ -28,6 +28,7 @@ import { useCommunityStore } from "../state/communityStore";
 import { cn } from "../utils/cn";
 import { GYM_EXERCISES } from "../utils/exerciseList";
 import { Switch } from "react-native";
+import { PremiumBackground } from "../components/PremiumBackground";
 
 export default function WorkoutScreen() {
   const theme = useSettingsStore((s) => s.theme);
@@ -292,7 +293,8 @@ export default function WorkoutScreen() {
   // Home view with 4 cards
   return (
     <>
-      <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
+      <SafeAreaView className="flex-1">
+        <PremiumBackground theme={theme} variant="workout" />
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           <View className="pt-4 mb-6 flex-row justify-between items-start">
             <View>
