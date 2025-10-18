@@ -2,6 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import WorkoutScreen from "../screens/WorkoutScreen";
 import NutritionScreen from "../screens/NutritionScreen";
 import CommunityScreen from "../screens/CommunityScreen";
@@ -10,6 +11,25 @@ import SettingsScreen from "../screens/SettingsScreen";
 import { useSettingsStore } from "../state/settingsStore";
 import { useAuthStore } from "../state/authStore";
 import OnboardingNavigator from "./OnboardingNavigator";
+
+// Wrapper components with fade animations
+const AnimatedWorkoutScreen = () => (
+  <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
+    <WorkoutScreen />
+  </Animated.View>
+);
+
+const AnimatedNutritionScreen = () => (
+  <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
+    <NutritionScreen />
+  </Animated.View>
+);
+
+const AnimatedSettingsScreen = () => (
+  <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
+    <SettingsScreen />
+  </Animated.View>
+);
 
 export type RootTabParamList = {
   Workout: undefined;
@@ -31,6 +51,8 @@ function CommunityStackNavigator() {
     <CommunityStack.Navigator
       screenOptions={{
         headerShown: false,
+        animation: "fade",
+        animationDuration: 200,
       }}
     >
       <CommunityStack.Screen name="Community" component={CommunityScreen} />
@@ -38,6 +60,13 @@ function CommunityStackNavigator() {
     </CommunityStack.Navigator>
   );
 }
+
+// Animated wrapper for community stack
+const AnimatedCommunityStack = () => (
+  <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
+    <CommunityStackNavigator />
+  </Animated.View>
+);
 
 export default function AppNavigator() {
   const theme = useSettingsStore((s) => s.theme);
@@ -78,16 +107,16 @@ export default function AppNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Workout" component={WorkoutScreen} />
-      <Tab.Screen name="Nutrition" component={NutritionScreen} />
+      <Tab.Screen name="Workout" component={AnimatedWorkoutScreen} />
+      <Tab.Screen name="Nutrition" component={AnimatedNutritionScreen} />
       <Tab.Screen 
         name="CommunityStack" 
-        component={CommunityStackNavigator}
+        component={AnimatedCommunityStack}
         options={{
           tabBarLabel: "Community",
         }}
       />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen name="Settings" component={AnimatedSettingsScreen} />
     </Tab.Navigator>
   );
 }
