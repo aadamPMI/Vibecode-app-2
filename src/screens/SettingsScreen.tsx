@@ -572,6 +572,93 @@ export default function SettingsScreen() {
               </View>
             </View>
           </View>
+
+          {/* Account & Legal Card */}
+          <View
+            className={cn("rounded-3xl overflow-hidden mb-6", isDark ? "bg-white/5" : "bg-white")}
+            style={{
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: isDark ? 0.3 : 0.1,
+              shadowRadius: 12,
+              elevation: 4,
+            }}
+          >
+            {/* Terms and Conditions */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // TODO: Open Terms and Conditions
+              }}
+              className="flex-row items-center p-5 border-b border-gray-200/10"
+            >
+              <Ionicons name="document-text-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Terms and Conditions
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+
+            {/* Privacy Policy */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // TODO: Open Privacy Policy
+              }}
+              className="flex-row items-center p-5 border-b border-gray-200/10"
+            >
+              <Ionicons name="shield-checkmark-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Privacy Policy
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+
+            {/* Support Email */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // TODO: Open email to support
+              }}
+              className="flex-row items-center p-5 border-b border-gray-200/10"
+            >
+              <Ionicons name="mail-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Support Email
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+
+            {/* Delete Account */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // TODO: Show delete account confirmation
+              }}
+              className="flex-row items-center p-5 border-b border-gray-200/10"
+            >
+              <Ionicons name="trash-outline" size={24} color="#ef4444" />
+              <Text className={cn("text-lg ml-4 flex-1", "text-red-500")}>
+                Delete Account
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+
+            {/* Log Out */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // TODO: Log out user
+              }}
+              className="flex-row items-center p-5"
+            >
+              <Ionicons name="log-out-outline" size={24} color={isDark ? "#fff" : "#000"} />
+              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+                Log Out
+              </Text>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+            </Pressable>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
