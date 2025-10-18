@@ -30,7 +30,8 @@ export default function OnboardingNavigator() {
       screenOptions={{
         headerShown: false,
         gestureEnabled: false,
-        animation: "slide_from_right",
+        animation: "fade",
+        animationDuration: 300,
       }}
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
