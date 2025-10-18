@@ -593,7 +593,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="document-text-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base ml-4 flex-1", isDark ? "text-white" : "text-black")}>
                 Terms and Conditions
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -608,7 +608,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="shield-checkmark-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base ml-4 flex-1", isDark ? "text-white" : "text-black")}>
                 Privacy Policy
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -623,7 +623,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="mail-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base ml-4 flex-1", isDark ? "text-white" : "text-black")}>
                 Support Email
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -638,7 +638,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="trash-outline" size={24} color="#ef4444" />
-              <Text className={cn("text-lg ml-4 flex-1", "text-red-500")}>
+              <Text className={cn("text-base ml-4 flex-1", "text-red-500")}>
                 Delete Account
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -653,7 +653,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5"
             >
               <Ionicons name="log-out-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base ml-4 flex-1", isDark ? "text-white" : "text-black")}>
                 Log Out
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
