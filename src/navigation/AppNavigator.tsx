@@ -14,30 +14,28 @@ import { useAuthStore } from "../state/authStore";
 import OnboardingNavigator from "./OnboardingNavigator";
 
 // Wrapper components with fade animations
-const AnimatedWorkoutScreen = () => (
-  <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
-    <WorkoutScreen />
-  </Animated.View>
-);
-
 const AnimatedNutritionScreen = () => (
   <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
     <NutritionScreen />
   </Animated.View>
 );
 
-const AnimatedWeightTrackingScreen = () => (
+const AnimatedSettingsScreen = () => (
   <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
-    <WeightTrackingScreen />
+    <SettingsScreen />
   </Animated.View>
 );
 
 export type RootTabParamList = {
-  Workout: undefined;
+  WorkoutStack: undefined;
   Nutrition: undefined;
   CommunityStack: undefined;
+  Settings: undefined;
+};
+
+export type WorkoutStackParamList = {
+  Workout: undefined;
   WeightTracking: undefined;
-  SettingsStack: undefined;
 };
 
 export type CommunityStackParamList = {
@@ -45,14 +43,31 @@ export type CommunityStackParamList = {
   MyCommunities: undefined;
 };
 
-export type SettingsStackParamList = {
-  Settings: undefined;
-  WeightTracking: undefined;
-};
-
 const Tab = createBottomTabNavigator<RootTabParamList>();
+const WorkoutStack = createNativeStackNavigator<WorkoutStackParamList>();
 const CommunityStack = createNativeStackNavigator<CommunityStackParamList>();
-const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
+
+function WorkoutStackNavigator() {
+  return (
+    <WorkoutStack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: "fade",
+        animationDuration: 200,
+      }}
+    >
+      <WorkoutStack.Screen name="Workout" component={WorkoutScreen} />
+      <WorkoutStack.Screen name="WeightTracking" component={WeightTrackingScreen} />
+    </WorkoutStack.Navigator>
+  );
+}
+
+// Animated wrapper for workout stack
+const AnimatedWorkoutStack = () => (
+  <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
+    <WorkoutStackNavigator />
+  </Animated.View>
+);
 
 function CommunityStackNavigator() {
   return (
@@ -76,28 +91,6 @@ const AnimatedCommunityStack = () => (
   </Animated.View>
 );
 
-function SettingsStackNavigator() {
-  return (
-    <SettingsStack.Navigator
-      screenOptions={{
-        headerShown: false,
-        animation: "fade",
-        animationDuration: 200,
-      }}
-    >
-      <SettingsStack.Screen name="Settings" component={SettingsScreen} />
-      <SettingsStack.Screen name="WeightTracking" component={WeightTrackingScreen} />
-    </SettingsStack.Navigator>
-  );
-}
-
-// Animated wrapper for settings stack
-const AnimatedSettingsStack = () => (
-  <Animated.View entering={FadeIn.duration(200)} exiting={FadeOut.duration(200)} style={{ flex: 1 }}>
-    <SettingsStackNavigator />
-  </Animated.View>
-);
-
 export default function AppNavigator() {
   const theme = useSettingsStore((s) => s.theme);
   const isDark = theme === "dark";
@@ -115,15 +108,13 @@ export default function AppNavigator() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap = "home";
 
-          if (route.name === "Workout") {
+          if (route.name === "WorkoutStack") {
             iconName = focused ? "barbell" : "barbell-outline";
           } else if (route.name === "Nutrition") {
             iconName = focused ? "nutrition" : "nutrition-outline";
           } else if (route.name === "CommunityStack") {
             iconName = focused ? "people" : "people-outline";
-          } else if (route.name === "WeightTracking") {
-            iconName = focused ? "trending-up" : "trending-up-outline";
-          } else if (route.name === "SettingsStack") {
+          } else if (route.name === "Settings") {
             iconName = focused ? "settings" : "settings-outline";
           }
 
@@ -139,7 +130,13 @@ export default function AppNavigator() {
         },
       })}
     >
-      <Tab.Screen name="Workout" component={AnimatedWorkoutScreen} />
+      <Tab.Screen 
+        name="WorkoutStack" 
+        component={AnimatedWorkoutStack}
+        options={{
+          tabBarLabel: "Workout",
+        }}
+      />
       <Tab.Screen name="Nutrition" component={AnimatedNutritionScreen} />
       <Tab.Screen 
         name="CommunityStack" 
@@ -148,20 +145,7 @@ export default function AppNavigator() {
           tabBarLabel: "Community",
         }}
       />
-      <Tab.Screen 
-        name="WeightTracking" 
-        component={AnimatedWeightTrackingScreen}
-        options={{
-          tabBarLabel: "Stats",
-        }}
-      />
-      <Tab.Screen 
-        name="SettingsStack" 
-        component={AnimatedSettingsStack}
-        options={{
-          tabBarLabel: "Settings",
-        }}
-      />
+      <Tab.Screen name="Settings" component={AnimatedSettingsScreen} />
     </Tab.Navigator>
   );
 }

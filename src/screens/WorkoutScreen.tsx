@@ -23,6 +23,7 @@ import Animated, {
 import { LinearGradient } from "expo-linear-gradient";
 import Slider from "@react-native-community/slider";
 import * as Haptics from "expo-haptics";
+import { useNavigation } from "@react-navigation/native";
 import { useWorkoutStore, Workout, Exercise, PersonalRecord } from "../state/workoutStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { useCommunityStore } from "../state/communityStore";
@@ -32,6 +33,7 @@ import { Switch } from "react-native";
 import { PremiumBackground } from "../components/PremiumBackground";
 
 export default function WorkoutScreen() {
+  const navigation = useNavigation<any>();
   const theme = useSettingsStore((s) => s.theme);
   const workouts = useWorkoutStore((s) => s.workouts);
   const addWorkout = useWorkoutStore((s) => s.addWorkout);
@@ -1053,7 +1055,11 @@ export default function WorkoutScreen() {
               </View>
 
               {/* Weight Tracking Section */}
-              <View
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  navigation.navigate("WeightTracking");
+                }}
                 className={cn(
                   "rounded-3xl p-6 mb-4",
                   isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
@@ -1068,55 +1074,21 @@ export default function WorkoutScreen() {
                   >
                     Weight Tracking
                   </Text>
-                  <Pressable
-                    onPress={() => {
-                      const newUnit = bodyWeightUnit === "kg" ? "lbs" : "kg";
-                      const converted = newUnit === "lbs" 
-                        ? bodyWeight * 2.20462 
-                        : bodyWeight / 2.20462;
-                      updateBodyWeight(Math.round(converted * 10) / 10, newUnit);
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    }}
-                    className={cn(
-                      "px-4 py-2 rounded-full",
-                      isDark ? "bg-[#1a1a1a]" : "bg-white"
-                    )}
-                  >
-                    <Text
-                      className={cn(
-                        "text-sm font-semibold",
-                        isDark ? "text-white" : "text-gray-900"
-                      )}
-                    >
-                      {bodyWeightUnit.toUpperCase()}
-                    </Text>
-                  </Pressable>
+                  <Ionicons name="chevron-forward" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
                 </View>
 
                 <View className="items-center py-4">
-                  <Text className="text-6xl font-bold text-blue-500 mb-2">
-                    {bodyWeight}
-                  </Text>
+                  <Ionicons name="trending-up" size={48} color="#3b82f6" />
                   <Text
                     className={cn(
-                      "text-base mb-4",
+                      "text-base mt-4 text-center",
                       isDark ? "text-gray-400" : "text-gray-600"
                     )}
                   >
-                    Current Body Weight
+                    Track your weight progress with graphs
                   </Text>
-                  <Pressable
-                    onPress={() => {
-                      setTempBodyWeight(bodyWeight.toString());
-                      setIsWeightModalVisible(true);
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                    }}
-                    className="bg-blue-500 px-6 py-3 rounded-full"
-                  >
-                    <Text className="text-white font-bold">Update Weight</Text>
-                  </Pressable>
                 </View>
-              </View>
+              </Pressable>
 
               {/* Personal Records Section */}
               <View
