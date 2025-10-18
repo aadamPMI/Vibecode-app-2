@@ -1640,9 +1640,7 @@ function MacroRow({
           >
             {showTotals 
               ? `${value}g / ${target}g`
-              : isComplete 
-                ? `Complete! ✓` 
-                : `${Math.max(0, target - value)}g left`}
+              : `${Math.max(0, target - value)}g left`}
           </Text>
         </Pressable>
       </View>
