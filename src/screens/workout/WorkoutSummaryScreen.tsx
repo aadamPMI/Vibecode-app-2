@@ -1,7 +1,7 @@
 // WorkoutSummaryScreen - Post-workout celebration and stats
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { useColorScheme } from '../../hooks/useColorScheme';
+import { useColorScheme } from 'react-native';
 import { cn } from '../../utils/cn';
 import { useTrainingStore } from '../../state/trainingStore';
 import { useNavigation, useRoute } from '@react-navigation/native';

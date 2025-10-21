@@ -1,7 +1,6 @@
 // WorkoutHomeScreen - Main hub for workout section
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { useColorScheme } from '../../hooks/useColorScheme';
+import { View, Text, ScrollView, TouchableOpacity, Dimensions, useColorScheme } from 'react-native';
 import { cn } from '../../utils/cn';
 import { useTrainingStore } from '../../state/trainingStore';
 import { getTodaysWorkout, getUpcomingWorkouts } from '../../services/scheduler';

@@ -1,7 +1,7 @@
 // ActiveWorkoutScreen - In-session workout logging
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
-import { useColorScheme } from '../../hooks/useColorScheme';
+import { useColorScheme } from 'react-native';
 import { cn } from '../../utils/cn';
 import { useTrainingStore } from '../../state/trainingStore';
 import { useNavigation } from '@react-navigation/native';

@@ -1,7 +1,7 @@
 // ExerciseLibraryScreen - Browse exercise library
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
-import { useColorScheme } from '../../hooks/useColorScheme';
+import { useColorScheme } from 'react-native';
 import { cn } from '../../utils/cn';
 import { EXERCISE_LIBRARY, searchExercises } from '../../constants/exerciseData';
 import { Exercise } from '../../types/workout';

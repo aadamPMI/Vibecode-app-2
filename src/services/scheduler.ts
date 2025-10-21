@@ -145,7 +145,6 @@ export function createSessionFromTemplate(
       targetScheme: exTarget.setScheme,
       sets,
       skipped: false,
-      order: exTarget.order,
     };
   });
   
@@ -164,7 +163,6 @@ export function createSessionFromTemplate(
     totalSets: 0,
     prEvents: [],
     notes: '',
-    isOfflineLogged: false,
   };
 }
 

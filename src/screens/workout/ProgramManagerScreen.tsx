@@ -1,7 +1,7 @@
 // ProgramManagerScreen - View and manage workout programs
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useColorScheme } from '../../hooks/useColorScheme';
+import { useColorScheme } from 'react-native';
 import { cn } from '../../utils/cn';
 import { useTrainingStore } from '../../state/trainingStore';
 import { useNavigation } from '@react-navigation/native';
