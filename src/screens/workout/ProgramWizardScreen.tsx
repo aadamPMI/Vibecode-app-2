@@ -13,6 +13,8 @@ import { BlurView } from 'expo-blur';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 type SplitType = 'push-pull-legs' | 'upper-lower' | 'full-body' | 'custom';
+type DayPreset = 'push' | 'pull' | 'legs' | 'upper' | 'lower' | 'custom';
+type MuscleGroup = 'chest' | 'back' | 'shoulders' | 'biceps' | 'triceps' | 'quads' | 'hamstrings' | 'glutes' | 'calves' | 'abs' | 'cardio';
 
 export default function ProgramWizardScreen() {
   const theme = useSettingsStore((s) => s.theme);
@@ -24,6 +26,12 @@ export default function ProgramWizardScreen() {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSplit, setSelectedSplit] = useState<SplitType | null>(null);
   const [programName, setProgramName] = useState('');
+  
+  // Step 2 - Workout Days
+  const [dayName, setDayName] = useState('');
+  const [isRestDay, setIsRestDay] = useState(false);
+  const [selectedDayPreset, setSelectedDayPreset] = useState<DayPreset | null>(null);
+  const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<MuscleGroup[]>([]);
 
   const handleSplitSelect = (splitType: SplitType) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -31,18 +39,56 @@ export default function ProgramWizardScreen() {
   };
 
   const handleNext = () => {
-    if (!selectedSplit) return;
+    if (currentStep === 1 && !selectedSplit) return;
+    if (currentStep === 2 && !dayName.trim() && !isRestDay) return;
     
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     
-    if (selectedSplit === 'custom') {
-      // Navigate to custom split builder
-      navigation.navigate('SplitBuilder', { preset: null, programName: programName || 'Custom Program' });
-    } else {
-      // Navigate with preset
-      setCurrentStep(2);
-      // TODO: Next step implementation
+    if (currentStep === 1) {
+      if (selectedSplit === 'custom') {
+        navigation.navigate('SplitBuilder', { preset: null, programName: programName || 'Custom Program' });
+      } else {
+        setCurrentStep(2);
+      }
+    } else if (currentStep === 2) {
+      // Move to step 3
+      setCurrentStep(3);
     }
+  };
+
+  const handleDayPresetSelect = (preset: DayPreset) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedDayPreset(preset);
+    
+    // Auto-populate muscle groups based on preset
+    if (preset === 'push') {
+      setSelectedMuscleGroups(['chest', 'shoulders', 'triceps']);
+      setDayName('Push Day');
+    } else if (preset === 'pull') {
+      setSelectedMuscleGroups(['back', 'biceps']);
+      setDayName('Pull Day');
+    } else if (preset === 'legs') {
+      setSelectedMuscleGroups(['quads', 'hamstrings', 'glutes', 'calves']);
+      setDayName('Legs Day');
+    } else if (preset === 'upper') {
+      setSelectedMuscleGroups(['chest', 'back', 'shoulders', 'biceps', 'triceps']);
+      setDayName('Upper Body');
+    } else if (preset === 'lower') {
+      setSelectedMuscleGroups(['quads', 'hamstrings', 'glutes', 'calves']);
+      setDayName('Lower Body');
+    } else {
+      setSelectedMuscleGroups([]);
+      setDayName('');
+    }
+  };
+
+  const toggleMuscleGroup = (muscle: MuscleGroup) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedMuscleGroups(prev => 
+      prev.includes(muscle) 
+        ? prev.filter(m => m !== muscle)
+        : [...prev, muscle]
+    );
   };
 
   const handleBack = () => {
@@ -98,7 +144,7 @@ export default function ProgramWizardScreen() {
                 Create Workout Program
               </Text>
               <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                Choose your workout split
+                {currentStep === 1 ? 'Choose your workout split' : currentStep === 2 ? 'Create workout days' : ''}
               </Text>
             </View>
             <Pressable
@@ -232,6 +278,400 @@ export default function ProgramWizardScreen() {
                   />
                 </BlurView>
               </Animated.View>
+            )}
+          </View>
+        )}
+
+        {/* Step 2 - Create Workout Day */}
+        {currentStep === 2 && (
+          <View className="px-6">
+            {/* Day Preset Buttons */}
+            <View className="mb-6">
+              <View className="flex-row flex-wrap gap-3 mb-4">
+                <Pressable
+                  onPress={() => handleDayPresetSelect('push')}
+                  className="flex-1 min-w-[30%]"
+                >
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                    <View
+                      className={cn(
+                        'p-4 items-center',
+                        selectedDayPreset === 'push' ? 'border-2 border-purple-500' : '',
+                        isDark ? 'bg-blue-500/20' : 'bg-blue-100'
+                      )}
+                    >
+                      <Ionicons name="fitness" size={28} color="#3b82f6" />
+                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                        Push
+                      </Text>
+                    </View>
+                  </BlurView>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => handleDayPresetSelect('pull')}
+                  className="flex-1 min-w-[30%]"
+                >
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                    <View
+                      className={cn(
+                        'p-4 items-center',
+                        selectedDayPreset === 'pull' ? 'border-2 border-purple-500' : '',
+                        isDark ? 'bg-pink-500/20' : 'bg-pink-100'
+                      )}
+                    >
+                      <Ionicons name="contract" size={28} color="#ec4899" />
+                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                        Pull
+                      </Text>
+                    </View>
+                  </BlurView>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => handleDayPresetSelect('legs')}
+                  className="flex-1 min-w-[30%]"
+                >
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                    <View
+                      className={cn(
+                        'p-4 items-center',
+                        selectedDayPreset === 'legs' ? 'border-2 border-purple-500' : '',
+                        isDark ? 'bg-green-500/20' : 'bg-green-100'
+                      )}
+                    >
+                      <Ionicons name="walk" size={28} color="#22c55e" />
+                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                        Legs
+                      </Text>
+                    </View>
+                  </BlurView>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => handleDayPresetSelect('upper')}
+                  className="flex-1 min-w-[30%]"
+                >
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                    <View
+                      className={cn(
+                        'p-4 items-center',
+                        selectedDayPreset === 'upper' ? 'border-2 border-purple-500' : '',
+                        isDark ? 'bg-purple-500/20' : 'bg-purple-100'
+                      )}
+                    >
+                      <Ionicons name="body" size={28} color="#a855f7" />
+                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                        Upper
+                      </Text>
+                    </View>
+                  </BlurView>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => handleDayPresetSelect('custom')}
+                  className="flex-1 min-w-[30%]"
+                >
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                    <View
+                      className={cn(
+                        'p-4 items-center',
+                        selectedDayPreset === 'custom' ? 'border-2 border-purple-500' : '',
+                        isDark ? 'bg-orange-500/20' : 'bg-orange-100'
+                      )}
+                    >
+                      <Ionicons name="add" size={28} color="#f97316" />
+                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                        Custom
+                      </Text>
+                    </View>
+                  </BlurView>
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Day Name Input */}
+            <View className="mb-4">
+              <Text className={cn('text-sm font-semibold mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                Day Name *
+              </Text>
+              <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                <TextInput
+                  value={dayName}
+                  onChangeText={setDayName}
+                  placeholder="e.g., Push Day"
+                  placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
+                  className={cn(
+                    'p-4 text-base',
+                    isDark ? 'text-white bg-white/5' : 'text-black bg-white/40'
+                  )}
+                />
+              </BlurView>
+            </View>
+
+            {/* Rest Day Toggle */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setIsRestDay(!isRestDay);
+              }}
+              className="mb-6"
+            >
+              <View className="flex-row items-center">
+                <View
+                  className={cn(
+                    'w-6 h-6 rounded-full border-2 items-center justify-center mr-3',
+                    isRestDay ? 'border-blue-500 bg-blue-500' : isDark ? 'border-gray-600' : 'border-gray-400'
+                  )}
+                >
+                  {isRestDay && <Ionicons name="checkmark" size={16} color="white" />}
+                </View>
+                <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  This is a rest day
+                </Text>
+              </View>
+            </Pressable>
+
+            {/* Muscle Groups */}
+            {!isRestDay && (
+              <View className="mb-6">
+                <Text className={cn('text-sm font-semibold mb-3', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                  Muscle Groups
+                </Text>
+                
+                <View className="flex-row flex-wrap gap-2">
+                  {/* Chest */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('chest')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('chest') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="heart" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Chest
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Back */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('back')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('back') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="flash" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Back
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Shoulders */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('shoulders')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('shoulders') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="shield" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Shoulders
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Biceps */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('biceps')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('biceps') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="fitness" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Biceps
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Triceps */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('triceps')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('triceps') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="barbell" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Triceps
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Quads */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('quads')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('quads') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="pulse" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Quads
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Hamstrings */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('hamstrings')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('hamstrings') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="contract" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Hamstrings
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Glutes */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('glutes')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('glutes') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="ellipse" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Glutes
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Calves */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('calves')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('calves') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="arrow-up" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Calves
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Abs */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('abs')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('abs') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="square" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Abs
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+
+                  {/* Cardio */}
+                  <Pressable
+                    onPress={() => toggleMuscleGroup('cardio')}
+                    className="w-[48%]"
+                  >
+                    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                      <View
+                        className={cn(
+                          'p-4 flex-row items-center',
+                          selectedMuscleGroups.includes('cardio') ? 'border-2 border-blue-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                      >
+                        <Ionicons name="heart-circle" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
+                          Cardio
+                        </Text>
+                      </View>
+                    </BlurView>
+                  </Pressable>
+                </View>
+              </View>
             )}
           </View>
         )}
