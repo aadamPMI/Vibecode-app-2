@@ -39,6 +39,7 @@ export default function ProgramWizardScreen() {
     name: string;
     muscleGroups: MuscleGroup[];
     isRestDay: boolean;
+    exercises: string[];
   }>>([]);
   const [selectedDayForExercises, setSelectedDayForExercises] = useState<string | null>(null);
 
@@ -66,6 +67,7 @@ export default function ProgramWizardScreen() {
         name: dayName,
         muscleGroups: selectedMuscleGroups,
         isRestDay: isRestDay,
+        exercises: [] as string[], // Initialize empty exercises array
       };
       setWorkoutDays([...workoutDays, newDay]);
       
@@ -77,7 +79,24 @@ export default function ProgramWizardScreen() {
       
       setCurrentStep(3);
     } else if (currentStep === 3) {
-      // Move to step 4 or finish
+      // Add mock exercises to selected day and move to step 4
+      if (selectedDayForExercises) {
+        const updatedDays = workoutDays.map(day => {
+          if (day.id === selectedDayForExercises) {
+            // Add mock exercises based on muscle groups
+            const mockExercises: string[] = [];
+            if (day.muscleGroups.includes('chest')) mockExercises.push('Bench Press', 'Push-ups');
+            if (day.muscleGroups.includes('back')) mockExercises.push('Lat Pulldowns', 'Barbell Rows');
+            if (day.muscleGroups.includes('quads')) mockExercises.push('Squats');
+            if (day.muscleGroups.includes('biceps')) mockExercises.push('Barbell Curls');
+            if (day.muscleGroups.includes('cardio')) mockExercises.push('Running', 'Cycling');
+            
+            return { ...day, exercises: mockExercises.length > 0 ? mockExercises : ['Sample Exercise 1', 'Sample Exercise 2'] };
+          }
+          return day;
+        });
+        setWorkoutDays(updatedDays);
+      }
       setCurrentStep(4);
     }
   };
@@ -987,11 +1006,196 @@ export default function ProgramWizardScreen() {
             </View>
           </View>
         )}
+
+        {/* Step 4 - Review Program */}
+        {currentStep === 4 && (
+          <View className="px-6">
+            {/* Header Section */}
+            <Animated.View
+              entering={FadeInDown.delay(100).duration(400).springify()}
+              className="mb-6"
+            >
+              <Text className={cn('text-3xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                Review Your Program
+              </Text>
+              <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                Review your workout program before activating it
+              </Text>
+            </Animated.View>
+
+            {/* Split Name */}
+            <Animated.View
+              entering={FadeInDown.delay(200).duration(400).springify()}
+              className="mb-6"
+            >
+              <Text className={cn('text-sm font-semibold mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                Split Name
+              </Text>
+              <Text className={cn('text-2xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                {programName || (selectedSplit === 'push-pull-legs' ? 'Push/Pull/Legs' : 
+                  selectedSplit === 'upper-lower' ? 'Upper/Lower' : 
+                  selectedSplit === 'full-body' ? 'Full Body' : 'Custom Split')}
+              </Text>
+            </Animated.View>
+
+            {/* Workout Days */}
+            <Animated.View
+              entering={FadeInDown.delay(300).duration(400).springify()}
+              className="mb-6"
+            >
+              <Text className={cn('text-sm font-semibold mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                Workout Days ({workoutDays.length})
+              </Text>
+
+              <View className="gap-4">
+                {workoutDays.map((day, index) => (
+                  <BlurView 
+                    key={day.id}
+                    intensity={60} 
+                    tint={isDark ? 'dark' : 'light'} 
+                    className="rounded-3xl overflow-hidden"
+                  >
+                    <View
+                      className={cn('p-5', isDark ? 'bg-white/5' : 'bg-white/40')}
+                      style={{
+                        shadowColor: isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: 0.15,
+                        shadowRadius: 12,
+                        elevation: 5,
+                      }}
+                    >
+                      <Text className={cn('text-xl font-bold mb-3', isDark ? 'text-white' : 'text-black')}>
+                        {day.name}
+                      </Text>
+
+                      {/* Muscle Groups */}
+                      {!day.isRestDay && day.muscleGroups.length > 0 && (
+                        <View className="mb-3">
+                          <View className="flex-row flex-wrap gap-2">
+                            {day.muscleGroups.map((muscle) => (
+                              <View
+                                key={muscle}
+                                className={cn(
+                                  'px-3 py-1 rounded-full',
+                                  isDark ? 'bg-blue-500/20' : 'bg-blue-100'
+                                )}
+                              >
+                                <Text className={cn('text-xs font-bold capitalize', isDark ? 'text-blue-400' : 'text-blue-600')}>
+                                  {muscle}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                      )}
+
+                      {/* Exercises */}
+                      <View>
+                        <Text className={cn('text-xs font-semibold mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                          Exercises ({day.exercises.length})
+                        </Text>
+                        
+                        {day.exercises.length > 0 ? (
+                          <View className="gap-1">
+                            {day.exercises.map((exercise, idx) => (
+                              <Text 
+                                key={idx}
+                                className={cn('text-sm', isDark ? 'text-gray-300' : 'text-gray-700')}
+                              >
+                                • {exercise}
+                              </Text>
+                            ))}
+                          </View>
+                        ) : (
+                          <Text className={cn('text-sm italic', isDark ? 'text-gray-500' : 'text-gray-400')}>
+                            No exercises added yet
+                          </Text>
+                        )}
+                      </View>
+
+                      {day.isRestDay && (
+                        <View
+                          className={cn(
+                            'px-3 py-1 rounded-full self-start',
+                            isDark ? 'bg-green-500/20' : 'bg-green-100'
+                          )}
+                        >
+                          <Text className={cn('text-xs font-bold', isDark ? 'text-green-400' : 'text-green-600')}>
+                            Rest Day
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  </BlurView>
+                ))}
+              </View>
+            </Animated.View>
+
+            {/* Create & Activate Button */}
+            <Animated.View
+              entering={FadeInDown.delay(400).duration(400).springify()}
+              className="mb-6"
+            >
+              <Pressable
+                onPress={() => {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  // TODO: Save program and activate
+                  navigation.goBack();
+                }}
+              >
+                <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                  <View
+                    className="bg-purple-500 p-5 flex-row items-center justify-center"
+                    style={{
+                      shadowColor: '#a855f7',
+                      shadowOffset: { width: 0, height: 8 },
+                      shadowOpacity: 0.5,
+                      shadowRadius: 16,
+                      elevation: 10,
+                    }}
+                  >
+                    <Ionicons name="checkmark-circle" size={24} color="white" />
+                    <Text className="text-white font-bold text-lg ml-2">
+                      Create & Activate Program
+                    </Text>
+                  </View>
+                </BlurView>
+              </Pressable>
+            </Animated.View>
+          </View>
+        )}
       </ScrollView>
 
       {/* Bottom Actions */}
       <View className="px-6 pb-6">
-        <View className="flex-row gap-3">
+        {currentStep === 4 ? (
+          // Step 4 - Only Back button
+          <Pressable
+            onPress={handleBack}
+            className="flex-1"
+          >
+            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+              <View 
+                className={cn('py-4 flex-row items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/5')}
+                style={{
+                  shadowColor: isDark ? '#000' : '#1f2937',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 8,
+                  elevation: 3,
+                }}
+              >
+                <Ionicons name="arrow-back" size={20} color={isDark ? '#fff' : '#000'} />
+                <Text className={cn('font-bold ml-2', isDark ? 'text-white' : 'text-black')}>
+                  Back
+                </Text>
+              </View>
+            </BlurView>
+          </Pressable>
+        ) : (
+          // Steps 1-3 - Back and Next buttons
+          <View className="flex-row gap-3">
           <Pressable
             onPress={handleBack}
             className="flex-1"
@@ -1088,6 +1292,7 @@ export default function ProgramWizardScreen() {
             </BlurView>
           </Pressable>
         </View>
+        )}
       </View>
     </SafeAreaView>
   );
