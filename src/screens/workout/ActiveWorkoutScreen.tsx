@@ -27,6 +27,7 @@ export default function ActiveWorkoutScreen() {
   const pauseSession = useTrainingStore(state => state.pauseSession);
   const logSet = useTrainingStore(state => state.logSet);
   const updateSet = useTrainingStore(state => state.updateSet);
+  const substituteExercise = useTrainingStore(state => state.substituteExercise);
   const preferences = useTrainingStore(state => state.preferences);
 
   const [currentSession, setCurrentSession] = useState<Session | null>(activeSession);
@@ -113,6 +114,14 @@ export default function ActiveWorkoutScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     pauseSession(currentSession.id);
     navigation.goBack();
+  };
+
+  const handleSwapExercise = (exerciseId: string) => {
+    // Navigate to exercise selector to pick a replacement
+    navigation.navigate('ExerciseSelector', { 
+      returnScreen: 'ActiveWorkout',
+      exerciseToReplace: exerciseId 
+    });
   };
 
   if (!currentSession) {
@@ -206,6 +215,7 @@ export default function ActiveWorkoutScreen() {
               setExpandedExercises(newExpanded);
             }}
             onSetComplete={handleSetComplete}
+            onSwapExercise={handleSwapExercise}
             unit={preferences.unit}
             isDark={isDark}
           />
@@ -364,6 +374,7 @@ function ExerciseCard({
   isExpanded,
   onToggle,
   onSetComplete,
+  onSwapExercise,
   unit,
   isDark,
 }: {
@@ -371,6 +382,7 @@ function ExerciseCard({
   isExpanded: boolean;
   onToggle: () => void;
   onSetComplete: (exerciseId: string, setIndex: number, reps: number, load: number, rpe?: number) => void;
+  onSwapExercise: (exerciseId: string) => void;
   unit: 'kg' | 'lbs';
   isDark: boolean;
 }) {
@@ -389,8 +401,8 @@ function ExerciseCard({
           elevation: 4,
         }}
       >
-        <Pressable onPress={onToggle} className="flex-row justify-between items-center">
-          <View className="flex-1 mr-3">
+        <View className="flex-row justify-between items-center mb-3">
+          <Pressable onPress={onToggle} className="flex-1 mr-3">
             <View className="flex-row items-center mb-2">
               <Text className={cn('font-bold text-lg flex-1', isDark ? 'text-white' : 'text-black')}>
                 {exercise.exerciseName}
@@ -408,18 +420,30 @@ function ExerciseCard({
                 </Text>
               </View>
             </View>
+          </Pressable>
+          
+          <View className="flex-row items-center gap-2">
+            <Pressable
+              onPress={() => onSwapExercise(exercise.id)}
+              className={cn('w-10 h-10 rounded-full items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/10')}
+            >
+              <Ionicons name="swap-horizontal" size={20} color={isDark ? '#fff' : '#000'} />
+            </Pressable>
+            <Pressable
+              onPress={onToggle}
+              className={cn('w-10 h-10 rounded-full items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/10')}
+            >
+              <Ionicons 
+                name={isExpanded ? 'chevron-up' : 'chevron-down'} 
+                size={20} 
+                color={isDark ? '#fff' : '#000'} 
+              />
+            </Pressable>
           </View>
-          <View className={cn('w-8 h-8 rounded-full items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/10')}>
-            <Ionicons 
-              name={isExpanded ? 'chevron-up' : 'chevron-down'} 
-              size={20} 
-              color={isDark ? '#fff' : '#000'} 
-            />
-          </View>
-        </Pressable>
+        </View>
 
         {isExpanded && (
-          <View className="mt-4">
+          <View className="mt-2">
             {exercise.sets.map((set: SetLog, setIndex: number) => (
               <SetRow
                 key={set.id}
