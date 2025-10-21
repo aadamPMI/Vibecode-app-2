@@ -32,6 +32,15 @@ export default function ProgramWizardScreen() {
   const [isRestDay, setIsRestDay] = useState(false);
   const [selectedDayPreset, setSelectedDayPreset] = useState<DayPreset | null>(null);
   const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<MuscleGroup[]>([]);
+  
+  // Step 3 - Days list and selection
+  const [workoutDays, setWorkoutDays] = useState<Array<{
+    id: string;
+    name: string;
+    muscleGroups: MuscleGroup[];
+    isRestDay: boolean;
+  }>>([]);
+  const [selectedDayForExercises, setSelectedDayForExercises] = useState<string | null>(null);
 
   const handleSplitSelect = (splitType: SplitType) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -51,8 +60,25 @@ export default function ProgramWizardScreen() {
         setCurrentStep(2);
       }
     } else if (currentStep === 2) {
-      // Move to step 3
+      // Save the day and move to step 3
+      const newDay = {
+        id: Date.now().toString(),
+        name: dayName,
+        muscleGroups: selectedMuscleGroups,
+        isRestDay: isRestDay,
+      };
+      setWorkoutDays([...workoutDays, newDay]);
+      
+      // Reset step 2 fields
+      setDayName('');
+      setSelectedMuscleGroups([]);
+      setIsRestDay(false);
+      setSelectedDayPreset(null);
+      
       setCurrentStep(3);
+    } else if (currentStep === 3) {
+      // Move to step 4 or finish
+      setCurrentStep(4);
     }
   };
 
@@ -144,7 +170,13 @@ export default function ProgramWizardScreen() {
                 Create Workout Program
               </Text>
               <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                {currentStep === 1 ? 'Choose your workout split' : currentStep === 2 ? 'Create workout days' : ''}
+                {currentStep === 1 
+                  ? 'Choose your workout split' 
+                  : currentStep === 2 
+                  ? 'Create workout days' 
+                  : currentStep === 3
+                  ? 'Add exercises to days'
+                  : 'Review program'}
               </Text>
             </View>
             <Pressable
@@ -789,6 +821,172 @@ export default function ProgramWizardScreen() {
             )}
           </View>
         )}
+
+        {/* Step 3 - Select Day to Add Exercises */}
+        {currentStep === 3 && (
+          <View className="px-6">
+            {/* Section Title */}
+            <Animated.View
+              entering={FadeInDown.delay(100).duration(400).springify()}
+              className="mb-6"
+            >
+              <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                Select a Day to Add Exercises
+              </Text>
+              <View className="flex-row items-start">
+                <Text className="text-xl mr-2">👆</Text>
+                <Text className={cn('text-sm flex-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  Click a day below to start adding exercises
+                </Text>
+              </View>
+            </Animated.View>
+
+            {/* Days List */}
+            <View className="gap-4 mb-6">
+              {workoutDays.map((day, index) => (
+                <Animated.View
+                  key={day.id}
+                  entering={FadeInDown.delay(200 + index * 100).duration(400).springify()}
+                >
+                  <Pressable
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setSelectedDayForExercises(day.id);
+                    }}
+                  >
+                    <BlurView 
+                      intensity={80} 
+                      tint={isDark ? 'dark' : 'light'} 
+                      className="rounded-3xl overflow-hidden"
+                    >
+                      <View
+                        className={cn(
+                          'p-6',
+                          selectedDayForExercises === day.id ? 'border-2 border-purple-500' : '',
+                          isDark ? 'bg-white/5' : 'bg-white/40'
+                        )}
+                        style={{
+                          shadowColor: selectedDayForExercises === day.id ? '#a855f7' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 8 },
+                          shadowOpacity: selectedDayForExercises === day.id ? 0.4 : isDark ? 0.3 : 0.1,
+                          shadowRadius: 16,
+                          elevation: selectedDayForExercises === day.id ? 10 : 5,
+                        }}
+                      >
+                        <View className="flex-row items-center justify-between">
+                          <View className="flex-1">
+                            <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                              {day.name}
+                            </Text>
+                            <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                              0 exercises
+                            </Text>
+                          </View>
+                          
+                          {selectedDayForExercises === day.id && (
+                            <View className="w-8 h-8 rounded-full bg-purple-500 items-center justify-center">
+                              <Ionicons name="checkmark" size={20} color="white" />
+                            </View>
+                          )}
+                        </View>
+
+                        {/* Muscle Groups Tags */}
+                        {!day.isRestDay && day.muscleGroups.length > 0 && (
+                          <View className="flex-row flex-wrap gap-2 mt-3">
+                            {day.muscleGroups.slice(0, 4).map((muscle) => (
+                              <View
+                                key={muscle}
+                                className={cn(
+                                  'px-3 py-1 rounded-full',
+                                  isDark ? 'bg-blue-500/20' : 'bg-blue-100'
+                                )}
+                              >
+                                <Text className={cn('text-xs font-bold capitalize', isDark ? 'text-blue-400' : 'text-blue-600')}>
+                                  {muscle}
+                                </Text>
+                              </View>
+                            ))}
+                            {day.muscleGroups.length > 4 && (
+                              <View
+                                className={cn(
+                                  'px-3 py-1 rounded-full',
+                                  isDark ? 'bg-gray-700' : 'bg-gray-200'
+                                )}
+                              >
+                                <Text className={cn('text-xs font-bold', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                                  +{day.muscleGroups.length - 4}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        )}
+
+                        {day.isRestDay && (
+                          <View className="mt-2">
+                            <View
+                              className={cn(
+                                'px-3 py-1 rounded-full self-start',
+                                isDark ? 'bg-green-500/20' : 'bg-green-100'
+                              )}
+                            >
+                              <Text className={cn('text-xs font-bold', isDark ? 'text-green-400' : 'text-green-600')}>
+                                Rest Day
+                              </Text>
+                            </View>
+                          </View>
+                        )}
+                      </View>
+                    </BlurView>
+                  </Pressable>
+                </Animated.View>
+              ))}
+
+              {/* Add Another Day Button */}
+              <Animated.View
+                entering={FadeInDown.delay(200 + workoutDays.length * 100).duration(400).springify()}
+              >
+                <Pressable
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    setCurrentStep(2);
+                  }}
+                >
+                  <BlurView 
+                    intensity={60} 
+                    tint={isDark ? 'dark' : 'light'} 
+                    className="rounded-3xl overflow-hidden"
+                  >
+                    <View
+                      className={cn(
+                        'p-6 flex-row items-center justify-center',
+                        isDark ? 'bg-white/5' : 'bg-white/40'
+                      )}
+                      style={{
+                        shadowColor: isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
+                        elevation: 3,
+                        borderStyle: 'dashed',
+                        borderWidth: 2,
+                        borderColor: isDark ? '#4b5563' : '#d1d5db',
+                      }}
+                    >
+                      <Ionicons 
+                        name="add-circle-outline" 
+                        size={24} 
+                        color={isDark ? '#9ca3af' : '#6b7280'} 
+                      />
+                      <Text className={cn('ml-2 font-bold', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                        Add Another Day
+                      </Text>
+                    </View>
+                  </BlurView>
+                </Pressable>
+              </Animated.View>
+            </View>
+          </View>
+        )}
       </ScrollView>
 
       {/* Bottom Actions */}
@@ -819,34 +1017,72 @@ export default function ProgramWizardScreen() {
 
           <Pressable
             onPress={handleNext}
-            disabled={!selectedSplit}
+            disabled={
+              (currentStep === 1 && !selectedSplit) ||
+              (currentStep === 2 && !dayName.trim() && !isRestDay) ||
+              (currentStep === 3 && !selectedDayForExercises)
+            }
             className="flex-1"
           >
             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
               <View 
                 className={cn(
                   'py-4 flex-row items-center justify-center',
-                  selectedSplit
+                  ((currentStep === 1 && selectedSplit) ||
+                   (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                   (currentStep === 3 && selectedDayForExercises))
                     ? 'bg-purple-500'
                     : isDark
                     ? 'bg-gray-700'
                     : 'bg-gray-300'
                 )}
                 style={{
-                  shadowColor: selectedSplit ? '#a855f7' : '#6b7280',
+                  shadowColor: 
+                    ((currentStep === 1 && selectedSplit) ||
+                     (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                     (currentStep === 3 && selectedDayForExercises))
+                      ? '#a855f7' 
+                      : '#6b7280',
                   shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: selectedSplit ? 0.4 : 0.2,
+                  shadowOpacity: 
+                    ((currentStep === 1 && selectedSplit) ||
+                     (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                     (currentStep === 3 && selectedDayForExercises))
+                      ? 0.4 
+                      : 0.2,
                   shadowRadius: 12,
-                  elevation: selectedSplit ? 8 : 3,
+                  elevation: 
+                    ((currentStep === 1 && selectedSplit) ||
+                     (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                     (currentStep === 3 && selectedDayForExercises))
+                      ? 8 
+                      : 3,
                 }}
               >
-                <Text className={cn('font-bold mr-2', selectedSplit ? 'text-white' : isDark ? 'text-gray-500' : 'text-gray-400')}>
+                <Text className={cn(
+                  'font-bold mr-2', 
+                  ((currentStep === 1 && selectedSplit) ||
+                   (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                   (currentStep === 3 && selectedDayForExercises))
+                    ? 'text-white' 
+                    : isDark 
+                    ? 'text-gray-500' 
+                    : 'text-gray-400'
+                )}>
                   Next
                 </Text>
                 <Ionicons 
                   name="arrow-forward" 
                   size={20} 
-                  color={selectedSplit ? '#fff' : isDark ? '#6b7280' : '#9ca3af'} 
+                  color={
+                    ((currentStep === 1 && selectedSplit) ||
+                     (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                     (currentStep === 3 && selectedDayForExercises))
+                      ? '#fff' 
+                      : isDark 
+                      ? '#6b7280' 
+                      : '#9ca3af'
+                  } 
                 />
               </View>
             </BlurView>
