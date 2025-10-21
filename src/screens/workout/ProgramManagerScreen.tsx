@@ -175,78 +175,104 @@ export default function ProgramManagerScreen() {
                   elevation="md"
                   borderGlow={program.isActive}
                   glowColor="#3b82f6"
-                  className="p-5 mb-4"
+                  className="p-6 mb-4"
                 >
-                  <View className="flex-row justify-between items-start mb-3">
-                    <View className="flex-1">
-                      <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
+                  {/* Header */}
+                  <View className="flex-row justify-between items-start mb-4">
+                    <View className="flex-1 mr-3">
+                      <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
                         {program.name}
                       </Text>
                       {program.description && (
-                        <Text className={cn('text-sm mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                        <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
                           {program.description}
                         </Text>
                       )}
                     </View>
                     {program.isActive && (
-                      <View className="bg-blue-500 px-3 py-1 rounded-full">
+                      <View className="bg-green-500 px-3 py-1.5 rounded-full">
                         <Text className="text-white text-xs font-bold">ACTIVE</Text>
                       </View>
                     )}
                   </View>
 
-                  <View className="flex-row flex-wrap mb-4">
-                    <View className="mr-4 mb-2">
-                      <Text className={cn('text-xs', isDark ? 'text-gray-500' : 'text-gray-500')}>
+                  {/* Stats Row */}
+                  <View className="flex-row mb-5">
+                    <View className="flex-1">
+                      <Text className={cn('text-xs mb-1', isDark ? 'text-gray-500' : 'text-gray-500')}>
                         Days/Week
                       </Text>
-                      <Text className={cn('text-base font-semibold', isDark ? 'text-blue-400' : 'text-blue-600')}>
+                      <Text className={cn('text-2xl font-bold', isDark ? 'text-blue-400' : 'text-blue-600')}>
                         {program.split.daysPerWeek}
                       </Text>
                     </View>
-                    <View className="mr-4 mb-2">
-                      <Text className={cn('text-xs', isDark ? 'text-gray-500' : 'text-gray-500')}>
+                    <View className="flex-1">
+                      <Text className={cn('text-xs mb-1', isDark ? 'text-gray-500' : 'text-gray-500')}>
                         Workouts
                       </Text>
-                      <Text className={cn('text-base font-semibold', isDark ? 'text-green-400' : 'text-green-600')}>
+                      <Text className={cn('text-2xl font-bold', isDark ? 'text-green-400' : 'text-green-600')}>
                         {program.workoutTemplates.length}
                       </Text>
                     </View>
-                    <View className="mb-2">
-                      <Text className={cn('text-xs', isDark ? 'text-gray-500' : 'text-gray-500')}>
+                    <View className="flex-1">
+                      <Text className={cn('text-xs mb-1', isDark ? 'text-gray-500' : 'text-gray-500')}>
                         Duration
                       </Text>
-                      <Text className={cn('text-base font-semibold', isDark ? 'text-purple-400' : 'text-purple-600')}>
+                      <Text className={cn('text-2xl font-bold', isDark ? 'text-purple-400' : 'text-purple-600')}>
                         {program.durationWeeks}w
                       </Text>
                     </View>
                   </View>
 
-                  <View className="flex-row gap-2">
+                  {/* Action Buttons */}
+                  <View className="flex-row gap-3">
                     {!program.isActive && (
                       <Pressable
                         onPress={() => handleActivate(program.id)}
-                        className="flex-1 bg-blue-500 py-3 rounded-2xl"
+                        className="flex-1 py-3.5 rounded-2xl"
+                        style={{
+                          backgroundColor: '#3b82f6',
+                          shadowColor: '#3b82f6',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 8,
+                          elevation: 4,
+                        }}
                       >
-                        <Text className="text-white font-bold text-center">Activate</Text>
+                        <Text className="text-white font-bold text-center text-base">Activate</Text>
                       </Pressable>
                     )}
                     <Pressable
                       onPress={() => navigation.navigate('ProgramBuilder', { programId: program.id })}
                       className={cn(
-                        'flex-1 py-3 rounded-2xl',
-                        isDark ? 'bg-[#1a1a1a]' : 'bg-gray-200'
+                        program.isActive ? 'flex-1' : 'flex-1',
+                        'py-3.5 rounded-2xl',
+                        isDark ? 'bg-white/10' : 'bg-gray-200'
                       )}
+                      style={{
+                        shadowColor: isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        elevation: 2,
+                      }}
                     >
-                      <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-gray-900')}>
+                      <Text className={cn('font-bold text-center text-base', isDark ? 'text-white' : 'text-gray-900')}>
                         Edit
                       </Text>
                     </Pressable>
                     <Pressable
                       onPress={() => handleDelete(program)}
-                      className="py-3 px-4 rounded-2xl bg-red-500/20"
+                      className="py-3.5 px-5 rounded-2xl bg-red-500/20"
+                      style={{
+                        shadowColor: '#ef4444',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.2,
+                        shadowRadius: 4,
+                        elevation: 2,
+                      }}
                     >
-                      <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                      <Ionicons name="trash-outline" size={22} color="#ef4444" />
                     </Pressable>
                   </View>
                 </GlassCard>
