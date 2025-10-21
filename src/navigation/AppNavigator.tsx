@@ -3,7 +3,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
-import WorkoutScreen from "../screens/WorkoutScreen";
+import WorkoutHomeScreen from "../screens/workout/WorkoutHomeScreen";
+import ProgramManagerScreen from "../screens/workout/ProgramManagerScreen";
+import ProgramBuilderScreen from "../screens/workout/ProgramBuilderScreen";
+import ExerciseLibraryScreen from "../screens/workout/ExerciseLibraryScreen";
+import ActiveWorkoutScreen from "../screens/workout/ActiveWorkoutScreen";
+import WorkoutSummaryScreen from "../screens/workout/WorkoutSummaryScreen";
+import WorkoutHistoryScreen from "../screens/workout/WorkoutHistoryScreen";
 import NutritionScreen from "../screens/NutritionScreen";
 import CommunityScreen from "../screens/CommunityScreen";
 import MyCommunitiesScreen from "../screens/MyCommunitiesScreen";
@@ -34,7 +40,13 @@ export type RootTabParamList = {
 };
 
 export type WorkoutStackParamList = {
-  Workout: undefined;
+  WorkoutHome: undefined;
+  ProgramManager: undefined;
+  ProgramBuilder: undefined;
+  ExerciseLibrary: undefined;
+  ActiveWorkout: undefined;
+  WorkoutSummary: { sessionId: string };
+  WorkoutHistory: undefined;
   WeightTracking: undefined;
 };
 
@@ -56,7 +68,13 @@ function WorkoutStackNavigator() {
         animationDuration: 200,
       }}
     >
-      <WorkoutStack.Screen name="Workout" component={WorkoutScreen} />
+      <WorkoutStack.Screen name="WorkoutHome" component={WorkoutHomeScreen} />
+      <WorkoutStack.Screen name="ProgramManager" component={ProgramManagerScreen} />
+      <WorkoutStack.Screen name="ProgramBuilder" component={ProgramBuilderScreen} />
+      <WorkoutStack.Screen name="ExerciseLibrary" component={ExerciseLibraryScreen} />
+      <WorkoutStack.Screen name="ActiveWorkout" component={ActiveWorkoutScreen} />
+      <WorkoutStack.Screen name="WorkoutSummary" component={WorkoutSummaryScreen} />
+      <WorkoutStack.Screen name="WorkoutHistory" component={WorkoutHistoryScreen} />
       <WorkoutStack.Screen name="WeightTracking" component={WeightTrackingScreen} />
     </WorkoutStack.Navigator>
   );
