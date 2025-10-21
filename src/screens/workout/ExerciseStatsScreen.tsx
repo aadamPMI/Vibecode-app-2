@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { LineChart } from 'react-native-chart-kit';
 import { cn } from '../../utils/cn';
 import { useSettingsStore } from '../../state/settingsStore';
 import { useTrainingStore } from '../../state/trainingStore';
@@ -307,35 +306,7 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({ exerciseId, onB
                   Strength Progress
                 </Text>
                 <GlassCard intensity={60} isDark={isDark} className="p-4">
-                  <LineChart
-                    data={{
-                      labels: chartLabels,
-                      datasets: [{ data: chartData }],
-                    }}
-                    width={width - 80}
-                    height={220}
-                    chartConfig={{
-                      backgroundColor: isDark ? '#0a0a0a' : '#fff',
-                      backgroundGradientFrom: isDark ? '#1a1a1a' : '#f9fafb',
-                      backgroundGradientTo: isDark ? '#0a0a0a' : '#fff',
-                      decimalPlaces: 0,
-                      color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
-                      labelColor: (opacity = 1) => (isDark ? `rgba(255, 255, 255, ${opacity})` : `rgba(0, 0, 0, ${opacity})`),
-                      style: {
-                        borderRadius: 16,
-                      },
-                      propsForDots: {
-                        r: '5',
-                        strokeWidth: '2',
-                        stroke: '#3b82f6',
-                      },
-                    }}
-                    bezier
-                    style={{
-                      marginVertical: 8,
-                      borderRadius: 16,
-                    }}
-                  />
+                  <SimpleLineChart data={chartData} labels={chartLabels} isDark={isDark} />
                   <Text className={cn('text-sm text-center mt-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
                     Total Volume (kg) over Time
                   </Text>
@@ -387,6 +358,141 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({ exerciseId, onB
         )}
       </ScrollView>
     </SafeAreaView>
+  );
+};
+
+// Simple Line Chart Component
+interface SimpleLineChartProps {
+  data: number[];
+  labels: string[];
+  isDark: boolean;
+}
+
+const SimpleLineChart: React.FC<SimpleLineChartProps> = ({ data, labels, isDark }) => {
+  const chartWidth = width - 80;
+  const chartHeight = 220;
+  const padding = 20;
+  const graphWidth = chartWidth - padding * 2;
+  const graphHeight = chartHeight - padding * 2;
+
+  const maxValue = Math.max(...data);
+  const minValue = Math.min(...data);
+  const valueRange = maxValue - minValue || 1;
+
+  // Calculate points
+  const points = data.map((value, index) => {
+    const x = padding + (index / (data.length - 1)) * graphWidth;
+    const y = padding + graphHeight - ((value - minValue) / valueRange) * graphHeight;
+    return { x, y, value };
+  });
+
+  // Create path
+  const pathData = points.map((point, index) => {
+    if (index === 0) return `M ${point.x} ${point.y}`;
+    return `L ${point.x} ${point.y}`;
+  }).join(' ');
+
+  return (
+    <View style={{ width: chartWidth, height: chartHeight }}>
+      {/* Y-axis labels */}
+      <View style={{ position: 'absolute', left: 0, top: padding }}>
+        <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
+          {Math.round(maxValue)}
+        </Text>
+      </View>
+      <View style={{ position: 'absolute', left: 0, bottom: padding }}>
+        <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
+          {Math.round(minValue)}
+        </Text>
+      </View>
+
+      {/* Chart area */}
+      <View className={cn('rounded-2xl', isDark ? 'bg-[#1a1a1a]' : 'bg-gray-100')} 
+        style={{ width: chartWidth, height: chartHeight }}>
+        {/* Grid lines */}
+        {[0, 0.25, 0.5, 0.75, 1].map((fraction, index) => {
+          const y = padding + graphHeight * (1 - fraction);
+          return (
+            <View
+              key={index}
+              style={{
+                position: 'absolute',
+                left: padding,
+                top: y,
+                width: graphWidth,
+                height: 1,
+                backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+              }}
+            />
+          );
+        })}
+
+        {/* Data points and line */}
+        {points.map((point, index) => (
+          <View key={index}>
+            {/* Line segment */}
+            {index > 0 && (
+              <View
+                style={{
+                  position: 'absolute',
+                  left: points[index - 1].x,
+                  top: points[index - 1].y,
+                  width: Math.hypot(
+                    point.x - points[index - 1].x,
+                    point.y - points[index - 1].y
+                  ),
+                  height: 2,
+                  backgroundColor: '#3b82f6',
+                  transform: [
+                    {
+                      rotate: `${Math.atan2(
+                        point.y - points[index - 1].y,
+                        point.x - points[index - 1].x
+                      )}rad`,
+                    },
+                  ],
+                  transformOrigin: '0 0',
+                }}
+              />
+            )}
+            {/* Data point */}
+            <View
+              style={{
+                position: 'absolute',
+                left: point.x - 5,
+                top: point.y - 5,
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                backgroundColor: '#3b82f6',
+                borderWidth: 2,
+                borderColor: isDark ? '#0a0a0a' : '#fff',
+              }}
+            />
+          </View>
+        ))}
+
+        {/* X-axis labels */}
+        {labels.map((label, index) => {
+          if (!label) return null;
+          const x = padding + (index / (data.length - 1)) * graphWidth;
+          return (
+            <Text
+              key={index}
+              className={cn('text-xs absolute', isDark ? 'text-gray-400' : 'text-gray-600')}
+              style={{
+                left: x - 20,
+                bottom: 2,
+                width: 40,
+                textAlign: 'center',
+              }}
+            >
+              {label}
+            </Text>
+          );
+        })}
+      </View>
+    </View>
   );
 };
 
