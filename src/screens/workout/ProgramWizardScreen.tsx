@@ -285,22 +285,29 @@ export default function ProgramWizardScreen() {
         {/* Step 2 - Create Workout Day */}
         {currentStep === 2 && (
           <View className="px-6">
-            {/* Day Preset Buttons */}
+            {/* Day Preset Buttons - Top Row */}
             <View className="mb-6">
               <View className="flex-row flex-wrap gap-3 mb-4">
                 <Pressable
                   onPress={() => handleDayPresetSelect('push')}
                   className="flex-1 min-w-[30%]"
                 >
-                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-4 items-center',
+                        'p-5 items-center aspect-square justify-center',
                         selectedDayPreset === 'push' ? 'border-2 border-purple-500' : '',
-                        isDark ? 'bg-blue-500/20' : 'bg-blue-100'
+                        'bg-blue-500/20'
                       )}
+                      style={{
+                        shadowColor: selectedDayPreset === 'push' ? '#a855f7' : isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: selectedDayPreset === 'push' ? 0.4 : 0.2,
+                        shadowRadius: 12,
+                        elevation: selectedDayPreset === 'push' ? 8 : 4,
+                      }}
                     >
-                      <Ionicons name="fitness" size={28} color="#3b82f6" />
+                      <Ionicons name="fitness" size={32} color="#3b82f6" />
                       <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
                         Push
                       </Text>
@@ -312,15 +319,22 @@ export default function ProgramWizardScreen() {
                   onPress={() => handleDayPresetSelect('pull')}
                   className="flex-1 min-w-[30%]"
                 >
-                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-4 items-center',
+                        'p-5 items-center aspect-square justify-center',
                         selectedDayPreset === 'pull' ? 'border-2 border-purple-500' : '',
-                        isDark ? 'bg-pink-500/20' : 'bg-pink-100'
+                        'bg-pink-500/20'
                       )}
+                      style={{
+                        shadowColor: selectedDayPreset === 'pull' ? '#a855f7' : isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: selectedDayPreset === 'pull' ? 0.4 : 0.2,
+                        shadowRadius: 12,
+                        elevation: selectedDayPreset === 'pull' ? 8 : 4,
+                      }}
                     >
-                      <Ionicons name="contract" size={28} color="#ec4899" />
+                      <Ionicons name="contract" size={32} color="#ec4899" />
                       <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
                         Pull
                       </Text>
@@ -332,35 +346,51 @@ export default function ProgramWizardScreen() {
                   onPress={() => handleDayPresetSelect('legs')}
                   className="flex-1 min-w-[30%]"
                 >
-                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-4 items-center',
+                        'p-5 items-center aspect-square justify-center',
                         selectedDayPreset === 'legs' ? 'border-2 border-purple-500' : '',
-                        isDark ? 'bg-green-500/20' : 'bg-green-100'
+                        'bg-green-500/20'
                       )}
+                      style={{
+                        shadowColor: selectedDayPreset === 'legs' ? '#a855f7' : isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: selectedDayPreset === 'legs' ? 0.4 : 0.2,
+                        shadowRadius: 12,
+                        elevation: selectedDayPreset === 'legs' ? 8 : 4,
+                      }}
                     >
-                      <Ionicons name="walk" size={28} color="#22c55e" />
+                      <Ionicons name="walk" size={32} color="#22c55e" />
                       <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
                         Legs
                       </Text>
                     </View>
                   </BlurView>
                 </Pressable>
+              </View>
 
+              <View className="flex-row gap-3 mb-4">
                 <Pressable
                   onPress={() => handleDayPresetSelect('upper')}
-                  className="flex-1 min-w-[30%]"
+                  className="flex-1"
                 >
-                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-4 items-center',
+                        'p-5 items-center aspect-square justify-center',
                         selectedDayPreset === 'upper' ? 'border-2 border-purple-500' : '',
-                        isDark ? 'bg-purple-500/20' : 'bg-purple-100'
+                        'bg-purple-500/20'
                       )}
+                      style={{
+                        shadowColor: selectedDayPreset === 'upper' ? '#a855f7' : isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: selectedDayPreset === 'upper' ? 0.4 : 0.2,
+                        shadowRadius: 12,
+                        elevation: selectedDayPreset === 'upper' ? 8 : 4,
+                      }}
                     >
-                      <Ionicons name="body" size={28} color="#a855f7" />
+                      <Ionicons name="body" size={32} color="#a855f7" />
                       <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
                         Upper
                       </Text>
@@ -370,17 +400,24 @@ export default function ProgramWizardScreen() {
 
                 <Pressable
                   onPress={() => handleDayPresetSelect('custom')}
-                  className="flex-1 min-w-[30%]"
+                  className="flex-1"
                 >
-                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                  <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-4 items-center',
+                        'p-5 items-center aspect-square justify-center',
                         selectedDayPreset === 'custom' ? 'border-2 border-purple-500' : '',
-                        isDark ? 'bg-orange-500/20' : 'bg-orange-100'
+                        'bg-orange-500/20'
                       )}
+                      style={{
+                        shadowColor: selectedDayPreset === 'custom' ? '#a855f7' : isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 6 },
+                        shadowOpacity: selectedDayPreset === 'custom' ? 0.4 : 0.2,
+                        shadowRadius: 12,
+                        elevation: selectedDayPreset === 'custom' ? 8 : 4,
+                      }}
                     >
-                      <Ionicons name="add" size={28} color="#f97316" />
+                      <Ionicons name="add" size={32} color="#f97316" />
                       <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
                         Custom
                       </Text>
@@ -392,7 +429,7 @@ export default function ProgramWizardScreen() {
 
             {/* Day Name Input */}
             <View className="mb-4">
-              <Text className={cn('text-sm font-semibold mb-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
+              <Text className={cn('text-base font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
                 Day Name *
               </Text>
               <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
@@ -426,7 +463,7 @@ export default function ProgramWizardScreen() {
                 >
                   {isRestDay && <Ionicons name="checkmark" size={16} color="white" />}
                 </View>
-                <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                <Text className={cn('text-base', isDark ? 'text-gray-400' : 'text-gray-600')}>
                   This is a rest day
                 </Text>
               </View>
@@ -435,25 +472,32 @@ export default function ProgramWizardScreen() {
             {/* Muscle Groups */}
             {!isRestDay && (
               <View className="mb-6">
-                <Text className={cn('text-sm font-semibold mb-3', isDark ? 'text-gray-300' : 'text-gray-700')}>
+                <Text className={cn('text-base font-bold mb-3', isDark ? 'text-white' : 'text-black')}>
                   Muscle Groups
                 </Text>
                 
-                <View className="flex-row flex-wrap gap-2">
+                <View className="flex-row flex-wrap gap-3">
                   {/* Chest */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('chest')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('chest') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('chest') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('chest') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('chest') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="heart" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="heart-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Chest
                         </Text>
@@ -464,17 +508,24 @@ export default function ProgramWizardScreen() {
                   {/* Back */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('back')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('back') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('back') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('back') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('back') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="flash" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="flash-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Back
                         </Text>
@@ -485,17 +536,24 @@ export default function ProgramWizardScreen() {
                   {/* Shoulders */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('shoulders')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('shoulders') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('shoulders') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('shoulders') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('shoulders') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="shield" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="shield-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Shoulders
                         </Text>
@@ -506,17 +564,24 @@ export default function ProgramWizardScreen() {
                   {/* Biceps */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('biceps')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('biceps') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('biceps') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('biceps') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('biceps') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="fitness" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="fitness-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Biceps
                         </Text>
@@ -527,17 +592,24 @@ export default function ProgramWizardScreen() {
                   {/* Triceps */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('triceps')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('triceps') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('triceps') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('triceps') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('triceps') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="barbell" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="barbell-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Triceps
                         </Text>
@@ -548,17 +620,24 @@ export default function ProgramWizardScreen() {
                   {/* Quads */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('quads')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('quads') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('quads') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('quads') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('quads') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="pulse" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="pulse-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Quads
                         </Text>
@@ -569,17 +648,24 @@ export default function ProgramWizardScreen() {
                   {/* Hamstrings */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('hamstrings')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('hamstrings') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('hamstrings') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('hamstrings') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('hamstrings') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="contract" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="contract-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Hamstrings
                         </Text>
@@ -590,17 +676,24 @@ export default function ProgramWizardScreen() {
                   {/* Glutes */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('glutes')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('glutes') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('glutes') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('glutes') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('glutes') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="ellipse" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="ellipse-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Glutes
                         </Text>
@@ -611,17 +704,24 @@ export default function ProgramWizardScreen() {
                   {/* Calves */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('calves')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('calves') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('calves') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('calves') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('calves') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="arrow-up" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="arrow-up-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Calves
                         </Text>
@@ -632,17 +732,24 @@ export default function ProgramWizardScreen() {
                   {/* Abs */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('abs')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('abs') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('abs') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('abs') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('abs') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="square" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="square-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Abs
                         </Text>
@@ -653,17 +760,24 @@ export default function ProgramWizardScreen() {
                   {/* Cardio */}
                   <Pressable
                     onPress={() => toggleMuscleGroup('cardio')}
-                    className="w-[48%]"
+                    className="w-[47%]"
                   >
                     <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                       <View
                         className={cn(
-                          'p-4 flex-row items-center',
+                          'p-4 flex-row items-center justify-center',
                           selectedMuscleGroups.includes('cardio') ? 'border-2 border-blue-500' : '',
                           isDark ? 'bg-white/5' : 'bg-white/40'
                         )}
+                        style={{
+                          shadowColor: selectedMuscleGroups.includes('cardio') ? '#3b82f6' : isDark ? '#000' : '#1f2937',
+                          shadowOffset: { width: 0, height: 4 },
+                          shadowOpacity: selectedMuscleGroups.includes('cardio') ? 0.3 : 0.1,
+                          shadowRadius: 8,
+                          elevation: selectedMuscleGroups.includes('cardio') ? 6 : 3,
+                        }}
                       >
-                        <Ionicons name="heart-circle" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Ionicons name="heart-circle-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
                         <Text className={cn('ml-2 font-semibold', isDark ? 'text-white' : 'text-black')}>
                           Cardio
                         </Text>
