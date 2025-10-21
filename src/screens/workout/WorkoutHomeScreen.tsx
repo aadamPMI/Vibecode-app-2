@@ -1,5 +1,5 @@
 // WorkoutHomeScreen - Main hub for workout section
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,6 +14,8 @@ import { PremiumBackground } from '../../components/PremiumBackground';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 
+type CardType = 'workout' | 'programs' | 'history' | 'stats' | null;
+
 export default function WorkoutHomeScreen() {
   const theme = useSettingsStore((s) => s.theme);
   const systemColorScheme = useColorScheme();
@@ -27,11 +29,17 @@ export default function WorkoutHomeScreen() {
   const getWorkoutStats = useTrainingStore(state => state.getWorkoutStats);
   
   const stats = getWorkoutStats();
+  const [expandedCard, setExpandedCard] = useState<CardType>(null);
   
   // Get today's workout
   const today = new Date();
   const todaysWorkout = activeProgram ? getTodaysWorkout(activeProgram, today) : null;
   const upcomingWorkouts = activeProgram ? getUpcomingWorkouts(activeProgram, today, 7) : [];
+
+  const handleCardPress = (cardType: CardType) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setExpandedCard(expandedCard === cardType ? null : cardType);
+  };
 
   return (
     <SafeAreaView className={cn('flex-1', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
@@ -42,475 +50,462 @@ export default function WorkoutHomeScreen() {
           <Text className={cn('text-5xl font-bold', isDark ? 'text-white' : 'text-black')}>
             Workout
           </Text>
-          <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-            {activeProgram ? activeProgram.name : 'No active program'}
-          </Text>
         </View>
 
-        {/* Today's Workout Card with Liquid Glass */}
-        {activeProgram && todaysWorkout?.template ? (
-          <View className="px-6 mb-6">
-            <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
-              <View 
-                className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 12 },
-                  shadowOpacity: isDark ? 0.4 : 0.15,
-                  shadowRadius: 20,
-                  elevation: 8,
-                }}
-              >
-                <View className="flex-row items-center mb-3">
-                  <View className={cn('px-3 py-1 rounded-full', isDark ? 'bg-blue-500/20' : 'bg-blue-500/20')}>
-                    <Text className={cn('text-xs font-bold tracking-wider', isDark ? 'text-blue-400' : 'text-blue-600')}>
-                      TODAY
-                    </Text>
+        {/* 4 Card Grid */}
+        <View className="px-6 mb-4">
+          <View className="flex-row gap-3 mb-3">
+            {/* Active Workout Card */}
+            <Pressable 
+              className="flex-1"
+              onPress={() => handleCardPress('workout')}
+            >
+              <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+                <View 
+                  className={cn(
+                    'p-5 min-h-[140px]',
+                    expandedCard === 'workout' ? 'border-2 border-blue-500' : '',
+                    isDark ? 'bg-white/5' : 'bg-white/40'
+                  )}
+                  style={{
+                    shadowColor: isDark ? '#000' : '#1f2937',
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: isDark ? 0.4 : 0.15,
+                    shadowRadius: 16,
+                    elevation: 8,
+                  }}
+                >
+                  <View className="bg-orange-500/20 w-12 h-12 rounded-2xl items-center justify-center mb-3">
+                    <Ionicons name="flame" size={24} color="#f97316" />
                   </View>
+                  <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
+                    Active Workout
+                  </Text>
+                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    {todaysWorkout?.template ? todaysWorkout.template.name : 'Rest day'}
+                  </Text>
+                  {activeSession ? (
+                    <View className="flex-row items-center">
+                      <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                      <Text className="text-green-500 text-xs font-bold">In Progress</Text>
+                    </View>
+                  ) : todaysWorkout?.template ? (
+                    <View className="flex-row items-center">
+                      <Ionicons name="play" size={14} color="#3b82f6" />
+                      <Text className="text-blue-500 text-xs font-bold ml-1">Start Workout</Text>
+                    </View>
+                  ) : null}
                 </View>
-                <Text className={cn('text-3xl font-bold mb-3', isDark ? 'text-white' : 'text-black')}>
-                  {todaysWorkout.template.name}
-                </Text>
-                <View className="flex-row items-center mb-5">
-                  <View className="flex-row items-center mr-4">
-                    <Ionicons name="barbell-outline" size={18} color={isDark ? '#9ca3af' : '#6b7280'} />
-                    <Text className={cn('text-sm ml-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      {todaysWorkout.template.exercises.length} exercises
-                    </Text>
+              </BlurView>
+            </Pressable>
+
+            {/* My Programs Card */}
+            <Pressable 
+              className="flex-1"
+              onPress={() => handleCardPress('programs')}
+            >
+              <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+                <View 
+                  className={cn(
+                    'p-5 min-h-[140px]',
+                    expandedCard === 'programs' ? 'border-2 border-blue-500' : '',
+                    isDark ? 'bg-white/5' : 'bg-white/40'
+                  )}
+                  style={{
+                    shadowColor: isDark ? '#000' : '#1f2937',
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: isDark ? 0.4 : 0.15,
+                    shadowRadius: 16,
+                    elevation: 8,
+                  }}
+                >
+                  <View className="bg-blue-500/20 w-12 h-12 rounded-2xl items-center justify-center mb-3">
+                    <Ionicons name="list" size={24} color="#3b82f6" />
                   </View>
+                  <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
+                    My Programs
+                  </Text>
+                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    Manage workout splits
+                  </Text>
                   <View className="flex-row items-center">
-                    <Ionicons name="time-outline" size={18} color={isDark ? '#9ca3af' : '#6b7280'} />
-                    <Text className={cn('text-sm ml-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      {todaysWorkout.template.estimatedDuration} min
+                    <Ionicons name="barbell" size={14} color="#9ca3af" />
+                    <Text className={cn('text-xs font-bold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      {programs.length} {programs.length === 1 ? 'split' : 'splits'}
                     </Text>
                   </View>
                 </View>
-                
-                {activeSession ? (
-                  <Pressable
-                    className="rounded-2xl overflow-hidden"
-                    style={{
-                      shadowColor: '#22c55e',
-                      shadowOffset: { width: 0, height: 8 },
-                      shadowOpacity: 0.5,
-                      shadowRadius: 16,
-                      elevation: 10,
-                    }}
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                      navigation.navigate('ActiveWorkout');
-                    }}
-                  >
-                    <LinearGradient
-                      colors={['#22c55e', '#16a34a']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={{ padding: 18, alignItems: 'center' }}
-                    >
-                      <View className="flex-row items-center">
-                        <Ionicons name="play-circle" size={24} color="white" />
-                        <Text className="text-white font-bold text-lg ml-2">Continue Workout</Text>
-                      </View>
-                    </LinearGradient>
-                  </Pressable>
-                ) : (
-                  <Pressable
-                    className="rounded-2xl overflow-hidden"
-                    style={{
-                      shadowColor: '#3b82f6',
-                      shadowOffset: { width: 0, height: 8 },
-                      shadowOpacity: 0.5,
-                      shadowRadius: 16,
-                      elevation: 10,
-                    }}
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                      navigation.navigate('ActiveWorkout');
-                    }}
-                  >
-                    <LinearGradient
-                      colors={['#3b82f6', '#8b5cf6']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={{ padding: 18, alignItems: 'center' }}
-                    >
-                      <View className="flex-row items-center">
-                        <Ionicons name="fitness" size={24} color="white" />
-                        <Text className="text-white font-bold text-lg ml-2">Begin Workout</Text>
-                      </View>
-                    </LinearGradient>
-                  </Pressable>
-                )}
-              </View>
-            </BlurView>
+              </BlurView>
+            </Pressable>
           </View>
-        ) : (
-          <View className="px-6 mb-6">
-            <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
-              <View 
-                className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 12 },
-                  shadowOpacity: isDark ? 0.4 : 0.15,
-                  shadowRadius: 20,
-                  elevation: 8,
-                }}
-              >
-                <View className="flex-row items-center mb-3">
-                  <View className={cn('px-3 py-1 rounded-full', isDark ? 'bg-gray-500/20' : 'bg-gray-500/20')}>
-                    <Text className={cn('text-xs font-bold tracking-wider', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      {activeProgram ? 'REST DAY' : 'NO PROGRAM'}
+
+          <View className="flex-row gap-3">
+            {/* History Card */}
+            <Pressable 
+              className="flex-1"
+              onPress={() => handleCardPress('history')}
+            >
+              <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+                <View 
+                  className={cn(
+                    'p-5 min-h-[140px]',
+                    expandedCard === 'history' ? 'border-2 border-blue-500' : '',
+                    isDark ? 'bg-white/5' : 'bg-white/40'
+                  )}
+                  style={{
+                    shadowColor: isDark ? '#000' : '#1f2937',
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: isDark ? 0.4 : 0.15,
+                    shadowRadius: 16,
+                    elevation: 8,
+                  }}
+                >
+                  <View className="bg-green-500/20 w-12 h-12 rounded-2xl items-center justify-center mb-3">
+                    <Ionicons name="trending-up" size={24} color="#22c55e" />
+                  </View>
+                  <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
+                    History
+                  </Text>
+                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    Track your progress
+                  </Text>
+                  <View className="flex-row items-center">
+                    <Ionicons name="time" size={14} color="#9ca3af" />
+                    <Text className={cn('text-xs font-bold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      {stats.totalSessions} this week
                     </Text>
                   </View>
                 </View>
-                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
-                  {activeProgram ? 'Rest & Recovery' : 'Get Started'}
-                </Text>
-                <Text className={cn('text-sm mb-5', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  {activeProgram 
-                    ? 'Recovery is essential for progress'
-                    : 'Create or activate a training program'
-                  }
-                </Text>
-                {!activeProgram && (
-                  <Pressable
-                    className="rounded-2xl overflow-hidden"
-                    style={{
-                      shadowColor: '#3b82f6',
-                      shadowOffset: { width: 0, height: 8 },
-                      shadowOpacity: 0.5,
-                      shadowRadius: 16,
-                      elevation: 10,
-                    }}
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                      navigation.navigate('ProgramManager');
-                    }}
-                  >
-                    <LinearGradient
-                      colors={['#3b82f6', '#8b5cf6']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={{ padding: 16, alignItems: 'center' }}
-                    >
-                      <View className="flex-row items-center">
-                        <Ionicons name="add-circle-outline" size={22} color="white" />
-                        <Text className="text-white font-bold ml-2">Create Program</Text>
+              </BlurView>
+            </Pressable>
+
+            {/* Stats Card */}
+            <Pressable 
+              className="flex-1"
+              onPress={() => handleCardPress('stats')}
+            >
+              <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+                <View 
+                  className={cn(
+                    'p-5 min-h-[140px]',
+                    expandedCard === 'stats' ? 'border-2 border-blue-500' : '',
+                    isDark ? 'bg-white/5' : 'bg-white/40'
+                  )}
+                  style={{
+                    shadowColor: isDark ? '#000' : '#1f2937',
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: isDark ? 0.4 : 0.15,
+                    shadowRadius: 16,
+                    elevation: 8,
+                  }}
+                >
+                  <View className="bg-yellow-500/20 w-12 h-12 rounded-2xl items-center justify-center mb-3">
+                    <Ionicons name="stats-chart" size={24} color="#eab308" />
+                  </View>
+                  <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
+                    Stats
+                  </Text>
+                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    Dashboard & insights
+                  </Text>
+                  <View className="flex-row items-center">
+                    <Ionicons name="trophy" size={14} color="#9ca3af" />
+                    <Text className={cn('text-xs font-bold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      {stats.prCount} PRs
+                    </Text>
+                  </View>
+                </View>
+              </BlurView>
+            </Pressable>
+          </View>
+        </View>
+
+        {/* Expanded Card Content */}
+        {expandedCard === 'workout' && (
+          <View className="px-6 mb-6">
+            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}>
+                {activeProgram && todaysWorkout?.template ? (
+                  <>
+                    <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                      {todaysWorkout.template.name}
+                    </Text>
+                    <View className="flex-row items-center mb-4">
+                      <View className="flex-row items-center mr-4">
+                        <Ionicons name="barbell-outline" size={16} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('text-sm ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                          {todaysWorkout.template.exercises.length} exercises
+                        </Text>
                       </View>
-                    </LinearGradient>
-                  </Pressable>
+                      <View className="flex-row items-center">
+                        <Ionicons name="time-outline" size={16} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        <Text className={cn('text-sm ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                          {todaysWorkout.template.estimatedDuration} min
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    {activeSession ? (
+                      <Pressable
+                        className="rounded-2xl overflow-hidden"
+                        style={{
+                          shadowColor: '#22c55e',
+                          shadowOffset: { width: 0, height: 8 },
+                          shadowOpacity: 0.5,
+                          shadowRadius: 16,
+                          elevation: 10,
+                        }}
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                          navigation.navigate('ActiveWorkout');
+                        }}
+                      >
+                        <LinearGradient
+                          colors={['#22c55e', '#16a34a']}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={{ padding: 16, alignItems: 'center' }}
+                        >
+                          <View className="flex-row items-center">
+                            <Ionicons name="play-circle" size={24} color="white" />
+                            <Text className="text-white font-bold text-lg ml-2">Continue Workout</Text>
+                          </View>
+                        </LinearGradient>
+                      </Pressable>
+                    ) : (
+                      <Pressable
+                        className="rounded-2xl overflow-hidden"
+                        style={{
+                          shadowColor: '#3b82f6',
+                          shadowOffset: { width: 0, height: 8 },
+                          shadowOpacity: 0.5,
+                          shadowRadius: 16,
+                          elevation: 10,
+                        }}
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                          navigation.navigate('ActiveWorkout');
+                        }}
+                      >
+                        <LinearGradient
+                          colors={['#3b82f6', '#8b5cf6']}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={{ padding: 16, alignItems: 'center' }}
+                        >
+                          <View className="flex-row items-center">
+                            <Ionicons name="fitness" size={24} color="white" />
+                            <Text className="text-white font-bold text-lg ml-2">Start Workout</Text>
+                          </View>
+                        </LinearGradient>
+                      </Pressable>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                      {activeProgram ? 'Rest & Recovery' : 'No Active Program'}
+                    </Text>
+                    <Text className={cn('text-sm mb-4', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      {activeProgram 
+                        ? 'Recovery is essential for progress'
+                        : 'Create or activate a program to get started'
+                      }
+                    </Text>
+                    {!activeProgram && (
+                      <Pressable
+                        className="rounded-2xl overflow-hidden"
+                        style={{
+                          shadowColor: '#3b82f6',
+                          shadowOffset: { width: 0, height: 8 },
+                          shadowOpacity: 0.5,
+                          shadowRadius: 16,
+                          elevation: 10,
+                        }}
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                          navigation.navigate('ProgramManager');
+                        }}
+                      >
+                        <LinearGradient
+                          colors={['#3b82f6', '#8b5cf6']}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={{ padding: 14, alignItems: 'center' }}
+                        >
+                          <View className="flex-row items-center">
+                            <Ionicons name="add-circle-outline" size={20} color="white" />
+                            <Text className="text-white font-bold ml-2">Create Program</Text>
+                          </View>
+                        </LinearGradient>
+                      </Pressable>
+                    )}
+                  </>
                 )}
               </View>
             </BlurView>
           </View>
         )}
 
-        {/* Quick Stats with Liquid Glass */}
-        <View className="px-6 mb-6">
-          <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
-            Performance
-          </Text>
-          <View className="flex-row justify-between">
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="flex-1 rounded-3xl overflow-hidden mr-2">
-              <View 
-                className={cn('p-5', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 12,
-                  elevation: 4,
-                }}
-              >
-                <View className="mb-3">
-                  <LinearGradient
-                    colors={['#f59e0b', '#ef4444']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{ 
-                      width: 44, 
-                      height: 44, 
-                      borderRadius: 22, 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Ionicons name="flame" size={24} color="white" />
-                  </LinearGradient>
-                </View>
-                <Text className={cn('text-4xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
-                  {stats.streak.currentStreak}
+        {expandedCard === 'programs' && (
+          <View className="px-6 mb-6">
+            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}>
+                <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
+                  My Programs
                 </Text>
-                <Text className={cn('text-xs font-semibold tracking-wide', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  DAY STREAK
-                </Text>
-              </View>
-            </BlurView>
-            
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="flex-1 rounded-3xl overflow-hidden mx-1">
-              <View 
-                className={cn('p-5', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 12,
-                  elevation: 4,
-                }}
-              >
-                <View className="mb-3">
-                  <LinearGradient
-                    colors={['#3b82f6', '#8b5cf6']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{ 
-                      width: 44, 
-                      height: 44, 
-                      borderRadius: 22, 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Ionicons name="fitness" size={24} color="white" />
-                  </LinearGradient>
-                </View>
-                <Text className={cn('text-4xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
-                  {stats.totalSessions}
-                </Text>
-                <Text className={cn('text-xs font-semibold tracking-wide', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  WORKOUTS
-                </Text>
-              </View>
-            </BlurView>
-            
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="flex-1 rounded-3xl overflow-hidden ml-2">
-              <View 
-                className={cn('p-5', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 12,
-                  elevation: 4,
-                }}
-              >
-                <View className="mb-3">
-                  <LinearGradient
-                    colors={['#22c55e', '#10b981']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{ 
-                      width: 44, 
-                      height: 44, 
-                      borderRadius: 22, 
-                      alignItems: 'center', 
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Ionicons name="trophy" size={24} color="white" />
-                  </LinearGradient>
-                </View>
-                <Text className={cn('text-4xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
-                  {stats.prCount}
-                </Text>
-                <Text className={cn('text-xs font-semibold tracking-wide', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  RECORDS
-                </Text>
+                {programs.length === 0 ? (
+                  <Text className={cn('text-sm mb-4', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    No programs yet. Create your first one!
+                  </Text>
+                ) : (
+                  <View className="mb-4">
+                    {programs.slice(0, 3).map((program) => (
+                      <View key={program.id} className="mb-3">
+                        <View className="flex-row items-center justify-between">
+                          <View className="flex-1">
+                            <Text className={cn('font-bold', isDark ? 'text-white' : 'text-black')}>
+                              {program.name}
+                            </Text>
+                            {program.isActive && (
+                              <View className="flex-row items-center mt-1">
+                                <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                                <Text className="text-green-500 text-xs font-bold">Active</Text>
+                              </View>
+                            )}
+                          </View>
+                          <Ionicons name="chevron-forward" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                        </View>
+                      </View>
+                    ))}
+                  </View>
+                )}
+                <Pressable
+                  className={cn('rounded-2xl py-3', isDark ? 'bg-white/10' : 'bg-black/10')}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    navigation.navigate('ProgramManager');
+                  }}
+                >
+                  <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                    View All Programs
+                  </Text>
+                </Pressable>
               </View>
             </BlurView>
           </View>
-        </View>
+        )}
 
-        {/* Quick Actions with Liquid Glass */}
-        <View className="px-6 mb-6">
-          <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
-            Quick Actions
-          </Text>
-          <View className="space-y-3">
-            {/* Programs */}
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden mb-3">
-              <Pressable
-                className={cn('p-5 flex-row justify-between items-center', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 10,
-                  elevation: 4,
-                }}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  navigation.navigate('ProgramManager');
-                }}
-              >
-                <View className="flex-row items-center flex-1">
-                  <View 
-                    className="w-12 h-12 rounded-2xl items-center justify-center"
-                    style={{ backgroundColor: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(59, 130, 246, 0.15)' }}
-                  >
-                    <Ionicons name="list" size={24} color="#3b82f6" />
-                  </View>
-                  <View className="ml-3 flex-1">
-                    <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
-                      Programs
+        {expandedCard === 'history' && (
+          <View className="px-6 mb-6">
+            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}>
+                <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
+                  Workout History
+                </Text>
+                <View className="flex-row justify-between mb-4">
+                  <View className="items-center">
+                    <Text className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                      {stats.streak.currentStreak}
                     </Text>
                     <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      {programs.length} saved
+                      Day Streak
+                    </Text>
+                  </View>
+                  <View className="items-center">
+                    <Text className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                      {stats.totalSessions}
+                    </Text>
+                    <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      Total Workouts
                     </Text>
                   </View>
                 </View>
-                <Ionicons name="chevron-forward" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
-              </Pressable>
-            </BlurView>
-
-            {/* Exercise Library */}
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden mb-3">
-              <Pressable
-                className={cn('p-5 flex-row justify-between items-center', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 10,
-                  elevation: 4,
-                }}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  navigation.navigate('ExerciseLibrary');
-                }}
-              >
-                <View className="flex-row items-center flex-1">
-                  <View 
-                    className="w-12 h-12 rounded-2xl items-center justify-center"
-                    style={{ backgroundColor: isDark ? 'rgba(139, 92, 246, 0.2)' : 'rgba(139, 92, 246, 0.15)' }}
-                  >
-                    <Ionicons name="barbell" size={24} color="#8b5cf6" />
-                  </View>
-                  <View className="ml-3 flex-1">
-                    <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
-                      Exercise Library
-                    </Text>
-                    <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      Browse exercises
-                    </Text>
-                  </View>
-                </View>
-                <Ionicons name="chevron-forward" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
-              </Pressable>
-            </BlurView>
-
-            {/* History */}
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden mb-3">
-              <Pressable
-                className={cn('p-5 flex-row justify-between items-center', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 10,
-                  elevation: 4,
-                }}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  navigation.navigate('WorkoutHistory');
-                }}
-              >
-                <View className="flex-row items-center flex-1">
-                  <View 
-                    className="w-12 h-12 rounded-2xl items-center justify-center"
-                    style={{ backgroundColor: isDark ? 'rgba(236, 72, 153, 0.2)' : 'rgba(236, 72, 153, 0.15)' }}
-                  >
-                    <Ionicons name="time" size={24} color="#ec4899" />
-                  </View>
-                  <View className="ml-3 flex-1">
-                    <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
-                      History
-                    </Text>
-                    <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      View all workouts
-                    </Text>
-                  </View>
-                </View>
-                <Ionicons name="chevron-forward" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
-              </Pressable>
-            </BlurView>
-
-            {/* Exercise Stats */}
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden mb-3">
-              <Pressable
-                className={cn('p-5 flex-row justify-between items-center', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 10,
-                  elevation: 4,
-                }}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  navigation.navigate('ExerciseStats');
-                }}
-              >
-                <View className="flex-row items-center flex-1">
-                  <View 
-                    className="w-12 h-12 rounded-2xl items-center justify-center"
-                    style={{ backgroundColor: isDark ? 'rgba(34, 197, 94, 0.2)' : 'rgba(34, 197, 94, 0.15)' }}
-                  >
-                    <Ionicons name="stats-chart" size={24} color="#22c55e" />
-                  </View>
-                  <View className="ml-3 flex-1">
-                    <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
-                      Exercise Stats
-                    </Text>
-                    <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      View strength graphs & PRs
-                    </Text>
-                  </View>
-                </View>
-                <Ionicons name="chevron-forward" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
-              </Pressable>
-            </BlurView>
-
-            {/* Weight Tracking */}
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden mb-3">
-              <Pressable
-                className={cn('p-5 flex-row justify-between items-center', isDark ? 'bg-white/5' : 'bg-white/40')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: isDark ? 0.3 : 0.1,
-                  shadowRadius: 10,
-                  elevation: 4,
-                }}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  navigation.navigate('WeightTracking');
-                }}
-              >
-                <View className="flex-row items-center flex-1">
-                  <View 
-                    className="w-12 h-12 rounded-2xl items-center justify-center"
-                    style={{ backgroundColor: isDark ? 'rgba(249, 115, 22, 0.2)' : 'rgba(249, 115, 22, 0.15)' }}
-                  >
-                    <Ionicons name="scale" size={24} color="#f97316" />
-                  </View>
-                  <View className="ml-3 flex-1">
-                    <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
-                      Weight Tracking
-                    </Text>
-                    <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      Track your progress
-                    </Text>
-                  </View>
-                </View>
-                <Ionicons name="chevron-forward" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
-              </Pressable>
+                <Pressable
+                  className={cn('rounded-2xl py-3', isDark ? 'bg-white/10' : 'bg-black/10')}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    navigation.navigate('WorkoutHistory');
+                  }}
+                >
+                  <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                    View Full History
+                  </Text>
+                </Pressable>
+              </View>
             </BlurView>
           </View>
-        </View>
+        )}
 
-        {/* Upcoming Workouts with Liquid Glass */}
+        {expandedCard === 'stats' && (
+          <View className="px-6 mb-6">
+            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}>
+                <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
+                  Performance Stats
+                </Text>
+                <View className="flex-row flex-wrap gap-3 mb-4">
+                  <View className="flex-1 min-w-[45%]">
+                    <View className={cn('rounded-2xl p-4', isDark ? 'bg-white/5' : 'bg-black/5')}>
+                      <View className="flex-row items-center mb-2">
+                        <Ionicons name="flame" size={20} color="#f97316" />
+                        <Text className={cn('ml-2 text-sm font-bold', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                          Streak
+                        </Text>
+                      </View>
+                      <Text className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                        {stats.streak.currentStreak}
+                      </Text>
+                      <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                        days
+                      </Text>
+                    </View>
+                  </View>
+                  <View className="flex-1 min-w-[45%]">
+                    <View className={cn('rounded-2xl p-4', isDark ? 'bg-white/5' : 'bg-black/5')}>
+                      <View className="flex-row items-center mb-2">
+                        <Ionicons name="trophy" size={20} color="#eab308" />
+                        <Text className={cn('ml-2 text-sm font-bold', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                          Records
+                        </Text>
+                      </View>
+                      <Text className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                        {stats.prCount}
+                      </Text>
+                      <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                        PRs
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <Pressable
+                  className={cn('rounded-2xl py-3 mb-2', isDark ? 'bg-white/10' : 'bg-black/10')}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    navigation.navigate('ExerciseStats');
+                  }}
+                >
+                  <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                    Exercise Stats
+                  </Text>
+                </Pressable>
+                <Pressable
+                  className={cn('rounded-2xl py-3', isDark ? 'bg-white/10' : 'bg-black/10')}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    navigation.navigate('WeightTracking');
+                  }}
+                >
+                  <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                    Weight Tracking
+                  </Text>
+                </Pressable>
+              </View>
+            </BlurView>
+          </View>
+        )}
+
+        {/* This Week Section */}
         {upcomingWorkouts.length > 0 && (
           <View className="px-6 mb-8">
             <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
