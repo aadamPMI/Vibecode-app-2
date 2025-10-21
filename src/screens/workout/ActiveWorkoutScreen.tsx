@@ -1,6 +1,7 @@
 // ActiveWorkoutScreen - In-session workout logging
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, TextInput, Modal, Animated } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'react-native';
 import { cn } from '../../utils/cn';
 import { useTrainingStore } from '../../state/trainingStore';
@@ -8,6 +9,10 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { getTodaysWorkout, createSessionFromTemplate } from '../../services/scheduler';
 import { Session, SetLog } from '../../types/workout';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ActiveWorkoutScreen() {
   const colorScheme = useColorScheme();
@@ -26,6 +31,8 @@ export default function ActiveWorkoutScreen() {
 
   const [currentSession, setCurrentSession] = useState<Session | null>(activeSession);
   const [expandedExercises, setExpandedExercises] = useState<Set<string>>(new Set());
+  const [showPauseModal, setShowPauseModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   // Initialize session if none active
   useEffect(() => {
@@ -45,7 +52,6 @@ export default function ActiveWorkoutScreen() {
         startSession(newSession.id);
         setCurrentSession(newSession);
       } else {
-        Alert.alert('No Workout', 'No workout scheduled for today');
         navigation.goBack();
       }
     } else if (activeSession) {
@@ -63,6 +69,8 @@ export default function ActiveWorkoutScreen() {
 
   const handleSetComplete = (exerciseId: string, setIndex: number, reps: number, load: number, rpe?: number) => {
     if (!currentSession) return;
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
     const exercise = currentSession.exercises.find(e => e.id === exerciseId);
     if (!exercise) return;
@@ -94,37 +102,26 @@ export default function ActiveWorkoutScreen() {
 
   const handleCompleteWorkout = () => {
     if (!currentSession) return;
-
-    Alert.alert(
-      'Complete Workout',
-      'Finish this workout and save your progress?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Complete',
-          onPress: () => {
-            completeSession(currentSession.id);
-            navigation.navigate('WorkoutSummary', { sessionId: currentSession.id });
-          },
-        },
-      ]
-    );
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    completeSession(currentSession.id);
+    navigation.navigate('WorkoutSummary', { sessionId: currentSession.id });
   };
 
   const handlePause = () => {
     if (!currentSession) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     pauseSession(currentSession.id);
-    Alert.alert('Paused', 'Workout paused. Come back anytime!');
     navigation.goBack();
   };
 
   if (!currentSession) {
     return (
-      <View className={cn('flex-1 items-center justify-center', isDark ? 'bg-gray-900' : 'bg-gray-50')}>
+      <SafeAreaView className={cn('flex-1 items-center justify-center', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
         <Text className={cn('text-lg', isDark ? 'text-white' : 'text-gray-900')}>
           Loading workout...
         </Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -136,42 +133,80 @@ export default function ActiveWorkoutScreen() {
   const progress = totalSets > 0 ? (completedSets / totalSets) * 100 : 0;
 
   return (
-    <View className={cn('flex-1', isDark ? 'bg-gray-900' : 'bg-gray-50')}>
-      {/* Header */}
-      <View className={cn('px-6 pt-16 pb-4', isDark ? 'bg-gray-800' : 'bg-white')}>
-        <View className="flex-row justify-between items-center mb-3">
-          <View>
-            <Text className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-gray-900')}>
-              {currentSession.workoutName}
-            </Text>
-            <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
-              {completedSets} / {totalSets} sets completed
-            </Text>
-          </View>
-          <TouchableOpacity
-            className="bg-yellow-500 rounded-lg px-4 py-2"
-            onPress={handlePause}
+    <SafeAreaView className={cn('flex-1', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
+      {/* Floating Header with Liquid Glass Effect */}
+      <View className="px-4 pb-3">
+        <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+          <View 
+            className={cn('p-5', isDark ? 'bg-white/5' : 'bg-white/40')}
+            style={{
+              shadowColor: isDark ? '#000' : '#1f2937',
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: isDark ? 0.4 : 0.15,
+              shadowRadius: 16,
+              elevation: 8,
+            }}
           >
-            <Text className="text-white font-semibold">Pause</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {/* Progress Bar */}
-        <View className={cn('h-2 rounded-full overflow-hidden', isDark ? 'bg-gray-700' : 'bg-gray-200')}>
-          <View
-            className="h-full bg-blue-500"
-            style={{ width: `${progress}%` }}
-          />
-        </View>
+            <View className="flex-row justify-between items-center mb-4">
+              <View className="flex-1 mr-4">
+                <Text className={cn('text-2xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
+                  {currentSession.workoutName}
+                </Text>
+                <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  {completedSets} of {totalSets} sets completed
+                </Text>
+              </View>
+              <Pressable
+                className={cn('rounded-2xl px-5 py-3', isDark ? 'bg-white/10' : 'bg-black/5')}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setShowPauseModal(true);
+                }}
+                style={{
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 8,
+                }}
+              >
+                <Text className={cn('font-bold', isDark ? 'text-white' : 'text-black')}>Pause</Text>
+              </Pressable>
+            </View>
+            
+            {/* Animated Progress Bar */}
+            <View className={cn('h-3 rounded-full overflow-hidden', isDark ? 'bg-white/10' : 'bg-black/10')}>
+              <LinearGradient
+                colors={['#3b82f6', '#8b5cf6', '#ec4899']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ 
+                  width: `${progress}%`, 
+                  height: '100%',
+                  shadowColor: '#3b82f6',
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 8,
+                }}
+              />
+            </View>
+            
+            {progress === 100 && (
+              <View className="mt-3 items-center">
+                <Text className="text-2xl">🎉</Text>
+              </View>
+            )}
+          </View>
+        </BlurView>
       </View>
 
-      <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
         {currentSession.exercises.map((exercise, exIndex) => (
           <ExerciseCard
             key={exercise.id}
             exercise={exercise}
             isExpanded={expandedExercises.has(exercise.id)}
             onToggle={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               const newExpanded = new Set(expandedExercises);
               if (newExpanded.has(exercise.id)) {
                 newExpanded.delete(exercise.id);
@@ -186,15 +221,153 @@ export default function ActiveWorkoutScreen() {
           />
         ))}
 
-        {/* Complete Button */}
-        <TouchableOpacity
-          className="bg-green-500 rounded-xl py-4 items-center mt-6 mb-8"
-          onPress={handleCompleteWorkout}
+        {/* Complete Button with Gradient */}
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            setShowCompleteModal(true);
+          }}
+          className="rounded-3xl overflow-hidden mb-8 mt-4"
+          style={{
+            shadowColor: '#22c55e',
+            shadowOffset: { width: 0, height: 12 },
+            shadowOpacity: 0.4,
+            shadowRadius: 16,
+            elevation: 10,
+          }}
         >
-          <Text className="text-white font-bold text-lg">Complete Workout</Text>
-        </TouchableOpacity>
+          <LinearGradient
+            colors={['#22c55e', '#16a34a']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ padding: 20, alignItems: 'center' }}
+          >
+            <View className="flex-row items-center">
+              <Ionicons name="checkmark-circle" size={28} color="white" />
+              <Text className="text-white font-bold text-xl ml-2">Complete Workout</Text>
+            </View>
+          </LinearGradient>
+        </Pressable>
       </ScrollView>
-    </View>
+
+      {/* Pause Modal */}
+      <Modal
+        visible={showPauseModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPauseModal(false)}
+      >
+        <Pressable 
+          className="flex-1 bg-black/50 justify-center items-center px-6"
+          onPress={() => setShowPauseModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View className={cn('p-6 w-80', isDark ? 'bg-gray-900/95' : 'bg-white/95')}>
+                <Text className={cn('text-2xl font-bold mb-3 text-center', isDark ? 'text-white' : 'text-black')}>
+                  Pause Workout?
+                </Text>
+                <Text className={cn('text-center mb-6', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  Your progress will be saved and you can resume anytime.
+                </Text>
+                
+                <Pressable
+                  className="bg-yellow-500 rounded-2xl py-4 mb-3"
+                  onPress={() => {
+                    setShowPauseModal(false);
+                    handlePause();
+                  }}
+                  style={{
+                    shadowColor: '#eab308',
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 12,
+                  }}
+                >
+                  <Text className="text-white font-bold text-center text-lg">Pause</Text>
+                </Pressable>
+                
+                <Pressable
+                  className={cn('rounded-2xl py-4', isDark ? 'bg-white/10' : 'bg-black/5')}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setShowPauseModal(false);
+                  }}
+                >
+                  <Text className={cn('font-semibold text-center', isDark ? 'text-white' : 'text-black')}>
+                    Continue Training
+                  </Text>
+                </Pressable>
+              </View>
+            </BlurView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* Complete Modal */}
+      <Modal
+        visible={showCompleteModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowCompleteModal(false)}
+      >
+        <Pressable 
+          className="flex-1 bg-black/50 justify-center items-center px-6"
+          onPress={() => setShowCompleteModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View className={cn('p-6 w-80', isDark ? 'bg-gray-900/95' : 'bg-white/95')}>
+                <View className="items-center mb-4">
+                  <Text className="text-5xl mb-2">💪</Text>
+                  <Text className={cn('text-2xl font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                    Amazing Work!
+                  </Text>
+                </View>
+                <Text className={cn('text-center mb-6', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  Ready to finish and save your progress?
+                </Text>
+                
+                <Pressable
+                  className="rounded-2xl overflow-hidden mb-3"
+                  onPress={() => {
+                    setShowCompleteModal(false);
+                    handleCompleteWorkout();
+                  }}
+                  style={{
+                    shadowColor: '#22c55e',
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 12,
+                  }}
+                >
+                  <LinearGradient
+                    colors={['#22c55e', '#16a34a']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{ padding: 16 }}
+                  >
+                    <Text className="text-white font-bold text-center text-lg">Complete & Save</Text>
+                  </LinearGradient>
+                </Pressable>
+                
+                <Pressable
+                  className={cn('rounded-2xl py-4', isDark ? 'bg-white/10' : 'bg-black/5')}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setShowCompleteModal(false);
+                  }}
+                >
+                  <Text className={cn('font-semibold text-center', isDark ? 'text-white' : 'text-black')}>
+                    Keep Going
+                  </Text>
+                </Pressable>
+              </View>
+            </BlurView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+    </SafeAreaView>
   );
 }
 
@@ -215,41 +388,61 @@ function ExerciseCard({
   isDark: boolean;
 }) {
   const completedCount = exercise.sets.filter((s: SetLog) => s.status === 'completed').length;
+  const allCompleted = completedCount === exercise.sets.length;
 
   return (
-    <View className={cn(
-      'rounded-xl p-4 mb-3',
-      isDark ? 'bg-gray-800' : 'bg-white'
-    )}>
-      <TouchableOpacity onPress={onToggle} className="flex-row justify-between items-center">
-        <View className="flex-1">
-          <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-gray-900')}>
-            {exercise.exerciseName}
-          </Text>
-          <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
-            {completedCount} / {exercise.sets.length} sets
-          </Text>
-        </View>
-        <Text className={cn('text-2xl', isDark ? 'text-gray-400' : 'text-gray-600')}>
-          {isExpanded ? '−' : '+'}
-        </Text>
-      </TouchableOpacity>
-
-      {isExpanded && (
-        <View className="mt-4">
-          {exercise.sets.map((set: SetLog, setIndex: number) => (
-            <SetRow
-              key={set.id}
-              set={set}
-              setIndex={setIndex}
-              onComplete={(reps, load, rpe) => onSetComplete(exercise.id, setIndex, reps, load, rpe)}
-              unit={unit}
-              isDark={isDark}
+    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden mb-4">
+      <View 
+        className={cn('p-5', isDark ? 'bg-white/5' : 'bg-white/40')}
+        style={{
+          shadowColor: isDark ? '#000' : '#1f2937',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: isDark ? 0.3 : 0.1,
+          shadowRadius: 12,
+          elevation: 4,
+        }}
+      >
+        <Pressable onPress={onToggle} className="flex-row justify-between items-center">
+          <View className="flex-1 mr-3">
+            <View className="flex-row items-center mb-1">
+              {allCompleted && <Text className="text-xl mr-2">✅</Text>}
+              <Text className={cn('font-bold text-lg flex-1', isDark ? 'text-white' : 'text-black')}>
+                {exercise.exerciseName}
+              </Text>
+            </View>
+            <View className="flex-row items-center">
+              <View className={cn('px-3 py-1 rounded-full', allCompleted ? 'bg-green-500/20' : isDark ? 'bg-white/10' : 'bg-black/10')}>
+                <Text className={cn('text-xs font-semibold', allCompleted ? 'text-green-400' : isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  {completedCount} / {exercise.sets.length} sets
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View className={cn('w-8 h-8 rounded-full items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/10')}>
+            <Ionicons 
+              name={isExpanded ? 'chevron-up' : 'chevron-down'} 
+              size={20} 
+              color={isDark ? '#fff' : '#000'} 
             />
-          ))}
-        </View>
-      )}
-    </View>
+          </View>
+        </Pressable>
+
+        {isExpanded && (
+          <View className="mt-4">
+            {exercise.sets.map((set: SetLog, setIndex: number) => (
+              <SetRow
+                key={set.id}
+                set={set}
+                setIndex={setIndex}
+                onComplete={(reps, load, rpe) => onSetComplete(exercise.id, setIndex, reps, load, rpe)}
+                unit={unit}
+                isDark={isDark}
+              />
+            ))}
+          </View>
+        )}
+      </View>
+    </BlurView>
   );
 }
 
@@ -276,36 +469,40 @@ function SetRow({
   return (
     <View className={cn(
       'flex-row items-center py-3 border-t',
-      isDark ? 'border-gray-700' : 'border-gray-200'
+      isDark ? 'border-white/10' : 'border-black/10'
     )}>
-      <Text className={cn('w-8', isDark ? 'text-gray-400' : 'text-gray-600')}>
-        {setIndex + 1}
-      </Text>
+      <View className={cn('w-8 h-8 rounded-full items-center justify-center mr-3', 
+        isCompleted ? 'bg-green-500' : isDark ? 'bg-white/10' : 'bg-black/10'
+      )}>
+        <Text className={cn('font-bold text-sm', isCompleted ? 'text-white' : isDark ? 'text-gray-400' : 'text-gray-600')}>
+          {setIndex + 1}
+        </Text>
+      </View>
       
       <TextInput
         className={cn(
-          'flex-1 mx-2 px-3 py-2 rounded-lg text-center',
-          isDark ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900',
+          'flex-1 mx-1 px-3 py-3 rounded-xl text-center font-semibold',
+          isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black',
           isCompleted && 'opacity-50'
         )}
         placeholder={set.targetLoad ? `${set.targetLoad}${unit}` : 'Load'}
-        placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+        placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
         value={load}
         onChangeText={setLoad}
         keyboardType="numeric"
         editable={!isCompleted}
       />
       
-      <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>×</Text>
+      <Text className={cn('text-lg font-bold mx-1', isDark ? 'text-gray-400' : 'text-gray-600')}>×</Text>
       
       <TextInput
         className={cn(
-          'flex-1 mx-2 px-3 py-2 rounded-lg text-center',
-          isDark ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900',
+          'flex-1 mx-1 px-3 py-3 rounded-xl text-center font-semibold',
+          isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black',
           isCompleted && 'opacity-50'
         )}
         placeholder={set.targetReps ? `${set.targetReps}` : 'Reps'}
-        placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+        placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
         value={reps}
         onChangeText={setReps}
         keyboardType="numeric"
@@ -314,12 +511,12 @@ function SetRow({
 
       <TextInput
         className={cn(
-          'w-12 mx-2 px-2 py-2 rounded-lg text-center text-xs',
-          isDark ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900',
+          'w-14 mx-1 px-2 py-3 rounded-xl text-center text-xs font-semibold',
+          isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black',
           isCompleted && 'opacity-50'
         )}
         placeholder="RPE"
-        placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+        placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
         value={rpe}
         onChangeText={setRPE}
         keyboardType="numeric"
@@ -328,23 +525,35 @@ function SetRow({
       />
 
       {!isCompleted ? (
-        <TouchableOpacity
-          className="bg-blue-500 rounded-lg px-3 py-2"
+        <Pressable
+          className="ml-2 rounded-xl overflow-hidden"
           onPress={() => {
             const repsNum = parseInt(reps) || 0;
             const loadNum = parseFloat(load) || 0;
             const rpeNum = rpe ? parseInt(rpe) : undefined;
             onComplete(repsNum, loadNum, rpeNum);
           }}
+          style={{
+            shadowColor: '#3b82f6',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+          }}
         >
-          <Text className="text-white font-semibold text-xs">✓</Text>
-        </TouchableOpacity>
+          <LinearGradient
+            colors={['#3b82f6', '#8b5cf6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ padding: 12, paddingHorizontal: 16 }}
+          >
+            <Ionicons name="checkmark" size={20} color="white" />
+          </LinearGradient>
+        </Pressable>
       ) : (
-        <View className="bg-green-500 rounded-lg px-3 py-2">
-          <Text className="text-white font-semibold text-xs">✓</Text>
+        <View className="ml-2 bg-green-500 rounded-xl p-3 px-4">
+          <Ionicons name="checkmark" size={20} color="white" />
         </View>
       )}
     </View>
   );
 }
-
