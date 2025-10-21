@@ -1,467 +1,550 @@
-// Active Workout Screen - Exercise-by-exercise workout logging with AI suggestions
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  TextInput,
-  Modal,
-  useColorScheme,
-  Alert,
-  Dimensions,
-} from 'react-native';
+// ActiveWorkoutScreen - In-session workout logging
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, Pressable, TextInput, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  SlideInRight,
-  FlipInEYAxis,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useColorScheme } from 'react-native';
 import { cn } from '../../utils/cn';
-import { useSettingsStore } from '../../state/settingsStore';
 import { useTrainingStore } from '../../state/trainingStore';
-import { GlassCard } from '../../components/ui/GlassCard';
-import { GlassButton } from '../../components/ui/GlassButton';
-import { SetLogger } from '../../components/workout/SetLogger';
-import { ProgressIndicator } from '../../components/workout/ProgressIndicator';
-import { AIThinking } from '../../components/ui/LoadingStates';
-import { PremiumBackground } from '../../components/PremiumBackground';
-import { suggestProgressiveOverload } from '../../services/openaiService';
-import { hapticLight, hapticMedium, hapticSuccess, hapticHeavy } from '../../utils/haptics';
-import { SetLog } from '../../types/workout';
-
-const { width } = Dimensions.get('window');
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { getTodaysWorkout, createSessionFromTemplate } from '../../services/scheduler';
+import { Session, SetLog } from '../../types/workout';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ActiveWorkoutScreen() {
-  const theme = useSettingsStore((s) => s.theme);
-  const systemColorScheme = useColorScheme();
-  const resolvedTheme = theme === 'system' ? (systemColorScheme || 'light') : theme;
-  const isDark = resolvedTheme === 'dark';
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  const route = useRoute<any>();
+  
+  const activeProgram = useTrainingStore(state => state.activeProgram);
+  const activeSession = useTrainingStore(state => state.activeSession);
+  const createSession = useTrainingStore(state => state.createSession);
+  const startSession = useTrainingStore(state => state.startSession);
+  const completeSession = useTrainingStore(state => state.completeSession);
+  const pauseSession = useTrainingStore(state => state.pauseSession);
+  const logSet = useTrainingStore(state => state.logSet);
+  const updateSet = useTrainingStore(state => state.updateSet);
+  const preferences = useTrainingStore(state => state.preferences);
 
-  const activeSession = useTrainingStore((s) => s.activeSession);
-  const logSet = useTrainingStore((s) => s.logSet);
-  const completeSession = useTrainingStore((s) => s.completeSession);
-  const getExerciseHistory = useTrainingStore((s) => s.getExerciseHistory);
-  const getLastPerformance = useTrainingStore((s) => s.getPreviousPerformance);
+  const [currentSession, setCurrentSession] = useState<Session | null>(activeSession);
+  const [expandedExercises, setExpandedExercises] = useState<Set<string>>(new Set());
+  const [showPauseModal, setShowPauseModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [completionModalVisible, setCompletionModalVisible] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState<Record<string, any>>({});
-  const [loadingAI, setLoadingAI] = useState<Record<string, boolean>>({});
-  const [elapsedTime, setElapsedTime] = useState(0);
-
-  const flipAnimation = useSharedValue(0);
-
-  // Timer
+  // Initialize session if none active
   useEffect(() => {
-    const interval = setInterval(() => {
-      setElapsedTime((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
+    if (!currentSession && activeProgram) {
+      const today = new Date();
+      const { template, weekNumber, dayNumber } = getTodaysWorkout(activeProgram, today);
+      
+      if (template) {
+        const newSession = createSessionFromTemplate(
+          activeProgram,
+          template,
+          today,
+          weekNumber,
+          dayNumber
+        );
+        createSession(newSession);
+        startSession(newSession.id);
+        setCurrentSession(newSession);
+      } else {
+        navigation.goBack();
+      }
+    } else if (activeSession) {
+      setCurrentSession(activeSession);
+    }
   }, []);
 
-  // Format time
-  const formatTime = (seconds: number): string => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}` : `${m}:${s.toString().padStart(2, '0')}`;
+  // Auto-expand all exercises
+  useEffect(() => {
+    if (currentSession) {
+      const allIds = new Set(currentSession.exercises.map(e => e.id));
+      setExpandedExercises(allIds);
+    }
+  }, [currentSession]);
+
+  const handleSetComplete = (exerciseId: string, setIndex: number, reps: number, load: number, rpe?: number) => {
+    if (!currentSession) return;
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    const exercise = currentSession.exercises.find(e => e.id === exerciseId);
+    if (!exercise) return;
+
+    const setLog: SetLog = {
+      ...exercise.sets[setIndex],
+      actualReps: reps,
+      actualLoad: load,
+      rpe,
+      status: 'completed',
+      completedAt: new Date().toISOString(),
+    };
+
+    updateSet(currentSession.id, exerciseId, exercise.sets[setIndex].id, setLog);
+    
+    // Update local state
+    setCurrentSession({
+      ...currentSession,
+      exercises: currentSession.exercises.map(ex =>
+        ex.id === exerciseId
+          ? {
+              ...ex,
+              sets: ex.sets.map((s, idx) => idx === setIndex ? setLog : s),
+            }
+          : ex
+      ),
+    });
   };
 
-  if (!activeSession || !activeSession.template) {
+  const handleCompleteWorkout = () => {
+    if (!currentSession) return;
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    completeSession(currentSession.id);
+    navigation.navigate('WorkoutSummary', { sessionId: currentSession.id });
+  };
+
+  const handlePause = () => {
+    if (!currentSession) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    pauseSession(currentSession.id);
+    navigation.goBack();
+  };
+
+  if (!currentSession) {
     return (
       <SafeAreaView className={cn('flex-1 items-center justify-center', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
-        <Text className={cn('text-lg', isDark ? 'text-white' : 'text-black')}>No active workout</Text>
-        <GlassButton onPress={() => navigation.goBack()} variant="primary" className="mt-4">
-          Go Back
-        </GlassButton>
+        <Text className={cn('text-lg', isDark ? 'text-white' : 'text-gray-900')}>
+          Loading workout...
+        </Text>
       </SafeAreaView>
     );
   }
 
-  const currentExercise = activeSession.template.exercises[currentExerciseIndex];
-  const exerciseLogs = activeSession.sets.filter((s) => s.exerciseId === currentExercise.exerciseId);
-  const totalExercises = activeSession.template.exercises.length;
-  const completedExercises = currentExerciseIndex;
-  const progress = completedExercises / totalExercises;
-
-  // Load AI suggestion for current exercise
-  useEffect(() => {
-    if (!currentExercise) return;
-
-    const loadAISuggestion = async () => {
-      if (aiSuggestions[currentExercise.exerciseId]) return; // Already loaded
-
-      setLoadingAI((prev) => ({ ...prev, [currentExercise.exerciseId]: true }));
-
-      try {
-        const history = getExerciseHistory(currentExercise.exerciseId, 3);
-        const lastPerformance = getLastPerformance(currentExercise.exerciseId);
-
-        if (history.length === 0) {
-          // No history, no suggestion
-          setAiSuggestions((prev) => ({ ...prev, [currentExercise.exerciseId]: null }));
-          return;
-        }
-
-        const suggestion = await suggestProgressiveOverload(currentExercise.exerciseName, history);
-        setAiSuggestions((prev) => ({ ...prev, [currentExercise.exerciseId]: suggestion }));
-      } catch (error) {
-        console.error('Failed to load AI suggestion:', error);
-        setAiSuggestions((prev) => ({ ...prev, [currentExercise.exerciseId]: null }));
-      } finally {
-        setLoadingAI((prev) => ({ ...prev, [currentExercise.exerciseId]: false }));
-      }
-    };
-
-    loadAISuggestion();
-  }, [currentExercise]);
-
-  // Animate card flip when changing exercises
-  useEffect(() => {
-    flipAnimation.value = 0;
-    flipAnimation.value = withTiming(1, { duration: 600 });
-  }, [currentExerciseIndex]);
-
-  const animatedCardStyle = useAnimatedStyle(() => {
-    const rotateY = interpolate(flipAnimation.value, [0, 0.5, 1], [90, 0, 0]);
-    return {
-      transform: [{ rotateY: `${rotateY}deg` }],
-    };
-  });
-
-  const handleAddSet = (weight: number, reps: number, rpe?: number) => {
-    logSet(
-      activeSession.id,
-      currentExercise.exerciseId,
-      weight,
-      reps,
-      rpe
-    );
-    hapticMedium();
-  };
-
-  const handleNextExercise = () => {
-    if (currentExerciseIndex < totalExercises - 1) {
-      setCurrentExerciseIndex((prev) => prev + 1);
-      hapticLight();
-    } else {
-      // All exercises done
-      hapticHeavy();
-      setCompletionModalVisible(true);
-    }
-  };
-
-  const handleCompleteWorkout = () => {
-    completeSession(activeSession.id);
-    hapticSuccess();
-    navigation.navigate('WorkoutHome');
-  };
-
-  const lastPerformance = getLastPerformance(currentExercise.exerciseId);
-  const aiSuggestion = aiSuggestions[currentExercise.exerciseId];
-  const isLoadingAISuggestion = loadingAI[currentExercise.exerciseId];
+  const completedSets = currentSession.exercises.reduce(
+    (sum, ex) => sum + ex.sets.filter(s => s.status === 'completed').length,
+    0
+  );
+  const totalSets = currentSession.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+  const progress = totalSets > 0 ? (completedSets / totalSets) * 100 : 0;
 
   return (
     <SafeAreaView className={cn('flex-1', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
-      <PremiumBackground theme={theme} variant="workout" />
-
-      {/* Header */}
-      <View className="px-6 pt-6 pb-4">
-        <View className="flex-row justify-between items-center mb-2">
-          <Pressable onPress={() => {
-            Alert.alert('Exit Workout?', 'Your progress will be saved as a draft.', [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Exit', style: 'destructive', onPress: () => navigation.goBack() },
-            ]);
-          }}>
-            <Ionicons name="close" size={28} color={isDark ? '#fff' : '#000'} />
-          </Pressable>
-          <View className="flex-row items-center">
-            <Ionicons name="time-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
-            <Text className={cn('text-lg font-bold ml-1', isDark ? 'text-white' : 'text-black')}>
-              {formatTime(elapsedTime)}
-            </Text>
+      {/* Floating Header with Liquid Glass Effect */}
+      <View className="px-4 pb-3">
+        <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+          <View 
+            className={cn('p-5', isDark ? 'bg-white/5' : 'bg-white/40')}
+            style={{
+              shadowColor: isDark ? '#000' : '#1f2937',
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: isDark ? 0.4 : 0.15,
+              shadowRadius: 16,
+              elevation: 8,
+            }}
+          >
+            <View className="flex-row justify-between items-center mb-4">
+              <View className="flex-1 mr-4">
+                <Text className={cn('text-2xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
+                  {currentSession.workoutName}
+                </Text>
+                <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  {completedSets} of {totalSets} sets completed • {Math.round(progress)}%
+                </Text>
+              </View>
+              <Pressable
+                className={cn('rounded-2xl px-5 py-3', isDark ? 'bg-white/10' : 'bg-black/5')}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setShowPauseModal(true);
+                }}
+                style={{
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 8,
+                }}
+              >
+                <Ionicons name="pause" size={20} color={isDark ? '#fff' : '#000'} />
+              </Pressable>
+            </View>
+            
+            {/* Animated Progress Bar */}
+            <View className={cn('h-2 rounded-full overflow-hidden', isDark ? 'bg-white/10' : 'bg-black/10')}>
+              <LinearGradient
+                colors={['#3b82f6', '#8b5cf6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ 
+                  width: `${progress}%`, 
+                  height: '100%',
+                }}
+              />
+            </View>
           </View>
-        </View>
-
-        <Text className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-black')}>
-          {activeSession.template.name}
-        </Text>
-
-        {/* Progress Bar */}
-        <View className="mt-4">
-          <View className={cn('h-2 rounded-full overflow-hidden', isDark ? 'bg-[#1a1a1a]' : 'bg-gray-200')}>
-            <Animated.View
-              className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-              style={{ width: `${progress * 100}%` }}
-            />
-          </View>
-          <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-            Exercise {completedExercises + 1} of {totalExercises}
-          </Text>
-        </View>
+        </BlurView>
       </View>
 
-      <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
-        {/* Current Exercise Card */}
-        <Animated.View style={animatedCardStyle}>
-          <GlassCard intensity={80} isDark={isDark} className="p-6 mb-4">
-            <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
-              {currentExercise.exerciseName}
-            </Text>
-            <View className="flex-row items-center">
-              <View className={cn('px-3 py-1 rounded-full mr-2', isDark ? 'bg-blue-500/20' : 'bg-blue-100')}>
-                <Text className="text-blue-500 text-sm font-bold">
-                  {currentExercise.sets} × {currentExercise.reps} reps
-                </Text>
-              </View>
-              <Text className={cn('text-sm capitalize', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                {currentExercise.setScheme}
-              </Text>
-            </View>
-          </GlassCard>
-        </Animated.View>
+      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+        {currentSession.exercises.map((exercise, exIndex) => (
+          <ExerciseCard
+            key={exercise.id}
+            exercise={exercise}
+            isExpanded={expandedExercises.has(exercise.id)}
+            onToggle={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              const newExpanded = new Set(expandedExercises);
+              if (newExpanded.has(exercise.id)) {
+                newExpanded.delete(exercise.id);
+              } else {
+                newExpanded.add(exercise.id);
+              }
+              setExpandedExercises(newExpanded);
+            }}
+            onSetComplete={handleSetComplete}
+            unit={preferences.unit}
+            isDark={isDark}
+          />
+        ))}
 
-        {/* Last Performance */}
-        {lastPerformance && (
-          <Animated.View entering={FadeInDown.delay(100).duration(400)}>
-            <GlassCard intensity={60} isDark={isDark} className="p-4 mb-4">
-              <View className="flex-row items-center mb-2">
-                <Ionicons name="bar-chart-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
-                <Text className={cn('text-sm font-bold ml-2', isDark ? 'text-gray-300' : 'text-gray-700')}>
-                  Last Performance
-                </Text>
-              </View>
-              <View className="flex-row flex-wrap gap-2">
-                {lastPerformance.sets.map((set, index) => (
-                  <View key={index} className={cn('px-3 py-1 rounded', isDark ? 'bg-[#1a1a1a]' : 'bg-gray-100')}>
-                    <Text className={cn('text-sm', isDark ? 'text-white' : 'text-gray-900')}>
-                      {set.weight}kg × {set.reps}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </GlassCard>
-          </Animated.View>
-        )}
-
-        {/* AI Suggestion */}
-        {isLoadingAISuggestion && <AIThinking message="Calculating progressive overload..." isDark={isDark} />}
-
-        {aiSuggestion && (
-          <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-            <GlassCard intensity={60} isDark={isDark} className="p-4 mb-4">
-              <View className="flex-row items-center mb-2">
-                <Ionicons name="sparkles" size={20} color="#3b82f6" />
-                <Text className="text-blue-500 text-sm font-bold ml-2">AI Suggestion</Text>
-              </View>
-              <Text className={cn('text-base mb-2', isDark ? 'text-white' : 'text-gray-900')}>
-                {aiSuggestion.suggestion}
-              </Text>
-              <View className="flex-row flex-wrap gap-2">
-                {aiSuggestion.recommendedSets && aiSuggestion.recommendedSets.map((set: any, index: number) => (
-                  <View key={index} className="bg-green-500/20 px-3 py-1 rounded">
-                    <Text className="text-green-500 text-sm font-bold">
-                      {set.weight}kg × {set.reps}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            </GlassCard>
-          </Animated.View>
-        )}
-
-        {/* Set Logger */}
-        <SetLogger
-          exerciseId={currentExercise.exerciseId}
-          sessionId={activeSession.id}
-          onAddSet={handleAddSet}
-          existingSets={exerciseLogs}
-          aiSuggestion={aiSuggestion}
-          isDark={isDark}
-        />
-
-        {/* Navigation */}
-        <View className="flex-row gap-3 mt-6 mb-8">
-          {currentExerciseIndex > 0 && (
-            <GlassButton
-              onPress={() => {
-                setCurrentExerciseIndex((prev) => prev - 1);
-                hapticLight();
-              }}
-              variant="secondary"
-              className="flex-1"
-              icon={<Ionicons name="arrow-back" size={20} color={isDark ? '#fff' : '#000'} />}
-            >
-              Previous
-            </GlassButton>
-          )}
-          {exerciseLogs.length > 0 && (
-            <GlassButton
-              onPress={handleNextExercise}
-              variant="primary"
-              className="flex-1"
-              icon={<Ionicons name="arrow-forward" size={20} color="#fff" />}
-              haptic="medium"
-            >
-              {currentExerciseIndex < totalExercises - 1 ? 'Next Exercise' : 'Finish'}
-            </GlassButton>
-          )}
-        </View>
-
-        {/* Exercise List - Jump to any exercise */}
-        <View className="mb-6">
-          <Text className={cn('text-lg font-bold mb-3', isDark ? 'text-white' : 'text-black')}>
-            All Exercises
-          </Text>
-          {activeSession.template.exercises.map((exercise, index) => {
-            const sets = activeSession.sets.filter((s) => s.exerciseId === exercise.exerciseId);
-            const isComplete = sets.length >= exercise.sets;
-            const isCurrent = index === currentExerciseIndex;
-
-            return (
-              <Pressable
-                key={exercise.exerciseId}
-                onPress={() => {
-                  setCurrentExerciseIndex(index);
-                  hapticLight();
-                }}
-                className="mb-2"
-              >
-                <GlassCard
-                  intensity={isCurrent ? 80 : 40}
-                  isDark={isDark}
-                  className={cn('p-4', isCurrent && 'border-2 border-blue-500')}
-                >
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-1">
-                      <Text className={cn('text-base font-bold', isDark ? 'text-white' : 'text-black')}>
-                        {exercise.exerciseName}
-                      </Text>
-                      <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                        {sets.length} / {exercise.sets} sets
-                      </Text>
-                    </View>
-                    {isComplete ? (
-                      <Ionicons name="checkmark-circle" size={24} color="#22c55e" />
-                    ) : isCurrent ? (
-                      <View className="bg-blue-500 w-3 h-3 rounded-full" />
-                    ) : (
-                      <Ionicons name="ellipse-outline" size={24} color={isDark ? '#4b5563' : '#d1d5db'} />
-                    )}
-                  </View>
-                </GlassCard>
-              </Pressable>
-            );
-          })}
-        </View>
-
-        {/* Complete Workout Button */}
-        <GlassButton
+        {/* Complete Button with Gradient */}
+        <Pressable
           onPress={() => {
-            hapticHeavy();
-            setCompletionModalVisible(true);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            setShowCompleteModal(true);
           }}
-          variant="success"
-          size="lg"
-          fullWidth
-          icon={<Ionicons name="checkmark-circle" size={24} color="#fff" />}
-          className="mb-8"
-          haptic="heavy"
+          className="rounded-3xl overflow-hidden mb-8 mt-4"
+          style={{
+            shadowColor: '#22c55e',
+            shadowOffset: { width: 0, height: 12 },
+            shadowOpacity: 0.4,
+            shadowRadius: 16,
+            elevation: 10,
+          }}
         >
-          Complete Workout
-        </GlassButton>
+          <LinearGradient
+            colors={['#22c55e', '#16a34a']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ padding: 20, alignItems: 'center' }}
+          >
+            <View className="flex-row items-center">
+              <Ionicons name="checkmark-circle" size={28} color="white" />
+              <Text className="text-white font-bold text-xl ml-2">Complete Workout</Text>
+            </View>
+          </LinearGradient>
+        </Pressable>
       </ScrollView>
 
-      {/* Completion Modal */}
-      <WorkoutCompletionModal
-        visible={completionModalVisible}
-        onClose={() => setCompletionModalVisible(false)}
-        onConfirm={handleCompleteWorkout}
-        session={activeSession}
-        isDark={isDark}
-      />
+      {/* Pause Modal */}
+      <Modal
+        visible={showPauseModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowPauseModal(false)}
+      >
+        <Pressable 
+          className="flex-1 bg-black/50 justify-center items-center px-6"
+          onPress={() => setShowPauseModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View className={cn('p-6 w-80', isDark ? 'bg-gray-900/95' : 'bg-white/95')}>
+                <Text className={cn('text-2xl font-bold mb-3 text-center', isDark ? 'text-white' : 'text-black')}>
+                  Pause Workout
+                </Text>
+                <Text className={cn('text-center mb-6', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  Your progress will be saved. You can resume anytime from the home screen.
+                </Text>
+                
+                <Pressable
+                  className="bg-yellow-500 rounded-2xl py-4 mb-3"
+                  onPress={() => {
+                    setShowPauseModal(false);
+                    handlePause();
+                  }}
+                  style={{
+                    shadowColor: '#eab308',
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 12,
+                  }}
+                >
+                  <Text className="text-white font-bold text-center text-lg">Pause Workout</Text>
+                </Pressable>
+                
+                <Pressable
+                  className={cn('rounded-2xl py-4', isDark ? 'bg-white/10' : 'bg-black/5')}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setShowPauseModal(false);
+                  }}
+                >
+                  <Text className={cn('font-semibold text-center', isDark ? 'text-white' : 'text-black')}>
+                    Continue Training
+                  </Text>
+                </Pressable>
+              </View>
+            </BlurView>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* Complete Modal */}
+      <Modal
+        visible={showCompleteModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowCompleteModal(false)}
+      >
+        <Pressable 
+          className="flex-1 bg-black/50 justify-center items-center px-6"
+          onPress={() => setShowCompleteModal(false)}
+        >
+          <Pressable onPress={(e) => e.stopPropagation()}>
+            <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View className={cn('p-6 w-80', isDark ? 'bg-gray-900/95' : 'bg-white/95')}>
+                <Text className={cn('text-2xl font-bold text-center mb-3', isDark ? 'text-white' : 'text-black')}>
+                  Complete Workout
+                </Text>
+                <Text className={cn('text-center mb-6', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  Finish this session and save your progress?
+                </Text>
+                
+                <Pressable
+                  className="rounded-2xl overflow-hidden mb-3"
+                  onPress={() => {
+                    setShowCompleteModal(false);
+                    handleCompleteWorkout();
+                  }}
+                  style={{
+                    shadowColor: '#22c55e',
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 12,
+                  }}
+                >
+                  <LinearGradient
+                    colors={['#22c55e', '#16a34a']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{ padding: 16 }}
+                  >
+                    <Text className="text-white font-bold text-center text-lg">Complete & Save</Text>
+                  </LinearGradient>
+                </Pressable>
+                
+                <Pressable
+                  className={cn('rounded-2xl py-4', isDark ? 'bg-white/10' : 'bg-black/5')}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setShowCompleteModal(false);
+                  }}
+                >
+                  <Text className={cn('font-semibold text-center', isDark ? 'text-white' : 'text-black')}>
+                    Keep Training
+                  </Text>
+                </Pressable>
+              </View>
+            </BlurView>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
 
-// Workout Completion Modal
-interface WorkoutCompletionModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  session: any;
-  isDark: boolean;
-}
-
-const WorkoutCompletionModal: React.FC<WorkoutCompletionModalProps> = ({
-  visible,
-  onClose,
-  onConfirm,
-  session,
+// Exercise Card Component
+function ExerciseCard({
+  exercise,
+  isExpanded,
+  onToggle,
+  onSetComplete,
+  unit,
   isDark,
-}) => {
-  const totalSets = session?.sets.length || 0;
-  const totalVolume = session?.sets.reduce((sum: number, set: any) => sum + set.weight * set.reps, 0) || 0;
+}: {
+  exercise: any;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onSetComplete: (exerciseId: string, setIndex: number, reps: number, load: number, rpe?: number) => void;
+  unit: 'kg' | 'lbs';
+  isDark: boolean;
+}) {
+  const completedCount = exercise.sets.filter((s: SetLog) => s.status === 'completed').length;
+  const allCompleted = completedCount === exercise.sets.length;
 
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" transparent onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/50">
-        <Animated.View
-          entering={SlideInRight.duration(400).springify()}
-          className={cn('rounded-t-3xl p-6', isDark ? 'bg-[#0a0a0a]' : 'bg-white')}
-        >
-          <View className="items-center mb-6">
-            <View className="bg-green-500/20 w-20 h-20 rounded-full items-center justify-center mb-4">
-              <Ionicons name="checkmark-circle" size={48} color="#22c55e" />
-            </View>
-            <Text className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-black')}>
-              Workout Complete!
-            </Text>
-          </View>
-
-          {/* Stats */}
-          <View className="flex-row justify-around mb-6">
-            <View className="items-center">
-              <Text className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-black')}>
-                {totalSets}
+    <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden mb-4">
+      <View 
+        className={cn('p-5', isDark ? 'bg-white/5' : 'bg-white/40')}
+        style={{
+          shadowColor: isDark ? '#000' : '#1f2937',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: isDark ? 0.3 : 0.1,
+          shadowRadius: 12,
+          elevation: 4,
+        }}
+      >
+        <Pressable onPress={onToggle} className="flex-row justify-between items-center">
+          <View className="flex-1 mr-3">
+            <View className="flex-row items-center mb-2">
+              <Text className={cn('font-bold text-lg flex-1', isDark ? 'text-white' : 'text-black')}>
+                {exercise.exerciseName}
               </Text>
-              <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>Sets</Text>
+              {allCompleted && (
+                <View className="ml-2">
+                  <Ionicons name="checkmark-circle" size={20} color="#22c55e" />
+                </View>
+              )}
             </View>
-            <View className="items-center">
-              <Text className={cn('text-3xl font-bold', isDark ? 'text-white' : 'text-black')}>
-                {Math.round(totalVolume)}kg
-              </Text>
-              <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>Volume</Text>
+            <View className="flex-row items-center">
+              <View className={cn('px-3 py-1 rounded-full', allCompleted ? 'bg-green-500/20' : isDark ? 'bg-white/10' : 'bg-black/10')}>
+                <Text className={cn('text-xs font-semibold', allCompleted ? 'text-green-400' : isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  {completedCount} / {exercise.sets.length} SETS
+                </Text>
+              </View>
             </View>
           </View>
-
-          <Text className={cn('text-center text-sm mb-6', isDark ? 'text-gray-400' : 'text-gray-600')}>
-            Are you sure you want to complete this workout? All your sets will be saved.
-          </Text>
-
-          <View className="gap-3">
-            <GlassButton onPress={onConfirm} variant="success" size="lg" fullWidth haptic="success">
-              Confirm & Save
-            </GlassButton>
-            <GlassButton onPress={onClose} variant="secondary" size="lg" fullWidth>
-              Go Back
-            </GlassButton>
+          <View className={cn('w-8 h-8 rounded-full items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/10')}>
+            <Ionicons 
+              name={isExpanded ? 'chevron-up' : 'chevron-down'} 
+              size={20} 
+              color={isDark ? '#fff' : '#000'} 
+            />
           </View>
-        </Animated.View>
+        </Pressable>
+
+        {isExpanded && (
+          <View className="mt-4">
+            {exercise.sets.map((set: SetLog, setIndex: number) => (
+              <SetRow
+                key={set.id}
+                set={set}
+                setIndex={setIndex}
+                onComplete={(reps, load, rpe) => onSetComplete(exercise.id, setIndex, reps, load, rpe)}
+                unit={unit}
+                isDark={isDark}
+              />
+            ))}
+          </View>
+        )}
       </View>
-    </Modal>
+    </BlurView>
   );
-};
+}
+
+// Set Row Component
+function SetRow({
+  set,
+  setIndex,
+  onComplete,
+  unit,
+  isDark,
+}: {
+  set: SetLog;
+  setIndex: number;
+  onComplete: (reps: number, load: number, rpe?: number) => void;
+  unit: 'kg' | 'lbs';
+  isDark: boolean;
+}) {
+  const [reps, setReps] = useState(set.actualReps > 0 ? set.actualReps.toString() : '');
+  const [load, setLoad] = useState(set.actualLoad > 0 ? set.actualLoad.toString() : set.targetLoad?.toString() || '');
+  const [rpe, setRPE] = useState(set.rpe?.toString() || '');
+
+  const isCompleted = set.status === 'completed';
+
+  return (
+    <View className={cn(
+      'flex-row items-center py-3 border-t',
+      isDark ? 'border-white/10' : 'border-black/10'
+    )}>
+      <View className={cn('w-8 h-8 rounded-full items-center justify-center mr-3', 
+        isCompleted ? 'bg-green-500' : isDark ? 'bg-white/10' : 'bg-black/10'
+      )}>
+        <Text className={cn('font-bold text-sm', isCompleted ? 'text-white' : isDark ? 'text-gray-400' : 'text-gray-600')}>
+          {setIndex + 1}
+        </Text>
+      </View>
+      
+      <TextInput
+        className={cn(
+          'flex-1 mx-1 px-3 py-3 rounded-xl text-center font-semibold',
+          isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black',
+          isCompleted && 'opacity-50'
+        )}
+        placeholder={set.targetLoad ? `${set.targetLoad}${unit}` : 'Load'}
+        placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
+        value={load}
+        onChangeText={setLoad}
+        keyboardType="numeric"
+        editable={!isCompleted}
+      />
+      
+      <Text className={cn('text-lg font-bold mx-1', isDark ? 'text-gray-400' : 'text-gray-600')}>×</Text>
+      
+      <TextInput
+        className={cn(
+          'flex-1 mx-1 px-3 py-3 rounded-xl text-center font-semibold',
+          isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black',
+          isCompleted && 'opacity-50'
+        )}
+        placeholder={set.targetReps ? `${set.targetReps}` : 'Reps'}
+        placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
+        value={reps}
+        onChangeText={setReps}
+        keyboardType="numeric"
+        editable={!isCompleted}
+      />
+
+      <TextInput
+        className={cn(
+          'w-14 mx-1 px-2 py-3 rounded-xl text-center text-xs font-semibold',
+          isDark ? 'bg-white/10 text-white' : 'bg-black/5 text-black',
+          isCompleted && 'opacity-50'
+        )}
+        placeholder="RPE"
+        placeholderTextColor={isDark ? '#6B7280' : '#9CA3AF'}
+        value={rpe}
+        onChangeText={setRPE}
+        keyboardType="numeric"
+        editable={!isCompleted}
+        maxLength={2}
+      />
+
+      {!isCompleted ? (
+        <Pressable
+          className="ml-2 rounded-xl overflow-hidden"
+          onPress={() => {
+            const repsNum = parseInt(reps) || 0;
+            const loadNum = parseFloat(load) || 0;
+            const rpeNum = rpe ? parseInt(rpe) : undefined;
+            onComplete(repsNum, loadNum, rpeNum);
+          }}
+          style={{
+            shadowColor: '#3b82f6',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+          }}
+        >
+          <LinearGradient
+            colors={['#3b82f6', '#8b5cf6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ padding: 12, paddingHorizontal: 16 }}
+          >
+            <Ionicons name="checkmark" size={20} color="white" />
+          </LinearGradient>
+        </Pressable>
+      ) : (
+        <View className="ml-2 bg-green-500 rounded-xl p-3 px-4">
+          <Ionicons name="checkmark" size={20} color="white" />
+        </View>
+      )}
+    </View>
+  );
+}
