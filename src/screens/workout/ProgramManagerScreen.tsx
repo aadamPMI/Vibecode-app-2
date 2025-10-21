@@ -232,14 +232,14 @@ export default function ProgramManagerScreen() {
                       </Pressable>
                     )}
                     <Pressable
-                      onPress={() => navigation.navigate('ProgramDetail', { programId: program.id })}
+                      onPress={() => navigation.navigate('ProgramBuilder', { programId: program.id })}
                       className={cn(
                         'flex-1 py-3 rounded-2xl',
                         isDark ? 'bg-[#1a1a1a]' : 'bg-gray-200'
                       )}
                     >
                       <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-gray-900')}>
-                        View
+                        Edit
                       </Text>
                     </Pressable>
                     <Pressable
