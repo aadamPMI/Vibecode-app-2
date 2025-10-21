@@ -153,7 +153,7 @@ export default function ActiveWorkoutScreen() {
                   {currentSession.workoutName}
                 </Text>
                 <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  {completedSets} of {totalSets} sets completed
+                  {completedSets} of {totalSets} sets completed • {Math.round(progress)}%
                 </Text>
               </View>
               <Pressable
@@ -169,32 +169,22 @@ export default function ActiveWorkoutScreen() {
                   shadowRadius: 8,
                 }}
               >
-                <Text className={cn('font-bold', isDark ? 'text-white' : 'text-black')}>Pause</Text>
+                <Ionicons name="pause" size={20} color={isDark ? '#fff' : '#000'} />
               </Pressable>
             </View>
             
             {/* Animated Progress Bar */}
-            <View className={cn('h-3 rounded-full overflow-hidden', isDark ? 'bg-white/10' : 'bg-black/10')}>
+            <View className={cn('h-2 rounded-full overflow-hidden', isDark ? 'bg-white/10' : 'bg-black/10')}>
               <LinearGradient
-                colors={['#3b82f6', '#8b5cf6', '#ec4899']}
+                colors={['#3b82f6', '#8b5cf6']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={{ 
                   width: `${progress}%`, 
                   height: '100%',
-                  shadowColor: '#3b82f6',
-                  shadowOffset: { width: 0, height: 0 },
-                  shadowOpacity: 0.5,
-                  shadowRadius: 8,
                 }}
               />
             </View>
-            
-            {progress === 100 && (
-              <View className="mt-3 items-center">
-                <Text className="text-2xl">🎉</Text>
-              </View>
-            )}
           </View>
         </BlurView>
       </View>
@@ -265,10 +255,10 @@ export default function ActiveWorkoutScreen() {
             <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
               <View className={cn('p-6 w-80', isDark ? 'bg-gray-900/95' : 'bg-white/95')}>
                 <Text className={cn('text-2xl font-bold mb-3 text-center', isDark ? 'text-white' : 'text-black')}>
-                  Pause Workout?
+                  Pause Workout
                 </Text>
                 <Text className={cn('text-center mb-6', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  Your progress will be saved and you can resume anytime.
+                  Your progress will be saved. You can resume anytime from the home screen.
                 </Text>
                 
                 <Pressable
@@ -284,7 +274,7 @@ export default function ActiveWorkoutScreen() {
                     shadowRadius: 12,
                   }}
                 >
-                  <Text className="text-white font-bold text-center text-lg">Pause</Text>
+                  <Text className="text-white font-bold text-center text-lg">Pause Workout</Text>
                 </Pressable>
                 
                 <Pressable
@@ -318,14 +308,11 @@ export default function ActiveWorkoutScreen() {
           <Pressable onPress={(e) => e.stopPropagation()}>
             <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
               <View className={cn('p-6 w-80', isDark ? 'bg-gray-900/95' : 'bg-white/95')}>
-                <View className="items-center mb-4">
-                  <Text className="text-5xl mb-2">💪</Text>
-                  <Text className={cn('text-2xl font-bold text-center', isDark ? 'text-white' : 'text-black')}>
-                    Amazing Work!
-                  </Text>
-                </View>
+                <Text className={cn('text-2xl font-bold text-center mb-3', isDark ? 'text-white' : 'text-black')}>
+                  Complete Workout
+                </Text>
                 <Text className={cn('text-center mb-6', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  Ready to finish and save your progress?
+                  Finish this session and save your progress?
                 </Text>
                 
                 <Pressable
@@ -359,7 +346,7 @@ export default function ActiveWorkoutScreen() {
                   }}
                 >
                   <Text className={cn('font-semibold text-center', isDark ? 'text-white' : 'text-black')}>
-                    Keep Going
+                    Keep Training
                   </Text>
                 </Pressable>
               </View>
@@ -404,16 +391,20 @@ function ExerciseCard({
       >
         <Pressable onPress={onToggle} className="flex-row justify-between items-center">
           <View className="flex-1 mr-3">
-            <View className="flex-row items-center mb-1">
-              {allCompleted && <Text className="text-xl mr-2">✅</Text>}
+            <View className="flex-row items-center mb-2">
               <Text className={cn('font-bold text-lg flex-1', isDark ? 'text-white' : 'text-black')}>
                 {exercise.exerciseName}
               </Text>
+              {allCompleted && (
+                <View className="ml-2">
+                  <Ionicons name="checkmark-circle" size={20} color="#22c55e" />
+                </View>
+              )}
             </View>
             <View className="flex-row items-center">
               <View className={cn('px-3 py-1 rounded-full', allCompleted ? 'bg-green-500/20' : isDark ? 'bg-white/10' : 'bg-black/10')}>
                 <Text className={cn('text-xs font-semibold', allCompleted ? 'text-green-400' : isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  {completedCount} / {exercise.sets.length} sets
+                  {completedCount} / {exercise.sets.length} SETS
                 </Text>
               </View>
             </View>

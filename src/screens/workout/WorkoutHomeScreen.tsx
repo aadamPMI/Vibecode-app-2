@@ -63,26 +63,25 @@ export default function WorkoutHomeScreen() {
               >
                 <View className="flex-row items-center mb-3">
                   <View className={cn('px-3 py-1 rounded-full', isDark ? 'bg-blue-500/20' : 'bg-blue-500/20')}>
-                    <Text className={cn('text-xs font-bold', isDark ? 'text-blue-400' : 'text-blue-600')}>
+                    <Text className={cn('text-xs font-bold tracking-wider', isDark ? 'text-blue-400' : 'text-blue-600')}>
                       TODAY
                     </Text>
                   </View>
-                  <Text className="ml-2 text-2xl">💪</Text>
                 </View>
-                <Text className={cn('text-3xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <Text className={cn('text-3xl font-bold mb-3', isDark ? 'text-white' : 'text-black')}>
                   {todaysWorkout.template.name}
                 </Text>
                 <View className="flex-row items-center mb-5">
                   <View className="flex-row items-center mr-4">
-                    <Ionicons name="barbell" size={16} color={isDark ? '#9ca3af' : '#6b7280'} />
-                    <Text className={cn('text-sm ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    <Ionicons name="barbell-outline" size={18} color={isDark ? '#9ca3af' : '#6b7280'} />
+                    <Text className={cn('text-sm ml-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
                       {todaysWorkout.template.exercises.length} exercises
                     </Text>
                   </View>
                   <View className="flex-row items-center">
-                    <Ionicons name="time" size={16} color={isDark ? '#9ca3af' : '#6b7280'} />
-                    <Text className={cn('text-sm ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      ~{todaysWorkout.template.estimatedDuration} min
+                    <Ionicons name="time-outline" size={18} color={isDark ? '#9ca3af' : '#6b7280'} />
+                    <Text className={cn('text-sm ml-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      {todaysWorkout.template.estimatedDuration} min
                     </Text>
                   </View>
                 </View>
@@ -158,14 +157,20 @@ export default function WorkoutHomeScreen() {
                   elevation: 8,
                 }}
               >
-                <Text className="text-4xl mb-3">{activeProgram ? '😌' : '🏋️'}</Text>
+                <View className="flex-row items-center mb-3">
+                  <View className={cn('px-3 py-1 rounded-full', isDark ? 'bg-gray-500/20' : 'bg-gray-500/20')}>
+                    <Text className={cn('text-xs font-bold tracking-wider', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      {activeProgram ? 'REST DAY' : 'NO PROGRAM'}
+                    </Text>
+                  </View>
+                </View>
                 <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
-                  {activeProgram ? 'Rest Day' : 'No Active Program'}
+                  {activeProgram ? 'Rest & Recovery' : 'Get Started'}
                 </Text>
                 <Text className={cn('text-sm mb-5', isDark ? 'text-gray-400' : 'text-gray-600')}>
                   {activeProgram 
-                    ? 'Recovery is part of the process!'
-                    : 'Create or activate a program to get started'
+                    ? 'Recovery is essential for progress'
+                    : 'Create or activate a training program'
                   }
                 </Text>
                 {!activeProgram && (
@@ -190,7 +195,7 @@ export default function WorkoutHomeScreen() {
                       style={{ padding: 16, alignItems: 'center' }}
                     >
                       <View className="flex-row items-center">
-                        <Ionicons name="add-circle" size={22} color="white" />
+                        <Ionicons name="add-circle-outline" size={22} color="white" />
                         <Text className="text-white font-bold ml-2">Create Program</Text>
                       </View>
                     </LinearGradient>
@@ -204,7 +209,7 @@ export default function WorkoutHomeScreen() {
         {/* Quick Stats with Liquid Glass */}
         <View className="px-6 mb-6">
           <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
-            Your Stats
+            Performance
           </Text>
           <View className="flex-row justify-between">
             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="flex-1 rounded-3xl overflow-hidden mr-2">
@@ -218,28 +223,27 @@ export default function WorkoutHomeScreen() {
                   elevation: 4,
                 }}
               >
-                <View className="mb-2">
+                <View className="mb-3">
                   <LinearGradient
                     colors={['#f59e0b', '#ef4444']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={{ 
-                      width: 40, 
-                      height: 40, 
-                      borderRadius: 20, 
+                      width: 44, 
+                      height: 44, 
+                      borderRadius: 22, 
                       alignItems: 'center', 
                       justifyContent: 'center',
-                      marginBottom: 8,
                     }}
                   >
-                    <Text className="text-2xl">🔥</Text>
+                    <Ionicons name="flame" size={24} color="white" />
                   </LinearGradient>
                 </View>
                 <Text className={cn('text-4xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
                   {stats.streak.currentStreak}
                 </Text>
-                <Text className={cn('text-xs font-semibold', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  Day Streak
+                <Text className={cn('text-xs font-semibold tracking-wide', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  DAY STREAK
                 </Text>
               </View>
             </BlurView>
@@ -255,28 +259,27 @@ export default function WorkoutHomeScreen() {
                   elevation: 4,
                 }}
               >
-                <View className="mb-2">
+                <View className="mb-3">
                   <LinearGradient
                     colors={['#3b82f6', '#8b5cf6']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={{ 
-                      width: 40, 
-                      height: 40, 
-                      borderRadius: 20, 
+                      width: 44, 
+                      height: 44, 
+                      borderRadius: 22, 
                       alignItems: 'center', 
                       justifyContent: 'center',
-                      marginBottom: 8,
                     }}
                   >
-                    <Text className="text-2xl">💪</Text>
+                    <Ionicons name="fitness" size={24} color="white" />
                   </LinearGradient>
                 </View>
                 <Text className={cn('text-4xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
                   {stats.totalSessions}
                 </Text>
-                <Text className={cn('text-xs font-semibold', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  Workouts
+                <Text className={cn('text-xs font-semibold tracking-wide', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  WORKOUTS
                 </Text>
               </View>
             </BlurView>
@@ -292,28 +295,27 @@ export default function WorkoutHomeScreen() {
                   elevation: 4,
                 }}
               >
-                <View className="mb-2">
+                <View className="mb-3">
                   <LinearGradient
                     colors={['#22c55e', '#10b981']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={{ 
-                      width: 40, 
-                      height: 40, 
-                      borderRadius: 20, 
+                      width: 44, 
+                      height: 44, 
+                      borderRadius: 22, 
                       alignItems: 'center', 
                       justifyContent: 'center',
-                      marginBottom: 8,
                     }}
                   >
-                    <Text className="text-2xl">🏆</Text>
+                    <Ionicons name="trophy" size={24} color="white" />
                   </LinearGradient>
                 </View>
                 <Text className={cn('text-4xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
                   {stats.prCount}
                 </Text>
-                <Text className={cn('text-xs font-semibold', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  PRs
+                <Text className={cn('text-xs font-semibold tracking-wide', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  RECORDS
                 </Text>
               </View>
             </BlurView>
@@ -536,7 +538,7 @@ export default function WorkoutHomeScreen() {
                       {workout.dayName}
                     </Text>
                     <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      {workout.template ? workout.template.name : 'Rest Day 😌'}
+                      {workout.template ? workout.template.name : 'Rest & Recovery'}
                     </Text>
                   </View>
                   {!workout.isRestDay && workout.template && (
@@ -548,7 +550,7 @@ export default function WorkoutHomeScreen() {
                         style={{ borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6 }}
                       >
                         <Text className="text-white text-xs font-bold">
-                          {workout.template.exercises.length} exercises
+                          {workout.template.exercises.length} EXERCISES
                         </Text>
                       </LinearGradient>
                     </View>
