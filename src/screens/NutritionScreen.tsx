@@ -249,7 +249,7 @@ export default function NutritionScreen() {
                 isDark ? "text-white" : "text-gray-900"
               )}
             >
-              GainAI
+              POTTY AI
             </Text>
             <Text
               className={cn(
