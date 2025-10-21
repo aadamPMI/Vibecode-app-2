@@ -381,15 +381,27 @@ export default function WorkoutHomeScreen() {
                   </View>
                 )}
                 <Pressable
-                  className={cn('rounded-2xl py-3', isDark ? 'bg-white/10' : 'bg-black/10')}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     navigation.navigate('ProgramManager');
                   }}
                 >
-                  <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
-                    View All Programs
-                  </Text>
+                  <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                    <View 
+                      className={cn('py-4', isDark ? 'bg-white/10' : 'bg-black/5')}
+                      style={{
+                        shadowColor: isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
+                        elevation: 3,
+                      }}
+                    >
+                      <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                        View All Programs
+                      </Text>
+                    </View>
+                  </BlurView>
                 </Pressable>
               </View>
             </BlurView>
@@ -422,15 +434,27 @@ export default function WorkoutHomeScreen() {
                   </View>
                 </View>
                 <Pressable
-                  className={cn('rounded-2xl py-3', isDark ? 'bg-white/10' : 'bg-black/10')}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     navigation.navigate('WorkoutHistory');
                   }}
                 >
-                  <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
-                    View Full History
-                  </Text>
+                  <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                    <View 
+                      className={cn('py-4', isDark ? 'bg-white/10' : 'bg-black/5')}
+                      style={{
+                        shadowColor: isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
+                        elevation: 3,
+                      }}
+                    >
+                      <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                        View Full History
+                      </Text>
+                    </View>
+                  </BlurView>
                 </Pressable>
               </View>
             </BlurView>
@@ -479,26 +503,50 @@ export default function WorkoutHomeScreen() {
                   </View>
                 </View>
                 <Pressable
-                  className={cn('rounded-2xl py-3 mb-2', isDark ? 'bg-white/10' : 'bg-black/10')}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     navigation.navigate('ExerciseStats');
                   }}
                 >
-                  <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
-                    Exercise Stats
-                  </Text>
+                  <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden mb-3">
+                    <View 
+                      className={cn('py-4', isDark ? 'bg-white/10' : 'bg-black/5')}
+                      style={{
+                        shadowColor: isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
+                        elevation: 3,
+                      }}
+                    >
+                      <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                        Exercise Stats
+                      </Text>
+                    </View>
+                  </BlurView>
                 </Pressable>
                 <Pressable
-                  className={cn('rounded-2xl py-3', isDark ? 'bg-white/10' : 'bg-black/10')}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     navigation.navigate('WeightTracking');
                   }}
                 >
-                  <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
-                    Weight Tracking
-                  </Text>
+                  <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                    <View 
+                      className={cn('py-4', isDark ? 'bg-white/10' : 'bg-black/5')}
+                      style={{
+                        shadowColor: isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 8,
+                        elevation: 3,
+                      }}
+                    >
+                      <Text className={cn('font-bold text-center', isDark ? 'text-white' : 'text-black')}>
+                        Weight Tracking
+                      </Text>
+                    </View>
+                  </BlurView>
                 </Pressable>
               </View>
             </BlurView>
