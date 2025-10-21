@@ -86,6 +86,19 @@ interface TrainingState {
   
   // ========== UTILITIES ==========
   clearAllData: () => void;
+  
+  // ========== NEW HELPER FUNCTIONS ==========
+  getPreviousPerformance: (exerciseId: string) => { sets: SetLog[]; date: string } | null;
+  getExerciseHistory: (exerciseId: string, limit?: number) => Array<{ session: Session; exerciseData: SessionExercise }>;
+  getExerciseStats: (exerciseId: string) => {
+    totalSessions: number;
+    totalSets: number;
+    totalVolume: number;
+    bestSet: SetLog | null;
+    recentSessions: Array<{ date: string; volume: number; e1rm?: number }>;
+  };
+  profileVisibility: boolean;
+  setProfileVisibility: (visible: boolean) => void;
 }
 
 const DEFAULT_PREFERENCES: UserWorkoutPreferences = {
@@ -111,6 +124,7 @@ export const useTrainingStore = create<TrainingState>()(
       progressionHistory: [],
       preferences: DEFAULT_PREFERENCES,
       weeklySubRegionStimulus: [],
+      profileVisibility: false,
 
       // ========== PROGRAM ACTIONS ==========
       createProgram: (program) =>
@@ -573,6 +587,100 @@ export const useTrainingStore = create<TrainingState>()(
           progressionHistory: [],
           weeklySubRegionStimulus: [],
         }),
+      
+      // ========== NEW HELPER FUNCTIONS ==========
+      getPreviousPerformance: (exerciseId) => {
+        const state = get();
+        const completedSessions = state.sessions
+          .filter((s) => s.status === 'completed')
+          .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime());
+
+        for (const session of completedSessions) {
+          const exercise = session.exercises.find((ex) => ex.exerciseId === exerciseId);
+          if (exercise && exercise.sets.length > 0) {
+            return {
+              sets: exercise.sets.filter((s) => s.status === 'completed'),
+              date: session.completedAt!,
+            };
+          }
+        }
+        return null;
+      },
+
+      getExerciseHistory: (exerciseId, limit = 10) => {
+        const state = get();
+        const history: Array<{ session: Session; exerciseData: SessionExercise }> = [];
+
+        const completedSessions = state.sessions
+          .filter((s) => s.status === 'completed')
+          .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime());
+
+        for (const session of completedSessions) {
+          const exercise = session.exercises.find((ex) => ex.exerciseId === exerciseId);
+          if (exercise && exercise.sets.length > 0) {
+            history.push({ session, exerciseData: exercise });
+            if (history.length >= limit) break;
+          }
+        }
+
+        return history;
+      },
+
+      getExerciseStats: (exerciseId) => {
+        const state = get();
+        const history = get().getExerciseHistory(exerciseId, 100);
+
+        let totalSets = 0;
+        let totalVolume = 0;
+        let bestSet: SetLog | null = null;
+        const recentSessions: Array<{ date: string; volume: number; e1rm?: number }> = [];
+
+        history.forEach(({ session, exerciseData }) => {
+          const completedSets = exerciseData.sets.filter((s) => s.status === 'completed');
+          totalSets += completedSets.length;
+
+          const sessionVolume = completedSets.reduce(
+            (sum, set) => sum + set.actualLoad * set.actualReps,
+            0
+          );
+          totalVolume += sessionVolume;
+
+          // Track best set
+          completedSets.forEach((set) => {
+            if (!bestSet || set.actualLoad * set.actualReps > bestSet.actualLoad * bestSet.actualReps) {
+              bestSet = set;
+            }
+          });
+
+          // Add to recent sessions for AI analysis
+          if (recentSessions.length < 10) {
+            const bestSetThisSession = completedSets.reduce((best, set) => {
+              return set.actualLoad > best.actualLoad ? set : best;
+            }, completedSets[0]);
+
+            const e1rm = bestSetThisSession
+              ? calculateE1RM(bestSetThisSession.actualLoad, bestSetThisSession.actualReps)
+              : undefined;
+
+            recentSessions.push({
+              date: session.completedAt!,
+              volume: sessionVolume,
+              e1rm,
+            });
+          }
+        });
+
+        return {
+          totalSessions: history.length,
+          totalSets,
+          totalVolume,
+          bestSet,
+          recentSessions,
+        };
+      },
+
+      setProfileVisibility: (visible) =>
+        set({ profileVisibility: visible }),
     }),
     {
       name: "training-storage",

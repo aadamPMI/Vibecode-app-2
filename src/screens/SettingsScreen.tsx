@@ -506,7 +506,7 @@ export default function SettingsScreen() {
             </Pressable>
 
             {/* Rollover calories */}
-            <View className="px-5 py-4">
+            <View className="px-5 py-4 border-b border-gray-200/10">
               <View className="flex-row justify-between items-center">
                 <View className="flex-1 mr-4">
                   <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
@@ -521,6 +521,29 @@ export default function SettingsScreen() {
                   onValueChange={(value) => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     updatePreferencesSettings({ rolloverCalories: value });
+                  }}
+                  trackColor={{ false: "#767577", true: "#3b82f6" }}
+                  thumbColor="#ffffff"
+                />
+              </View>
+            </View>
+
+            {/* Workout Profile Visibility */}
+            <View className="px-5 py-4">
+              <View className="flex-row justify-between items-center">
+                <View className="flex-1 mr-4">
+                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                    Workout profile visibility
+                  </Text>
+                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Allow others to see your workout programs and history on your profile
+                  </Text>
+                </View>
+                <Switch
+                  value={privacySettings.showWorkouts}
+                  onValueChange={(value) => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    updatePrivacySettings({ showWorkouts: value });
                   }}
                   trackColor={{ false: "#767577", true: "#3b82f6" }}
                   thumbColor="#ffffff"

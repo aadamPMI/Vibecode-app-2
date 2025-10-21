@@ -436,7 +436,7 @@ export default function WorkoutHomeScreen() {
               </Pressable>
             </BlurView>
 
-            {/* Detailed Stats */}
+            {/* Exercise Stats */}
             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden mb-3">
               <Pressable
                 className={cn('p-5 flex-row justify-between items-center', isDark ? 'bg-white/5' : 'bg-white/40')}
@@ -449,7 +449,7 @@ export default function WorkoutHomeScreen() {
                 }}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  navigation.navigate('WorkoutHistory');
+                  navigation.navigate('ExerciseStats');
                 }}
               >
                 <View className="flex-row items-center flex-1">
@@ -461,10 +461,10 @@ export default function WorkoutHomeScreen() {
                   </View>
                   <View className="ml-3 flex-1">
                     <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
-                      Detailed Stats
+                      Exercise Stats
                     </Text>
                     <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      View all stats
+                      View strength graphs & PRs
                     </Text>
                   </View>
                 </View>

@@ -6,7 +6,11 @@ import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import WorkoutHomeScreen from "../screens/workout/WorkoutHomeScreen";
 import ProgramManagerScreen from "../screens/workout/ProgramManagerScreen";
 import ProgramBuilderScreen from "../screens/workout/ProgramBuilderScreen";
+import SplitBuilderScreen from "../screens/workout/SplitBuilderScreen";
+import DayEditorScreen from "../screens/workout/DayEditorScreen";
 import ExerciseLibraryScreen from "../screens/workout/ExerciseLibraryScreen";
+import ExerciseSelectorScreen from "../screens/workout/ExerciseSelectorScreen";
+import ExerciseStatsScreen from "../screens/workout/ExerciseStatsScreen";
 import ActiveWorkoutScreen from "../screens/workout/ActiveWorkoutScreen";
 import WorkoutSummaryScreen from "../screens/workout/WorkoutSummaryScreen";
 import WorkoutHistoryScreen from "../screens/workout/WorkoutHistoryScreen";
@@ -43,7 +47,11 @@ export type WorkoutStackParamList = {
   WorkoutHome: undefined;
   ProgramManager: undefined;
   ProgramBuilder: undefined;
+  SplitBuilder: { programId?: string };
+  DayEditor: { programId: string; dayIndex?: number };
   ExerciseLibrary: undefined;
+  ExerciseSelector: { returnScreen?: string };
+  ExerciseStats: undefined;
   ActiveWorkout: undefined;
   WorkoutSummary: { sessionId: string };
   WorkoutHistory: undefined;
@@ -71,7 +79,11 @@ function WorkoutStackNavigator() {
       <WorkoutStack.Screen name="WorkoutHome" component={WorkoutHomeScreen} />
       <WorkoutStack.Screen name="ProgramManager" component={ProgramManagerScreen} />
       <WorkoutStack.Screen name="ProgramBuilder" component={ProgramBuilderScreen} />
+      <WorkoutStack.Screen name="SplitBuilder" component={SplitBuilderScreen} />
+      <WorkoutStack.Screen name="DayEditor" component={DayEditorScreen} />
       <WorkoutStack.Screen name="ExerciseLibrary" component={ExerciseLibraryScreen} />
+      <WorkoutStack.Screen name="ExerciseSelector" component={ExerciseSelectorScreen} />
+      <WorkoutStack.Screen name="ExerciseStats" component={ExerciseStatsScreen} />
       <WorkoutStack.Screen name="ActiveWorkout" component={ActiveWorkoutScreen} />
       <WorkoutStack.Screen name="WorkoutSummary" component={WorkoutSummaryScreen} />
       <WorkoutStack.Screen name="WorkoutHistory" component={WorkoutHistoryScreen} />
