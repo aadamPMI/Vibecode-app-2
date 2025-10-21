@@ -324,7 +324,7 @@ export default function WorkoutHomeScreen() {
                         }}
                         onPress={() => {
                           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                          navigation.navigate('ProgramManager');
+                          navigation.navigate('ProgramWizard');
                         }}
                       >
                         <LinearGradient

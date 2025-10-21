@@ -47,7 +47,7 @@ export default function ProgramManagerScreen() {
 
   const handleCreateProgram = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setIsSplitModalVisible(true);
+    navigation.navigate('ProgramWizard');
   };
 
   const handleSelectPresetSplit = (split: PresetSplit) => {

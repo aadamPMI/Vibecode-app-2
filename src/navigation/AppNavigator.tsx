@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import WorkoutHomeScreen from "../screens/workout/WorkoutHomeScreen";
 import ProgramManagerScreen from "../screens/workout/ProgramManagerScreen";
+import ProgramWizardScreen from "../screens/workout/ProgramWizardScreen";
 import ProgramBuilderScreen from "../screens/workout/ProgramBuilderScreen";
 import SplitBuilderScreen from "../screens/workout/SplitBuilderScreen";
 import ExerciseLibraryScreen from "../screens/workout/ExerciseLibraryScreen";
@@ -45,6 +46,7 @@ export type RootTabParamList = {
 export type WorkoutStackParamList = {
   WorkoutHome: undefined;
   ProgramManager: undefined;
+  ProgramWizard: undefined;
   ProgramBuilder: undefined;
   SplitBuilder: { programId?: string };
   ExerciseLibrary: undefined;
@@ -76,6 +78,7 @@ function WorkoutStackNavigator() {
     >
       <WorkoutStack.Screen name="WorkoutHome" component={WorkoutHomeScreen} />
       <WorkoutStack.Screen name="ProgramManager" component={ProgramManagerScreen} />
+      <WorkoutStack.Screen name="ProgramWizard" component={ProgramWizardScreen} />
       <WorkoutStack.Screen name="ProgramBuilder" component={ProgramBuilderScreen} />
       <WorkoutStack.Screen name="SplitBuilder" component={SplitBuilderScreen} />
       <WorkoutStack.Screen name="ExerciseLibrary" component={ExerciseLibraryScreen} />
