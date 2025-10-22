@@ -54,49 +54,54 @@ export default function WorkoutHomeScreen() {
 
         {/* 4 Card Grid */}
         <View className="px-6 mb-4">
-          <View className="flex-row gap-3 mb-3">
+          <View className="flex-row gap-4 mb-4">
             {/* Active Workout Card */}
             <Pressable 
               className="flex-1"
               onPress={() => handleCardPress('workout')}
             >
-              <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View 
+                className={cn(
+                  'rounded-3xl p-6 min-h-[200px]',
+                  expandedCard === 'workout' ? 'border-2 border-blue-500' : '',
+                  isDark ? 'bg-[#1c1c1e]' : 'bg-white'
+                )}
+                style={{
+                  shadowColor: isDark ? '#000' : '#1f2937',
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: isDark ? 0.6 : 0.12,
+                  shadowRadius: 20,
+                  elevation: 10,
+                }}
+              >
+                {/* Icon Container - Larger pill shape */}
                 <View 
-                  className={cn(
-                    'p-5 min-h-[140px]',
-                    expandedCard === 'workout' ? 'border-2 border-blue-500' : '',
-                    isDark ? 'bg-white/5' : 'bg-white/40'
-                  )}
+                  className="rounded-3xl p-6 mb-5 self-start"
                   style={{
-                    shadowColor: isDark ? '#000' : '#1f2937',
-                    shadowOffset: { width: 0, height: 8 },
-                    shadowOpacity: isDark ? 0.4 : 0.15,
-                    shadowRadius: 16,
-                    elevation: 8,
+                    backgroundColor: isDark ? 'rgba(251, 146, 60, 0.15)' : '#fed7aa',
                   }}
                 >
-                  <View className="bg-orange-500/20 w-12 h-12 rounded-2xl items-center justify-center mb-3">
-                    <Ionicons name="flame" size={24} color="#f97316" />
-                  </View>
-                  <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
-                    Active Workout
-                  </Text>
-                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                    {todaysWorkout?.template ? todaysWorkout.template.name : 'Rest day'}
-                  </Text>
-                  {activeSession ? (
-                    <View className="flex-row items-center">
-                      <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                      <Text className="text-green-500 text-xs font-bold">In Progress</Text>
-                    </View>
-                  ) : todaysWorkout?.template ? (
-                    <View className="flex-row items-center">
-                      <Ionicons name="play" size={14} color="#3b82f6" />
-                      <Text className="text-blue-500 text-xs font-bold ml-1">Start Workout</Text>
-                    </View>
-                  ) : null}
+                  <Ionicons name="flame" size={32} color="#f97316" />
                 </View>
-              </BlurView>
+                
+                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                  Active{'\n'}Workout
+                </Text>
+                <Text className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  {todaysWorkout?.template ? todaysWorkout.template.name : 'Start training'}
+                </Text>
+                {activeSession ? (
+                  <View className="flex-row items-center">
+                    <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
+                    <Text className="text-green-500 text-sm font-semibold">In Progress</Text>
+                  </View>
+                ) : todaysWorkout?.template ? (
+                  <View className="flex-row items-center">
+                    <Ionicons name="play" size={16} color="#6b7280" />
+                    <Text className={cn('text-sm font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>Start</Text>
+                  </View>
+                ) : null}
+              </View>
             </Pressable>
 
             {/* My Programs Card */}
@@ -104,79 +109,89 @@ export default function WorkoutHomeScreen() {
               className="flex-1"
               onPress={() => handleCardPress('programs')}
             >
-              <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View 
+                className={cn(
+                  'rounded-3xl p-6 min-h-[200px]',
+                  expandedCard === 'programs' ? 'border-2 border-blue-500' : '',
+                  isDark ? 'bg-[#1c1c1e]' : 'bg-white'
+                )}
+                style={{
+                  shadowColor: isDark ? '#000' : '#1f2937',
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: isDark ? 0.6 : 0.12,
+                  shadowRadius: 20,
+                  elevation: 10,
+                }}
+              >
+                {/* Icon Container - Larger pill shape */}
                 <View 
-                  className={cn(
-                    'p-5 min-h-[140px]',
-                    expandedCard === 'programs' ? 'border-2 border-blue-500' : '',
-                    isDark ? 'bg-white/5' : 'bg-white/40'
-                  )}
+                  className="rounded-3xl p-6 mb-5 self-start"
                   style={{
-                    shadowColor: isDark ? '#000' : '#1f2937',
-                    shadowOffset: { width: 0, height: 8 },
-                    shadowOpacity: isDark ? 0.4 : 0.15,
-                    shadowRadius: 16,
-                    elevation: 8,
+                    backgroundColor: isDark ? 'rgba(147, 197, 253, 0.15)' : '#dbeafe',
                   }}
                 >
-                  <View className="bg-blue-500/20 w-12 h-12 rounded-2xl items-center justify-center mb-3">
-                    <Ionicons name="list" size={24} color="#3b82f6" />
-                  </View>
-                  <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
-                    My Programs
-                  </Text>
-                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                    Manage workout splits
-                  </Text>
-                  <View className="flex-row items-center">
-                    <Ionicons name="barbell" size={14} color="#9ca3af" />
-                    <Text className={cn('text-xs font-bold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      {programs.length} {programs.length === 1 ? 'split' : 'splits'}
-                    </Text>
-                  </View>
+                  <Ionicons name="heart-circle-outline" size={32} color="#3b82f6" />
                 </View>
-              </BlurView>
+                
+                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                  My Programs
+                </Text>
+                <Text className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  Workout splits
+                </Text>
+                <View className="flex-row items-center">
+                  <Ionicons name="layers-outline" size={16} color="#6b7280" />
+                  <Text className={cn('text-sm font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    {programs.length} {programs.length === 1 ? 'split' : 'splits'}
+                  </Text>
+                </View>
+              </View>
             </Pressable>
           </View>
 
-          <View className="flex-row gap-3">
+          <View className="flex-row gap-4">
             {/* History Card */}
             <Pressable 
               className="flex-1"
               onPress={() => handleCardPress('history')}
             >
-              <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View 
+                className={cn(
+                  'rounded-3xl p-6 min-h-[200px]',
+                  expandedCard === 'history' ? 'border-2 border-blue-500' : '',
+                  isDark ? 'bg-[#1c1c1e]' : 'bg-white'
+                )}
+                style={{
+                  shadowColor: isDark ? '#000' : '#1f2937',
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: isDark ? 0.6 : 0.12,
+                  shadowRadius: 20,
+                  elevation: 10,
+                }}
+              >
+                {/* Icon Container - Larger pill shape */}
                 <View 
-                  className={cn(
-                    'p-5 min-h-[140px]',
-                    expandedCard === 'history' ? 'border-2 border-blue-500' : '',
-                    isDark ? 'bg-white/5' : 'bg-white/40'
-                  )}
+                  className="rounded-3xl p-6 mb-5 self-start"
                   style={{
-                    shadowColor: isDark ? '#000' : '#1f2937',
-                    shadowOffset: { width: 0, height: 8 },
-                    shadowOpacity: isDark ? 0.4 : 0.15,
-                    shadowRadius: 16,
-                    elevation: 8,
+                    backgroundColor: isDark ? 'rgba(134, 239, 172, 0.15)' : '#d1fae5',
                   }}
                 >
-                  <View className="bg-green-500/20 w-12 h-12 rounded-2xl items-center justify-center mb-3">
-                    <Ionicons name="trending-up" size={24} color="#22c55e" />
-                  </View>
-                  <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
-                    History
-                  </Text>
-                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                    Track your progress
-                  </Text>
-                  <View className="flex-row items-center">
-                    <Ionicons name="time" size={14} color="#9ca3af" />
-                    <Text className={cn('text-xs font-bold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      {stats.totalSessions} this week
-                    </Text>
-                  </View>
+                  <Ionicons name="trending-up" size={32} color="#22c55e" />
                 </View>
-              </BlurView>
+                
+                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                  History
+                </Text>
+                <Text className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  Track your progress
+                </Text>
+                <View className="flex-row items-center">
+                  <Ionicons name="time-outline" size={16} color="#6b7280" />
+                  <Text className={cn('text-sm font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    {stats.totalSessions} this week
+                  </Text>
+                </View>
+              </View>
             </Pressable>
 
             {/* Stats Card */}
@@ -184,38 +199,43 @@ export default function WorkoutHomeScreen() {
               className="flex-1"
               onPress={() => handleCardPress('stats')}
             >
-              <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
+              <View 
+                className={cn(
+                  'rounded-3xl p-6 min-h-[200px]',
+                  expandedCard === 'stats' ? 'border-2 border-blue-500' : '',
+                  isDark ? 'bg-[#1c1c1e]' : 'bg-white'
+                )}
+                style={{
+                  shadowColor: isDark ? '#000' : '#1f2937',
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: isDark ? 0.6 : 0.12,
+                  shadowRadius: 20,
+                  elevation: 10,
+                }}
+              >
+                {/* Icon Container - Larger pill shape */}
                 <View 
-                  className={cn(
-                    'p-5 min-h-[140px]',
-                    expandedCard === 'stats' ? 'border-2 border-blue-500' : '',
-                    isDark ? 'bg-white/5' : 'bg-white/40'
-                  )}
+                  className="rounded-3xl p-6 mb-5 self-start"
                   style={{
-                    shadowColor: isDark ? '#000' : '#1f2937',
-                    shadowOffset: { width: 0, height: 8 },
-                    shadowOpacity: isDark ? 0.4 : 0.15,
-                    shadowRadius: 16,
-                    elevation: 8,
+                    backgroundColor: isDark ? 'rgba(251, 146, 60, 0.15)' : '#fed7aa',
                   }}
                 >
-                  <View className="bg-yellow-500/20 w-12 h-12 rounded-2xl items-center justify-center mb-3">
-                    <Ionicons name="stats-chart" size={24} color="#eab308" />
-                  </View>
-                  <Text className={cn('text-xl font-bold mb-1', isDark ? 'text-white' : 'text-black')}>
-                    Stats
-                  </Text>
-                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                    Dashboard & insights
-                  </Text>
-                  <View className="flex-row items-center">
-                    <Ionicons name="trophy" size={14} color="#9ca3af" />
-                    <Text className={cn('text-xs font-bold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      {stats.prCount} PRs
-                    </Text>
-                  </View>
+                  <Ionicons name="flame" size={32} color="#f97316" />
                 </View>
-              </BlurView>
+                
+                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                  Stats
+                </Text>
+                <Text className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  Dashboard & insights
+                </Text>
+                <View className="flex-row items-center">
+                  <Ionicons name="star-outline" size={16} color="#6b7280" />
+                  <Text className={cn('text-sm font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    {stats.prCount} PRs
+                  </Text>
+                </View>
+              </View>
             </Pressable>
           </View>
         </View>
