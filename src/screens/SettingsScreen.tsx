@@ -304,7 +304,12 @@ export default function SettingsScreen() {
         {/* Header */}
         <View className="px-6 pt-6 pb-6">
           <Pressable onPress={handleHeaderTap}>
-            <Text className={cn("text-5xl font-bold", isDark ? "text-white" : "text-black")}>
+            <Text
+              className={cn(
+                "text-4xl font-bold",
+                isDark ? "text-white" : "text-black"
+              )}
+            >
               Settings
             </Text>
           </Pressable>
@@ -363,18 +368,18 @@ export default function SettingsScreen() {
           >
             <View className="flex-row items-center mb-4">
               <Ionicons name="people-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg font-semibold ml-2", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base font-bold ml-2", isDark ? "text-white" : "text-black")}>
                 Invite friends
               </Text>
             </View>
 
             {/* Image Banner */}
             <View className="rounded-2xl overflow-hidden bg-gray-800 h-48 items-center justify-center">
-              <Text className="text-white text-xl font-bold text-center px-6 mb-2">
+              <Text className="text-white text-base font-bold text-center px-6 mb-2">
                 The journey is easier together
               </Text>
               <View className="bg-white rounded-full px-6 py-3 mt-2">
-                <Text className="text-black font-semibold">
+                <Text className="text-black font-bold text-xs">
                   Earn $10 for each friend referred
                 </Text>
               </View>
@@ -401,7 +406,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="id-card-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base font-bold ml-4 flex-1", isDark ? "text-white" : "text-black")}>
                 Personal details
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -416,7 +421,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="nutrition-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base font-bold ml-4 flex-1", isDark ? "text-white" : "text-black")}>
                 Edit nutrition goals
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -431,7 +436,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="flag-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base font-bold ml-4 flex-1", isDark ? "text-white" : "text-black")}>
                 Goals & current weight
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -446,7 +451,7 @@ export default function SettingsScreen() {
               className="flex-row items-center p-5 border-b border-gray-200/10"
             >
               <Ionicons name="language-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-lg ml-4 flex-1", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base font-bold ml-4 flex-1", isDark ? "text-white" : "text-black")}>
                 Language
               </Text>
               <Ionicons name="chevron-forward" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -467,7 +472,7 @@ export default function SettingsScreen() {
             {/* Preferences Header */}
             <View className="flex-row items-center p-5 border-b border-gray-200/10">
               <Ionicons name="settings-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-xl font-bold ml-3", isDark ? "text-white" : "text-black")}>
+              <Text className={cn("text-base font-bold ml-3", isDark ? "text-white" : "text-black")}>
                 Preferences
               </Text>
             </View>
@@ -489,15 +494,15 @@ export default function SettingsScreen() {
             >
               <View className="flex-row justify-between items-center">
                 <View className="flex-1">
-                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                  <Text className={cn("text-base font-bold mb-1", isDark ? "text-white" : "text-black")}>
                     Appearance
                   </Text>
-                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                  <Text className={cn("text-xs", isDark ? "text-gray-400" : "text-gray-600")}>
                     Choose light, dark, or system appearance
                   </Text>
                 </View>
                 <View className="flex-row items-center">
-                  <Text className={cn("text-base mr-2", isDark ? "text-white" : "text-black")}>
+                  <Text className={cn("text-sm mr-2", isDark ? "text-white" : "text-black")}>
                     {theme === "light" ? "Light" : theme === "dark" ? "Dark" : "System"}
                   </Text>
                   <Ionicons name="chevron-down" size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
@@ -509,10 +514,10 @@ export default function SettingsScreen() {
             <View className="px-5 py-4 border-b border-gray-200/10">
               <View className="flex-row justify-between items-center">
                 <View className="flex-1 mr-4">
-                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                  <Text className={cn("text-base font-bold mb-1", isDark ? "text-white" : "text-black")}>
                     Rollover calories
                   </Text>
-                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                  <Text className={cn("text-xs", isDark ? "text-gray-400" : "text-gray-600")}>
                     Add up to 200 left over calories from yesterday into {"today's"} daily goal
                   </Text>
                 </View>
@@ -532,18 +537,18 @@ export default function SettingsScreen() {
             <View className="px-5 py-4">
               <View className="flex-row justify-between items-center">
                 <View className="flex-1 mr-4">
-                  <Text className={cn("text-base font-semibold mb-1", isDark ? "text-white" : "text-black")}>
+                  <Text className={cn("text-base font-bold mb-1", isDark ? "text-white" : "text-black")}>
                     Workout profile visibility
                   </Text>
-                  <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                  <Text className={cn("text-xs", isDark ? "text-gray-400" : "text-gray-600")}>
                     Allow others to see your workout programs and history on your profile
                   </Text>
                 </View>
                 <Switch
-                  value={privacySettings.showWorkouts}
+                  value={privacySettings.publicProfile}
                   onValueChange={(value) => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    updatePrivacySettings({ showWorkouts: value });
+                    updatePrivacySettings({ publicProfile: value });
                   }}
                   trackColor={{ false: "#767577", true: "#3b82f6" }}
                   thumbColor="#ffffff"
