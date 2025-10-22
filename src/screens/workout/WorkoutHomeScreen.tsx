@@ -62,7 +62,7 @@ export default function WorkoutHomeScreen() {
             >
               <View 
                 className={cn(
-                  'rounded-3xl p-6 min-h-[200px]',
+                  'rounded-3xl p-6 aspect-square',
                   expandedCard === 'workout' ? 'border-2 border-blue-500' : '',
                   isDark ? 'bg-[#1c1c1e]' : 'bg-white'
                 )}
@@ -76,29 +76,29 @@ export default function WorkoutHomeScreen() {
               >
                 {/* Icon Container - Larger pill shape */}
                 <View 
-                  className="rounded-3xl p-6 mb-5 self-start"
+                  className="rounded-3xl p-5 mb-auto self-start"
                   style={{
                     backgroundColor: isDark ? 'rgba(251, 146, 60, 0.15)' : '#fed7aa',
                   }}
                 >
-                  <Ionicons name="flame" size={32} color="#f97316" />
+                  <Ionicons name="flame" size={28} color="#f97316" />
                 </View>
                 
-                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
                   Active{'\n'}Workout
                 </Text>
-                <Text className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
                   {todaysWorkout?.template ? todaysWorkout.template.name : 'Start training'}
                 </Text>
                 {activeSession ? (
                   <View className="flex-row items-center">
                     <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                    <Text className="text-green-500 text-sm font-semibold">In Progress</Text>
+                    <Text className="text-green-500 text-xs font-semibold">In Progress</Text>
                   </View>
                 ) : todaysWorkout?.template ? (
                   <View className="flex-row items-center">
-                    <Ionicons name="play" size={16} color="#6b7280" />
-                    <Text className={cn('text-sm font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>Start</Text>
+                    <Ionicons name="play" size={14} color="#6b7280" />
+                    <Text className={cn('text-xs font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>Start</Text>
                   </View>
                 ) : null}
               </View>
@@ -111,7 +111,7 @@ export default function WorkoutHomeScreen() {
             >
               <View 
                 className={cn(
-                  'rounded-3xl p-6 min-h-[200px]',
+                  'rounded-3xl p-6 aspect-square',
                   expandedCard === 'programs' ? 'border-2 border-blue-500' : '',
                   isDark ? 'bg-[#1c1c1e]' : 'bg-white'
                 )}
@@ -125,23 +125,23 @@ export default function WorkoutHomeScreen() {
               >
                 {/* Icon Container - Larger pill shape */}
                 <View 
-                  className="rounded-3xl p-6 mb-5 self-start"
+                  className="rounded-3xl p-5 mb-auto self-start"
                   style={{
                     backgroundColor: isDark ? 'rgba(147, 197, 253, 0.15)' : '#dbeafe',
                   }}
                 >
-                  <Ionicons name="heart-circle-outline" size={32} color="#3b82f6" />
+                  <Ionicons name="heart-circle-outline" size={28} color="#3b82f6" />
                 </View>
                 
-                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
                   My Programs
                 </Text>
-                <Text className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
                   Workout splits
                 </Text>
                 <View className="flex-row items-center">
-                  <Ionicons name="layers-outline" size={16} color="#6b7280" />
-                  <Text className={cn('text-sm font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <Ionicons name="layers-outline" size={14} color="#6b7280" />
+                  <Text className={cn('text-xs font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
                     {programs.length} {programs.length === 1 ? 'split' : 'splits'}
                   </Text>
                 </View>
@@ -157,7 +157,7 @@ export default function WorkoutHomeScreen() {
             >
               <View 
                 className={cn(
-                  'rounded-3xl p-6 min-h-[200px]',
+                  'rounded-3xl p-6 aspect-square',
                   expandedCard === 'history' ? 'border-2 border-blue-500' : '',
                   isDark ? 'bg-[#1c1c1e]' : 'bg-white'
                 )}
@@ -171,23 +171,23 @@ export default function WorkoutHomeScreen() {
               >
                 {/* Icon Container - Larger pill shape */}
                 <View 
-                  className="rounded-3xl p-6 mb-5 self-start"
+                  className="rounded-3xl p-5 mb-auto self-start"
                   style={{
                     backgroundColor: isDark ? 'rgba(134, 239, 172, 0.15)' : '#d1fae5',
                   }}
                 >
-                  <Ionicons name="trending-up" size={32} color="#22c55e" />
+                  <Ionicons name="trending-up" size={28} color="#22c55e" />
                 </View>
                 
-                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
                   History
                 </Text>
-                <Text className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
                   Track your progress
                 </Text>
                 <View className="flex-row items-center">
-                  <Ionicons name="time-outline" size={16} color="#6b7280" />
-                  <Text className={cn('text-sm font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <Ionicons name="time-outline" size={14} color="#6b7280" />
+                  <Text className={cn('text-xs font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
                     {stats.totalSessions} this week
                   </Text>
                 </View>
@@ -201,7 +201,7 @@ export default function WorkoutHomeScreen() {
             >
               <View 
                 className={cn(
-                  'rounded-3xl p-6 min-h-[200px]',
+                  'rounded-3xl p-6 aspect-square',
                   expandedCard === 'stats' ? 'border-2 border-blue-500' : '',
                   isDark ? 'bg-[#1c1c1e]' : 'bg-white'
                 )}
@@ -215,23 +215,23 @@ export default function WorkoutHomeScreen() {
               >
                 {/* Icon Container - Larger pill shape */}
                 <View 
-                  className="rounded-3xl p-6 mb-5 self-start"
+                  className="rounded-3xl p-5 mb-auto self-start"
                   style={{
                     backgroundColor: isDark ? 'rgba(251, 146, 60, 0.15)' : '#fed7aa',
                   }}
                 >
-                  <Ionicons name="flame" size={32} color="#f97316" />
+                  <Ionicons name="flame" size={28} color="#f97316" />
                 </View>
                 
-                <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
                   Stats
                 </Text>
-                <Text className={cn('text-sm mb-3', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
                   Dashboard & insights
                 </Text>
                 <View className="flex-row items-center">
-                  <Ionicons name="star-outline" size={16} color="#6b7280" />
-                  <Text className={cn('text-sm font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <Ionicons name="star-outline" size={14} color="#6b7280" />
+                  <Text className={cn('text-xs font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
                     {stats.prCount} PRs
                   </Text>
                 </View>
