@@ -1,4 +1,3 @@
-// WorkoutHistoryScreen - View past workout sessions with enhanced UI
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, TextInput, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,7 +8,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { cn } from '../../utils/cn';
 import { useSettingsStore } from '../../state/settingsStore';
 import { useTrainingStore } from '../../state/trainingStore';
-import { GlassCard } from '../../components/ui/GlassCard';
+import { BlurView } from 'expo-blur';
 import { EmptyState } from '../../components/ui/LoadingStates';
 import { PremiumBackground } from '../../components/PremiumBackground';
 import { hapticLight } from '../../utils/haptics';
@@ -75,16 +74,18 @@ export default function WorkoutHistoryScreen() {
 
       {/* Search */}
       <View className="px-6 mb-4">
-        <TextInput
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search workouts..."
-          placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
-          className={cn(
-            'rounded-2xl p-4 text-base',
-            isDark ? 'bg-[#1a1a1a] text-white' : 'bg-white text-gray-900'
-          )}
-        />
+        <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search workouts..."
+            placeholderTextColor={isDark ? '#6b7280' : '#9ca3af'}
+            className={cn(
+              'p-4 text-base',
+              isDark ? 'bg-white/5 text-white' : 'bg-white/40 text-black'
+            )}
+          />
+        </BlurView>
       </View>
 
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
@@ -105,113 +106,134 @@ export default function WorkoutHistoryScreen() {
                 layout={Layout.springify()}
               >
                 <Pressable onPress={() => toggleExpanded(session.id)}>
-                  <GlassCard intensity={60} isDark={isDark} className="p-4 mb-3">
-                    <View className="flex-row justify-between items-start mb-2">
-                      <View className="flex-1">
-                        <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-gray-900')}>
-                          {session.workoutName}
-                        </Text>
-                        <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                          {formatDate(session.completedAt!)}
-                        </Text>
-                      </View>
-                      <View className="flex-row items-center gap-2">
-                        {session.prEvents && session.prEvents.length > 0 && (
-                          <View className="bg-yellow-500/20 rounded-full px-3 py-1">
-                            <Text className="text-yellow-500 text-xs font-bold">
-                              {session.prEvents.length} PR
-                            </Text>
-                          </View>
-                        )}
-                        <Ionicons
-                          name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                          size={20}
-                          color={isDark ? '#9ca3af' : '#6b7280'}
-                        />
-                      </View>
-                    </View>
-
-                    <View className="flex-row justify-between mt-3">
-                      <View className="items-center">
-                        <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                          Duration
-                        </Text>
-                        <Text className={cn('font-semibold', isDark ? 'text-white' : 'text-gray-900')}>
-                          {session.duration}m
-                        </Text>
-                      </View>
-                      <View className="items-center">
-                        <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                          Sets
-                        </Text>
-                        <Text className={cn('font-semibold', isDark ? 'text-white' : 'text-gray-900')}>
-                          {session.totalSets}
-                        </Text>
-                      </View>
-                      <View className="items-center">
-                        <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                          Volume
-                        </Text>
-                        <Text className={cn('font-semibold', isDark ? 'text-white' : 'text-gray-900')}>
-                          {Math.round(session.totalVolume)}kg
-                        </Text>
-                      </View>
-                      <View className="items-center">
-                        <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                          Exercises
-                        </Text>
-                        <Text className={cn('font-semibold', isDark ? 'text-white' : 'text-gray-900')}>
-                          {session.exercises.length}
-                        </Text>
-                      </View>
-                    </View>
-
-                    {/* Expanded Details */}
-                    {isExpanded && (
-                      <Animated.View entering={FadeInDown.duration(300)} className="mt-4 pt-4 border-t border-gray-700/30">
-                        <Text className={cn('text-sm font-bold mb-2', isDark ? 'text-white' : 'text-gray-900')}>
-                          Exercises:
-                        </Text>
-                        {session.exercises.map((exercise, exIdx) => {
-                          return (
-                            <View key={exIdx} className="mb-3">
-                              <Text className={cn('text-sm font-semibold mb-1', isDark ? 'text-white' : 'text-gray-900')}>
-                                {exercise.exerciseName}
+                  <BlurView 
+                    intensity={80} 
+                    tint={isDark ? 'dark' : 'light'} 
+                    className="rounded-3xl overflow-hidden mb-4"
+                  >
+                    <View 
+                      className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}
+                      style={{
+                        shadowColor: isDark ? '#000' : '#1f2937',
+                        shadowOffset: { width: 0, height: 8 },
+                        shadowOpacity: isDark ? 0.4 : 0.15,
+                        shadowRadius: 16,
+                        elevation: 8,
+                      }}
+                    >
+                      <View className="flex-row justify-between items-start mb-3">
+                        <View className="flex-1">
+                          <Text className={cn('font-bold text-xl mb-1', isDark ? 'text-white' : 'text-black')}>
+                            {session.workoutName}
+                          </Text>
+                          <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            {formatDate(session.completedAt!)}
+                          </Text>
+                        </View>
+                        <View className="flex-row items-center gap-2">
+                          {session.prEvents && session.prEvents.length > 0 && (
+                            <View className="bg-yellow-500/20 rounded-full px-3 py-1">
+                              <Text className="text-yellow-500 text-xs font-bold">
+                                {session.prEvents.length} PR
                               </Text>
-                              <View className="flex-row flex-wrap gap-2">
-                                {exercise.sets.map((set, setIdx) => (
-                                  <View
-                                    key={setIdx}
-                                    className={cn('px-3 py-1 rounded', isDark ? 'bg-[#1a1a1a]' : 'bg-gray-100')}
-                                  >
-                                    <Text className={cn('text-xs', isDark ? 'text-gray-300' : 'text-gray-700')}>
-                                      {set.actualLoad}kg × {set.actualReps}
-                                    </Text>
-                                  </View>
-                                ))}
-                              </View>
                             </View>
-                          );
-                        })}
-                      </Animated.View>
-                    )}
+                          )}
+                          <Ionicons
+                            name={isExpanded ? 'chevron-up' : 'chevron-down'}
+                            size={24}
+                            color={isDark ? '#9ca3af' : '#6b7280'}
+                          />
+                        </View>
+                      </View>
 
-                    {session.aiCoachTip && (
-                      <View
-                        className={cn(
-                          'mt-3 p-3 rounded-lg',
-                          isDark ? 'bg-blue-500/10' : 'bg-blue-50'
-                        )}
-                      >
-                        <View className="flex-row items-start">
-                          <Ionicons name="bulb" size={16} color="#3b82f6" />
-                          <Text className={cn('text-xs ml-2 flex-1', isDark ? 'text-blue-400' : 'text-blue-600')}>
-                            {session.aiCoachTip}
+                      <View className="flex-row justify-between mt-4">
+                        <View className="items-center">
+                          <Text className={cn('text-xs mb-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Duration
+                          </Text>
+                          <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
+                            {session.duration}m
+                          </Text>
+                        </View>
+                        <View className="items-center">
+                          <Text className={cn('text-xs mb-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Sets
+                          </Text>
+                          <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
+                            {session.totalSets}
+                          </Text>
+                        </View>
+                        <View className="items-center">
+                          <Text className={cn('text-xs mb-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Volume
+                          </Text>
+                          <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
+                            {Math.round(session.totalVolume)}kg
+                          </Text>
+                        </View>
+                        <View className="items-center">
+                          <Text className={cn('text-xs mb-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Exercises
+                          </Text>
+                          <Text className={cn('font-bold text-lg', isDark ? 'text-white' : 'text-black')}>
+                            {session.exercises.length}
                           </Text>
                         </View>
                       </View>
-                    )}
-                  </GlassCard>
+
+                      {/* Expanded Details */}
+                      {isExpanded && (
+                        <Animated.View 
+                          entering={FadeInDown.duration(300)} 
+                          className={cn('mt-5 pt-5 border-t', isDark ? 'border-gray-700/30' : 'border-gray-300/30')}
+                        >
+                          <Text className={cn('text-base font-bold mb-3', isDark ? 'text-white' : 'text-black')}>
+                            Exercises:
+                          </Text>
+                          {session.exercises.map((exercise, exIdx) => {
+                            return (
+                              <View key={exIdx} className="mb-4">
+                                <Text className={cn('text-base font-semibold mb-2', isDark ? 'text-white' : 'text-black')}>
+                                  {exercise.exerciseName}
+                                </Text>
+                                <View className="flex-row flex-wrap gap-2">
+                                  {exercise.sets.map((set, setIdx) => (
+                                    <View
+                                      key={setIdx}
+                                      className={cn(
+                                        'px-3 py-2 rounded-xl',
+                                        isDark ? 'bg-white/10' : 'bg-black/5'
+                                      )}
+                                    >
+                                      <Text className={cn('text-sm font-semibold', isDark ? 'text-white' : 'text-black')}>
+                                        {set.actualLoad}kg × {set.actualReps}
+                                      </Text>
+                                    </View>
+                                  ))}
+                                </View>
+                              </View>
+                            );
+                          })}
+                        </Animated.View>
+                      )}
+
+                      {session.aiCoachTip && (
+                        <View
+                          className={cn(
+                            'mt-4 p-4 rounded-2xl',
+                            isDark ? 'bg-blue-500/20' : 'bg-blue-100'
+                          )}
+                        >
+                          <View className="flex-row items-start">
+                            <Ionicons name="bulb" size={18} color="#3b82f6" />
+                            <Text className={cn('text-sm ml-2 flex-1 font-medium', isDark ? 'text-blue-400' : 'text-blue-700')}>
+                              {session.aiCoachTip}
+                            </Text>
+                          </View>
+                        </View>
+                      )}
+                    </View>
+                  </BlurView>
                 </Pressable>
               </Animated.View>
             );
