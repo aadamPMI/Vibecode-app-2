@@ -1,5 +1,5 @@
 // Program Manager Screen - Enhanced with Split Selection
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,9 +12,19 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import Animated, { FadeInDown, FadeOutUp } from 'react-native-reanimated';
+import Animated, { 
+  FadeInDown, 
+  FadeOutUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+  withSequence,
+  Easing 
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { cn } from '../../utils/cn';
 import { useTrainingStore } from '../../state/trainingStore';
 import { useNavigation } from '@react-navigation/native';
@@ -114,6 +124,41 @@ export default function ProgramManagerScreen() {
     split.experienceLevel.includes(selectedExperienceLevel)
   );
 
+  // Pulsing animation for the Create Program button
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.02, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.8, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+  }, []);
+
+  const animatedButtonStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  const animatedGlowStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
+
   return (
     <SafeAreaView className={cn('flex-1', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
       <PremiumBackground theme={theme} variant="workout" />
@@ -137,19 +182,72 @@ export default function ProgramManagerScreen() {
           </View>
         </View>
 
-        {/* Create New Program Button */}
-        <View className="px-6 mb-6">
-          <GlassButton
-            onPress={handleCreateProgram}
-            variant="primary"
-            size="lg"
-            fullWidth
-            icon={<Ionicons name="add-circle-outline" size={24} color="white" />}
-            haptic="medium"
+        {/* Big Animated Create Program Button */}
+        <Animated.View entering={FadeInDown.delay(200)} className="px-6 mb-6">
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+              handleCreateProgram();
+            }}
           >
-            Create New Program
-          </GlassButton>
-        </View>
+            <Animated.View style={animatedButtonStyle}>
+              {/* Glow effect */}
+              <Animated.View
+                style={[
+                  animatedGlowStyle,
+                  {
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    borderRadius: 28,
+                    shadowColor: '#8b5cf6',
+                    shadowOffset: { width: 0, height: 12 },
+                    shadowOpacity: 0.6,
+                    shadowRadius: 24,
+                    elevation: 20,
+                  },
+                ]}
+              />
+              
+              {/* Button content */}
+              <View className="rounded-[28px] overflow-hidden">
+                <LinearGradient
+                  colors={['#8b5cf6', '#6366f1', '#3b82f6']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{ padding: 24 }}
+                >
+                  <View className="flex-row items-center justify-center">
+                    {/* Icon with background */}
+                    <View 
+                      className="w-14 h-14 rounded-full items-center justify-center mr-4"
+                      style={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                      }}
+                    >
+                      <Ionicons name="add-circle" size={32} color="white" />
+                    </View>
+                    
+                    {/* Text */}
+                    <View className="flex-1">
+                      <Text className="text-white text-2xl font-bold mb-1">
+                        Create New Program
+                      </Text>
+                      <Text className="text-white/80 text-sm">
+                        Build your perfect workout plan
+                      </Text>
+                    </View>
+
+                    {/* Arrow */}
+                    <Ionicons name="arrow-forward" size={24} color="white" />
+                  </View>
+                </LinearGradient>
+              </View>
+            </Animated.View>
+          </Pressable>
+        </Animated.View>
 
         {/* Programs List */}
         {activePrograms.length === 0 ? (
