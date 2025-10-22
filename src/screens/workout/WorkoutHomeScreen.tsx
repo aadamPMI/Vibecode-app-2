@@ -1,9 +1,19 @@
 // WorkoutHomeScreen - Main hub for workout section
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import Animated, { 
+  FadeInDown, 
+  FadeIn,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+  withSequence,
+  Easing
+} from 'react-native-reanimated';
 import { cn } from '../../utils/cn';
 import { useSettingsStore } from '../../state/settingsStore';
 import { useTrainingStore } from '../../state/trainingStore';
@@ -41,19 +51,123 @@ export default function WorkoutHomeScreen() {
     setExpandedCard(expandedCard === cardType ? null : cardType);
   };
 
+  // Pulsing animation for the Create Program button
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.02, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.8, { duration: 1500, easing: Easing.inOut(Easing.ease) }),
+        withTiming(1, { duration: 1500, easing: Easing.inOut(Easing.ease) })
+      ),
+      -1,
+      false
+    );
+  }, []);
+
+  const animatedButtonStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    };
+  });
+
+  const animatedGlowStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+    };
+  });
+
   return (
     <SafeAreaView className={cn('flex-1', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
       <PremiumBackground theme={theme} variant="workout" />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-6 pt-6 pb-4">
+        <Animated.View entering={FadeIn.delay(100)} className="px-6 pt-6 pb-4">
           <Text className={cn('text-5xl font-bold', isDark ? 'text-white' : 'text-black')}>
             Workout
           </Text>
-        </View>
+        </Animated.View>
+
+        {/* Big Animated Create Program Button */}
+        {!activeProgram && (
+          <Animated.View entering={FadeInDown.delay(200)} className="px-6 mb-6">
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                navigation.navigate('ProgramWizard');
+              }}
+            >
+              <Animated.View style={animatedButtonStyle}>
+                {/* Glow effect */}
+                <Animated.View
+                  style={[
+                    animatedGlowStyle,
+                    {
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      borderRadius: 28,
+                      shadowColor: '#8b5cf6',
+                      shadowOffset: { width: 0, height: 12 },
+                      shadowOpacity: 0.6,
+                      shadowRadius: 24,
+                      elevation: 20,
+                    },
+                  ]}
+                />
+                
+                {/* Button content */}
+                <View className="rounded-[28px] overflow-hidden">
+                  <LinearGradient
+                    colors={['#8b5cf6', '#6366f1', '#3b82f6']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{ padding: 24 }}
+                  >
+                    <View className="flex-row items-center justify-center">
+                      {/* Icon with background */}
+                      <View 
+                        className="w-14 h-14 rounded-full items-center justify-center mr-4"
+                        style={{
+                          backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        }}
+                      >
+                        <Ionicons name="add-circle" size={32} color="white" />
+                      </View>
+                      
+                      {/* Text */}
+                      <View className="flex-1">
+                        <Text className="text-white text-2xl font-bold mb-1">
+                          Create Program
+                        </Text>
+                        <Text className="text-white/80 text-sm">
+                          Start your fitness journey
+                        </Text>
+                      </View>
+
+                      {/* Arrow */}
+                      <Ionicons name="arrow-forward" size={24} color="white" />
+                    </View>
+                  </LinearGradient>
+                </View>
+              </Animated.View>
+            </Pressable>
+          </Animated.View>
+        )}
 
         {/* 4 Card Grid */}
-        <View className="px-6 mb-4">
+        <Animated.View entering={FadeInDown.delay(activeProgram ? 200 : 400)} className="px-6 mb-4">
           <View className="flex-row gap-4 mb-4">
             {/* Active Workout Card */}
             <Pressable 
@@ -246,11 +360,11 @@ export default function WorkoutHomeScreen() {
               </View>
             </Pressable>
           </View>
-        </View>
+        </Animated.View>
 
         {/* Expanded Card Content */}
         {expandedCard === 'workout' && (
-          <View className="px-6 mb-6">
+          <Animated.View entering={FadeInDown.duration(300)} className="px-6 mb-6">
             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
               <View className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}>
                 {activeProgram && todaysWorkout?.template ? (
@@ -372,11 +486,11 @@ export default function WorkoutHomeScreen() {
                 )}
               </View>
             </BlurView>
-          </View>
+          </Animated.View>
         )}
 
         {expandedCard === 'programs' && (
-          <View className="px-6 mb-6">
+          <Animated.View entering={FadeInDown.duration(300)} className="px-6 mb-6">
             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
               <View className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}>
                 <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
@@ -433,11 +547,11 @@ export default function WorkoutHomeScreen() {
                 </Pressable>
               </View>
             </BlurView>
-          </View>
+          </Animated.View>
         )}
 
         {expandedCard === 'history' && (
-          <View className="px-6 mb-6">
+          <Animated.View entering={FadeInDown.duration(300)} className="px-6 mb-6">
             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
               <View className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}>
                 <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
@@ -486,11 +600,11 @@ export default function WorkoutHomeScreen() {
                 </Pressable>
               </View>
             </BlurView>
-          </View>
+          </Animated.View>
         )}
 
         {expandedCard === 'stats' && (
-          <View className="px-6 mb-6">
+          <Animated.View entering={FadeInDown.duration(300)} className="px-6 mb-6">
             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
               <View className={cn('p-6', isDark ? 'bg-white/5' : 'bg-white/40')}>
                 <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
@@ -578,18 +692,21 @@ export default function WorkoutHomeScreen() {
                 </Pressable>
               </View>
             </BlurView>
-          </View>
+          </Animated.View>
         )}
 
         {/* This Week Section */}
         {upcomingWorkouts.length > 0 && (
-          <View className="px-6 mb-8">
+          <Animated.View entering={FadeInDown.delay(activeProgram ? 400 : 600)} className="px-6 mb-8">
             <Text className={cn('text-2xl font-bold mb-4', isDark ? 'text-white' : 'text-black')}>
               This Week
             </Text>
             {upcomingWorkouts.slice(0, 7).map((workout, index) => (
-              <BlurView 
-                key={index} 
+              <Animated.View
+                key={index}
+                entering={FadeInDown.delay((activeProgram ? 500 : 700) + index * 100).springify()}
+              >
+                <BlurView 
                 intensity={60} 
                 tint={isDark ? 'dark' : 'light'} 
                 className="rounded-3xl overflow-hidden mb-3"
@@ -628,8 +745,9 @@ export default function WorkoutHomeScreen() {
                   )}
                 </View>
               </BlurView>
+              </Animated.View>
             ))}
-          </View>
+          </Animated.View>
         )}
       </ScrollView>
     </SafeAreaView>
