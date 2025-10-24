@@ -336,17 +336,18 @@ export default function ProgramWizardScreen() {
         {/* Step 2 - Create Workout Day */}
         {currentStep === 2 && (
           <View className="px-6">
-            {/* Day Preset Buttons - Top Row */}
+            {/* Day Preset Buttons - 2 Column Grid */}
             <View className="mb-6">
-              <View className="flex-row flex-wrap gap-3 mb-4">
+              <View className="flex-row flex-wrap gap-3">
+                {/* Push */}
                 <Pressable
                   onPress={() => handleDayPresetSelect('push')}
-                  className="flex-1 min-w-[30%]"
+                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-5 items-center aspect-square justify-center',
+                        'p-6 items-center aspect-square justify-center',
                         selectedDayPreset === 'push' ? 'border-2 border-purple-500' : '',
                         'bg-blue-500/20'
                       )}
@@ -358,22 +359,23 @@ export default function ProgramWizardScreen() {
                         elevation: selectedDayPreset === 'push' ? 8 : 4,
                       }}
                     >
-                      <Ionicons name="fitness" size={32} color="#3b82f6" />
-                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                      <Ionicons name="fitness" size={40} color="#3b82f6" />
+                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
                         Push
                       </Text>
                     </View>
                   </BlurView>
                 </Pressable>
 
+                {/* Pull */}
                 <Pressable
                   onPress={() => handleDayPresetSelect('pull')}
-                  className="flex-1 min-w-[30%]"
+                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-5 items-center aspect-square justify-center',
+                        'p-6 items-center aspect-square justify-center',
                         selectedDayPreset === 'pull' ? 'border-2 border-purple-500' : '',
                         'bg-pink-500/20'
                       )}
@@ -385,22 +387,23 @@ export default function ProgramWizardScreen() {
                         elevation: selectedDayPreset === 'pull' ? 8 : 4,
                       }}
                     >
-                      <Ionicons name="contract" size={32} color="#ec4899" />
-                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                      <Ionicons name="contract" size={40} color="#ec4899" />
+                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
                         Pull
                       </Text>
                     </View>
                   </BlurView>
                 </Pressable>
 
+                {/* Legs */}
                 <Pressable
                   onPress={() => handleDayPresetSelect('legs')}
-                  className="flex-1 min-w-[30%]"
+                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-5 items-center aspect-square justify-center',
+                        'p-6 items-center aspect-square justify-center',
                         selectedDayPreset === 'legs' ? 'border-2 border-purple-500' : '',
                         'bg-green-500/20'
                       )}
@@ -412,24 +415,23 @@ export default function ProgramWizardScreen() {
                         elevation: selectedDayPreset === 'legs' ? 8 : 4,
                       }}
                     >
-                      <Ionicons name="walk" size={32} color="#22c55e" />
-                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                      <Ionicons name="walk" size={40} color="#22c55e" />
+                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
                         Legs
                       </Text>
                     </View>
                   </BlurView>
                 </Pressable>
-              </View>
 
-              <View className="flex-row gap-3 mb-4">
+                {/* Upper */}
                 <Pressable
                   onPress={() => handleDayPresetSelect('upper')}
-                  className="flex-1"
+                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-5 items-center aspect-square justify-center',
+                        'p-6 items-center aspect-square justify-center',
                         selectedDayPreset === 'upper' ? 'border-2 border-purple-500' : '',
                         'bg-purple-500/20'
                       )}
@@ -441,22 +443,23 @@ export default function ProgramWizardScreen() {
                         elevation: selectedDayPreset === 'upper' ? 8 : 4,
                       }}
                     >
-                      <Ionicons name="body" size={32} color="#a855f7" />
-                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                      <Ionicons name="body" size={40} color="#a855f7" />
+                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
                         Upper
                       </Text>
                     </View>
                   </BlurView>
                 </Pressable>
 
+                {/* Custom */}
                 <Pressable
                   onPress={() => handleDayPresetSelect('custom')}
-                  className="flex-1"
+                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-5 items-center aspect-square justify-center',
+                        'p-6 items-center aspect-square justify-center',
                         selectedDayPreset === 'custom' ? 'border-2 border-purple-500' : '',
                         'bg-orange-500/20'
                       )}
@@ -468,8 +471,8 @@ export default function ProgramWizardScreen() {
                         elevation: selectedDayPreset === 'custom' ? 8 : 4,
                       }}
                     >
-                      <Ionicons name="add" size={32} color="#f97316" />
-                      <Text className={cn('text-sm font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
+                      <Ionicons name="add" size={40} color="#f97316" />
+                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
                         Custom
                       </Text>
                     </View>
