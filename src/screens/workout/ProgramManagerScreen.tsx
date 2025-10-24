@@ -322,10 +322,10 @@ export default function ProgramManagerScreen() {
                       </View>
                       <View className="flex-1">
                         <Text className={cn('text-xs mb-2 tracking-wide', isDark ? 'text-gray-400' : 'text-gray-500')}>
-                          Duration
+                          Days/Week
                         </Text>
                         <Text className={cn('text-4xl font-bold', isDark ? 'text-purple-400' : 'text-purple-600')}>
-                          {program.durationWeeks}w
+                          {program.split.daysPerWeek}
                         </Text>
                       </View>
                     </View>

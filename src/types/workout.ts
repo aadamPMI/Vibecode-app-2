@@ -135,9 +135,9 @@ export interface Program {
   name: string;
   description?: string;
   version: string; // e.g., '1.0', '1.1'
-  experienceLevel: ExperienceLevel;
+  experienceLevel?: ExperienceLevel;
   goals: ProgramGoal[];
-  durationWeeks: number;
+  durationWeeks?: number;
   split: Split;
   workoutTemplates: WorkoutTemplate[];
   periodization: PeriodizationWeek[];

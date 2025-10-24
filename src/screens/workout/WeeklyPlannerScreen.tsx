@@ -232,25 +232,12 @@ export default function WeeklyPlannerScreen() {
               <View className="flex-1">
                 <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
                   <View className={cn('p-4', isDark ? 'bg-purple-500/10' : 'bg-purple-50')}>
-                    <Ionicons name="calendar-outline" size={24} color="#a855f7" />
+                    <Ionicons name="fitness" size={24} color="#a855f7" />
                     <Text className={cn('text-2xl font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
-                      {activeProgram.durationWeeks}
+                      {activeProgram.workoutTemplates.length}
                     </Text>
                     <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      Weeks
-                    </Text>
-                  </View>
-                </BlurView>
-              </View>
-              <View className="flex-1">
-                <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
-                  <View className={cn('p-4', isDark ? 'bg-green-500/10' : 'bg-green-50')}>
-                    <Ionicons name="trending-up" size={24} color="#22c55e" />
-                    <Text className={cn('text-2xl font-bold mt-2', isDark ? 'text-white' : 'text-black')}>
-                      {activeProgram.experienceLevel}
-                    </Text>
-                    <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                      Level
+                      Workouts
                     </Text>
                   </View>
                 </BlurView>

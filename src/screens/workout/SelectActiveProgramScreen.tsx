@@ -129,7 +129,7 @@ export default function SelectActiveProgramScreen() {
                         </View>
                         <View className={cn('px-3 py-1 rounded-full', isDark ? 'bg-purple-500/20' : 'bg-purple-100')}>
                           <Text className={cn('text-xs font-bold', isDark ? 'text-purple-400' : 'text-purple-600')}>
-                            {program.durationWeeks} weeks
+                            {program.workoutTemplates.length} workouts
                           </Text>
                         </View>
                       </View>

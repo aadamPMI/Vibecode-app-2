@@ -24,8 +24,8 @@ export function getTodaysWorkout(program: Program, today: Date): {
   const weekNumber = Math.floor(daysSinceStart / 7) + 1;
   const dayOfWeek = today.getDay(); // 0=Sunday, 1=Monday, etc.
   
-  // Check if we're past program duration
-  if (weekNumber > program.durationWeeks) {
+  // Check if we're past program duration (if duration is set)
+  if (program.durationWeeks && weekNumber > program.durationWeeks) {
     return {
       template: null,
       weekNumber,

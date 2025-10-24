@@ -135,9 +135,7 @@ export default function ProgramWizardScreen() {
       name: finalProgramName,
       description: `${selectedSplit?.replace(/-/g, ' ')} training program`,
       version: '1.0',
-      experienceLevel: 'intermediate' as const,
       goals: ['hypertrophy' as const],
-      durationWeeks: 8,
       split: {
         id: `split-${Date.now()}`,
         name: selectedSplit || 'custom',
