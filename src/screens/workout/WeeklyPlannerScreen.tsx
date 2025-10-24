@@ -305,55 +305,51 @@ interface DayRowProps {
 function DayRow({ day, index, isDark, onPress, onReorder, draggingIndex, dragOffset }: DayRowProps) {
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
-  const isDragging = useSharedValue(false);
+  const startY = useSharedValue(0);
 
   const ITEM_HEIGHT = 80;
 
-  // Simultaneous long press and pan gesture
-  const longPress = Gesture.LongPress()
-    .minDuration(500)
+  // Combined long press + drag gesture
+  const gesture = Gesture.Pan()
+    .minDistance(10)
+    .onBegin(() => {
+      'worklet';
+      startY.value = translateY.value;
+    })
     .onStart(() => {
-      isDragging.value = true;
+      'worklet';
+      // Start the drag immediately
       draggingIndex.value = index;
       scale.value = withSpring(1.05);
       runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-    });
-
-  const pan = Gesture.Pan()
-    .activeOffsetY([-10, 10])
+    })
     .onUpdate((event) => {
-      if (isDragging.value) {
-        translateY.value = event.translationY;
-        dragOffset.value = event.translationY;
-
-        // Calculate which position we're dragging to
-        const offset = Math.round(translateY.value / ITEM_HEIGHT);
-
-        // Provide haptic feedback when crossing item boundaries
-        if (Math.abs(translateY.value % ITEM_HEIGHT) < 10 && offset !== 0) {
-          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
-        }
-      }
+      'worklet';
+      translateY.value = event.translationY;
+      dragOffset.value = event.translationY;
     })
     .onEnd(() => {
-      if (isDragging.value) {
-        const offset = Math.round(translateY.value / ITEM_HEIGHT);
-        const newIndex = Math.max(0, Math.min(6, index + offset));
+      'worklet';
+      const offset = Math.round(translateY.value / ITEM_HEIGHT);
+      const newIndex = Math.max(0, Math.min(6, index + offset));
 
-        if (newIndex !== index) {
-          runOnJS(onReorder)(index, newIndex);
-        }
-
-        isDragging.value = false;
-        draggingIndex.value = -1;
-        dragOffset.value = 0;
-        scale.value = withSpring(1);
-        translateY.value = withSpring(0);
+      if (newIndex !== index) {
+        runOnJS(onReorder)(index, newIndex);
       }
-    });
 
-  // Combine gestures: long press activates dragging, pan handles the drag
-  const gesture = Gesture.Simultaneous(longPress, pan);
+      draggingIndex.value = -1;
+      dragOffset.value = 0;
+      scale.value = withSpring(1);
+      translateY.value = withSpring(0);
+    })
+    .onFinalize(() => {
+      'worklet';
+      // Reset state when gesture ends
+      draggingIndex.value = -1;
+      dragOffset.value = 0;
+      scale.value = withSpring(1);
+      translateY.value = withSpring(0);
+    });
 
   const animatedStyle = useAnimatedStyle(() => {
     // Calculate if this item should be displaced
@@ -410,9 +406,9 @@ function DayRow({ day, index, isDark, onPress, onReorder, draggingIndex, dragOff
   const isRestDay = day.type === 'rest';
 
   return (
-    <GestureDetector gesture={gesture}>
-      <Animated.View style={animatedStyle}>
-        <Pressable onPress={onPress}>
+    <Animated.View style={animatedStyle}>
+      <GestureDetector gesture={gesture}>
+        <Animated.View>
           <View
             className={cn(
               'rounded-2xl p-4 flex-row items-center justify-between mb-3',
@@ -446,14 +442,16 @@ function DayRow({ day, index, isDark, onPress, onReorder, draggingIndex, dragOff
               </View>
 
               {/* Workout Info */}
-              <View className="flex-1">
-                <Text className={cn('text-base font-bold', isDark ? 'text-white' : 'text-black')}>
-                  {isRestDay ? 'Rest Day' : day.workoutName}
-                </Text>
-                <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  {isRestDay ? 'Recovery & rest' : 'Tap to start workout'}
-                </Text>
-              </View>
+              <Pressable onPress={onPress} className="flex-1">
+                <View className="flex-1">
+                  <Text className={cn('text-base font-bold', isDark ? 'text-white' : 'text-black')}>
+                    {isRestDay ? 'Rest Day' : day.workoutName}
+                  </Text>
+                  <Text className={cn('text-xs', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    {isRestDay ? 'Recovery & rest' : 'Tap to start workout'}
+                  </Text>
+                </View>
+              </Pressable>
             </View>
 
             {/* Arrow Icon */}
@@ -461,8 +459,8 @@ function DayRow({ day, index, isDark, onPress, onReorder, draggingIndex, dragOff
               <Ionicons name="chevron-forward" size={20} color={isDark ? '#6b7280' : '#9ca3af'} />
             )}
           </View>
-        </Pressable>
-      </Animated.View>
-    </GestureDetector>
+        </Animated.View>
+      </GestureDetector>
+    </Animated.View>
   );
 }
