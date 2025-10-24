@@ -949,7 +949,6 @@ export default function ProgramWizardScreen() {
                     onPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                       setSelectedDayForExercises(day.id);
-                      setCurrentStep(4); // Navigate to exercise selection
                     }}
                   >
                     <BlurView 
@@ -1049,9 +1048,9 @@ export default function ProgramWizardScreen() {
                     setCurrentStep(2);
                   }}
                 >
-                  <BlurView 
-                    intensity={60} 
-                    tint={isDark ? 'dark' : 'light'} 
+                  <BlurView
+                    intensity={60}
+                    tint={isDark ? 'dark' : 'light'}
                     className="rounded-3xl overflow-hidden"
                   >
                     <View
@@ -1070,10 +1069,10 @@ export default function ProgramWizardScreen() {
                         borderColor: isDark ? '#4b5563' : '#d1d5db',
                       }}
                     >
-                      <Ionicons 
-                        name="add-circle-outline" 
-                        size={24} 
-                        color={isDark ? '#9ca3af' : '#6b7280'} 
+                      <Ionicons
+                        name="add-circle-outline"
+                        size={24}
+                        color={isDark ? '#9ca3af' : '#6b7280'}
                       />
                       <Text className={cn('ml-2 font-bold', isDark ? 'text-gray-400' : 'text-gray-600')}>
                         Add Another Day
@@ -1083,6 +1082,21 @@ export default function ProgramWizardScreen() {
                 </Pressable>
               </Animated.View>
             </View>
+
+            {/* Helper Text */}
+            {!selectedDayForExercises && workoutDays.length > 0 && (
+              <Animated.View
+                entering={FadeInDown.delay(100).duration(300).springify()}
+                className="mt-4"
+              >
+                <View className="flex-row items-center justify-center">
+                  <Ionicons name="information-circle" size={18} color={isDark ? '#9ca3af' : '#6b7280'} />
+                  <Text className={cn('text-sm ml-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                    Select a day to continue
+                  </Text>
+                </View>
+              </Animated.View>
+            )}
           </View>
         )}
 
@@ -1645,7 +1659,8 @@ export default function ProgramWizardScreen() {
             } : handleNext}
             disabled={
               (currentStep === 1 && !selectedSplit) ||
-              (currentStep === 2 && !dayName.trim() && !isRestDay)
+              (currentStep === 2 && !dayName.trim() && !isRestDay) ||
+              (currentStep === 3 && !selectedDayForExercises)
             }
             className="flex-1"
           >
@@ -1655,7 +1670,8 @@ export default function ProgramWizardScreen() {
                   'py-4 flex-row items-center justify-center',
                   currentStep === 5 || ((currentStep === 1 && selectedSplit) ||
                    (currentStep === 2 && (dayName.trim() || isRestDay)) ||
-                   currentStep === 3 || currentStep === 4)
+                   (currentStep === 3 && selectedDayForExercises) ||
+                   currentStep === 4)
                     ? 'bg-purple-500'
                     : isDark
                     ? 'bg-gray-700'
@@ -1665,23 +1681,33 @@ export default function ProgramWizardScreen() {
                   shadowColor:
                     currentStep === 5 || ((currentStep === 1 && selectedSplit) ||
                      (currentStep === 2 && (dayName.trim() || isRestDay)) ||
-                     currentStep === 3 || currentStep === 4)
+                     (currentStep === 3 && selectedDayForExercises) ||
+                     currentStep === 4)
                       ? '#a855f7'
                       : '#6b7280',
                   shadowOffset: { width: 0, height: 6 },
                   shadowOpacity:
                     currentStep === 5 || ((currentStep === 1 && selectedSplit) ||
                      (currentStep === 2 && (dayName.trim() || isRestDay)) ||
-                     currentStep === 3 || currentStep === 4)
+                     (currentStep === 3 && selectedDayForExercises) ||
+                     currentStep === 4)
                       ? 0.4
                       : 0.2,
                   shadowRadius: 12,
                   elevation:
                     currentStep === 5 || ((currentStep === 1 && selectedSplit) ||
                      (currentStep === 2 && (dayName.trim() || isRestDay)) ||
-                     currentStep === 3 || currentStep === 4)
+                     (currentStep === 3 && selectedDayForExercises) ||
+                     currentStep === 4)
                       ? 8
                       : 3,
+                  opacity:
+                    currentStep === 5 || ((currentStep === 1 && selectedSplit) ||
+                     (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                     (currentStep === 3 && selectedDayForExercises) ||
+                     currentStep === 4)
+                      ? 1
+                      : 0.5,
                 }}
               >
                 {currentStep === 5 ? (
@@ -1697,7 +1723,8 @@ export default function ProgramWizardScreen() {
                       'font-bold mr-2',
                       ((currentStep === 1 && selectedSplit) ||
                        (currentStep === 2 && (dayName.trim() || isRestDay)) ||
-                       currentStep === 3 || currentStep === 4)
+                       (currentStep === 3 && selectedDayForExercises) ||
+                       currentStep === 4)
                         ? 'text-white'
                         : isDark
                         ? 'text-gray-500'
@@ -1711,7 +1738,8 @@ export default function ProgramWizardScreen() {
                       color={
                         ((currentStep === 1 && selectedSplit) ||
                          (currentStep === 2 && (dayName.trim() || isRestDay)) ||
-                         currentStep === 3 || currentStep === 4)
+                         (currentStep === 3 && selectedDayForExercises) ||
+                         currentStep === 4)
                           ? '#fff'
                           : isDark
                           ? '#6b7280'
