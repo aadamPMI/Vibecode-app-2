@@ -356,6 +356,7 @@ export default function WorkoutScreen() {
                   : "bg-gray-100"
               )}
               style={{
+                minHeight: 200,
                 shadowColor: activeView === "active" ? "#fb923c" : (isDark ? "#000" : "#1f2937"),
                 shadowOffset: { width: 0, height: activeView === "active" ? 8 : 6 },
                 shadowOpacity: activeView === "active" ? 0.5 : (isDark ? 0.6 : 0.25),
@@ -365,7 +366,9 @@ export default function WorkoutScreen() {
             >
               <View
                 className="rounded-2xl p-4 mb-4"
-                style={{ 
+                style={{
+                  width: 56,
+                  height: 56,
                   backgroundColor: "rgba(251, 146, 60, 0.15)",
                   shadowColor: "#fb923c",
                   shadowOffset: { width: 0, height: 4 },
@@ -374,13 +377,14 @@ export default function WorkoutScreen() {
                   elevation: 4,
                 }}
               >
-                <Ionicons name="flame" size={28} color="#fb923c" />
+                <Ionicons name="flame" size={24} color="#fb923c" />
               </View>
               <Text
                 className={cn(
-                  "text-xl font-bold mb-2",
+                  "text-lg font-bold mb-1",
                   isDark ? "text-white" : "text-gray-900"
                 )}
+                numberOfLines={1}
               >
                 Active Workout
               </Text>
@@ -389,20 +393,22 @@ export default function WorkoutScreen() {
                   "text-xs mb-4",
                   isDark ? "text-gray-400" : "text-gray-600"
                 )}
+                numberOfLines={1}
               >
                 Start training
               </Text>
               <View className="flex-row items-center">
                 <Ionicons
                   name="play"
-                  size={16}
+                  size={14}
                   color={isDark ? "#9ca3af" : "#6b7280"}
                 />
                 <Text
                   className={cn(
-                    "text-sm font-semibold ml-1",
+                    "text-xs font-semibold ml-1",
                     isDark ? "text-gray-400" : "text-gray-600"
                   )}
+                  numberOfLines={1}
                 >
                   Start
                 </Text>
@@ -424,6 +430,7 @@ export default function WorkoutScreen() {
                   : "bg-gray-100"
               )}
               style={{
+                minHeight: 200,
                 shadowColor: activeView === "programs" ? "#3b82f6" : (isDark ? "#000" : "#1f2937"),
                 shadowOffset: { width: 0, height: activeView === "programs" ? 8 : 6 },
                 shadowOpacity: activeView === "programs" ? 0.5 : (isDark ? 0.6 : 0.25),
@@ -433,7 +440,9 @@ export default function WorkoutScreen() {
             >
               <View
                 className="rounded-2xl p-4 mb-4"
-                style={{ 
+                style={{
+                  width: 56,
+                  height: 56,
                   backgroundColor: "rgba(147, 197, 253, 0.3)",
                   shadowColor: "#3b82f6",
                   shadowOffset: { width: 0, height: 4 },
@@ -442,13 +451,14 @@ export default function WorkoutScreen() {
                   elevation: 4,
                 }}
               >
-                <Ionicons name="fitness-outline" size={28} color="#60a5fa" />
+                <Ionicons name="fitness-outline" size={24} color="#60a5fa" />
               </View>
               <Text
                 className={cn(
-                  "text-xl font-bold mb-2",
+                  "text-lg font-bold mb-1",
                   isDark ? "text-white" : "text-gray-900"
                 )}
+                numberOfLines={1}
               >
                 My Programs
               </Text>
@@ -457,20 +467,22 @@ export default function WorkoutScreen() {
                   "text-xs mb-4",
                   isDark ? "text-gray-400" : "text-gray-600"
                 )}
+                numberOfLines={1}
               >
                 Workout splits
               </Text>
               <View className="flex-row items-center">
                 <Ionicons
                   name="albums-outline"
-                  size={16}
+                  size={14}
                   color={isDark ? "#9ca3af" : "#6b7280"}
                 />
                 <Text
                   className={cn(
-                    "text-sm font-semibold ml-1",
+                    "text-xs font-semibold ml-1",
                     isDark ? "text-gray-400" : "text-gray-600"
                   )}
+                  numberOfLines={1}
                 >
                   0 splits
                 </Text>
@@ -495,6 +507,7 @@ export default function WorkoutScreen() {
                   : "bg-gray-100"
               )}
               style={{
+                minHeight: 200,
                 shadowColor: activeView === "history" ? "#4ade80" : (isDark ? "#000" : "#1f2937"),
                 shadowOffset: { width: 0, height: activeView === "history" ? 8 : 6 },
                 shadowOpacity: activeView === "history" ? 0.5 : (isDark ? 0.6 : 0.25),
@@ -504,7 +517,9 @@ export default function WorkoutScreen() {
             >
               <View
                 className="rounded-2xl p-4 mb-4"
-                style={{ 
+                style={{
+                  width: 56,
+                  height: 56,
                   backgroundColor: "rgba(134, 239, 172, 0.3)",
                   shadowColor: "#4ade80",
                   shadowOffset: { width: 0, height: 4 },
@@ -513,13 +528,14 @@ export default function WorkoutScreen() {
                   elevation: 4,
                 }}
               >
-                <Ionicons name="trending-up" size={28} color="#4ade80" />
+                <Ionicons name="trending-up" size={24} color="#4ade80" />
               </View>
               <Text
                 className={cn(
-                  "text-xl font-bold mb-2",
+                  "text-lg font-bold mb-1",
                   isDark ? "text-white" : "text-gray-900"
                 )}
+                numberOfLines={1}
               >
                 History
               </Text>
@@ -528,20 +544,22 @@ export default function WorkoutScreen() {
                   "text-xs mb-4",
                   isDark ? "text-gray-400" : "text-gray-600"
                 )}
+                numberOfLines={1}
               >
                 Track your progress
               </Text>
               <View className="flex-row items-center">
                 <Ionicons
                   name="time-outline"
-                  size={16}
+                  size={14}
                   color={isDark ? "#9ca3af" : "#6b7280"}
                 />
                 <Text
                   className={cn(
-                    "text-sm font-semibold ml-1",
+                    "text-xs font-semibold ml-1",
                     isDark ? "text-gray-400" : "text-gray-600"
                   )}
+                  numberOfLines={1}
                 >
                   {getThisWeekWorkouts()} this week
                 </Text>
@@ -563,6 +581,7 @@ export default function WorkoutScreen() {
                   : "bg-gray-100"
               )}
               style={{
+                minHeight: 200,
                 shadowColor: activeView === "stats" ? "#a855f7" : (isDark ? "#000" : "#1f2937"),
                 shadowOffset: { width: 0, height: activeView === "stats" ? 8 : 6 },
                 shadowOpacity: activeView === "stats" ? 0.5 : (isDark ? 0.6 : 0.25),
@@ -572,7 +591,9 @@ export default function WorkoutScreen() {
             >
               <View
                 className="rounded-2xl p-4 mb-4"
-                style={{ 
+                style={{
+                  width: 56,
+                  height: 56,
                   backgroundColor: "rgba(251, 146, 60, 0.15)",
                   shadowColor: "#a855f7",
                   shadowOffset: { width: 0, height: 4 },
@@ -581,13 +602,14 @@ export default function WorkoutScreen() {
                   elevation: 4,
                 }}
               >
-                <Ionicons name="flame" size={28} color="#fb923c" />
+                <Ionicons name="flame" size={24} color="#fb923c" />
               </View>
               <Text
                 className={cn(
-                  "text-xl font-bold mb-2",
+                  "text-lg font-bold mb-1",
                   isDark ? "text-white" : "text-gray-900"
                 )}
+                numberOfLines={1}
               >
                 Stats
               </Text>
@@ -596,20 +618,22 @@ export default function WorkoutScreen() {
                   "text-xs mb-4",
                   isDark ? "text-gray-400" : "text-gray-600"
                 )}
+                numberOfLines={1}
               >
                 Dashboard & insights
               </Text>
               <View className="flex-row items-center">
                 <Ionicons
                   name="star-outline"
-                  size={16}
+                  size={14}
                   color={isDark ? "#9ca3af" : "#6b7280"}
                 />
                 <Text
                   className={cn(
-                    "text-sm font-semibold ml-1",
+                    "text-xs font-semibold ml-1",
                     isDark ? "text-gray-400" : "text-gray-600"
                   )}
+                  numberOfLines={1}
                 >
                   {getTotalPRs()} PRs
                 </Text>
