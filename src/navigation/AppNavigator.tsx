@@ -14,6 +14,7 @@ import ExerciseStatsScreen from "../screens/workout/ExerciseStatsScreen";
 import ActiveWorkoutScreen from "../screens/workout/ActiveWorkoutScreen";
 import WorkoutSummaryScreen from "../screens/workout/WorkoutSummaryScreen";
 import WorkoutHistoryScreen from "../screens/workout/WorkoutHistoryScreen";
+import WorkoutDayScreen from "../screens/workout/WorkoutDayScreen";
 import NutritionScreen from "../screens/NutritionScreen";
 import CommunityScreen from "../screens/CommunityScreen";
 import MyCommunitiesScreen from "../screens/MyCommunitiesScreen";
@@ -56,6 +57,7 @@ export type WorkoutStackParamList = {
   WorkoutSummary: { sessionId: string };
   WorkoutHistory: undefined;
   WeightTracking: undefined;
+  WorkoutDay: { dayName: string; date: string; workoutName: string };
 };
 
 export type CommunityStackParamList = {
@@ -88,6 +90,7 @@ function WorkoutStackNavigator() {
       <WorkoutStack.Screen name="WorkoutSummary" component={WorkoutSummaryScreen} />
       <WorkoutStack.Screen name="WorkoutHistory" component={WorkoutHistoryScreen} />
       <WorkoutStack.Screen name="WeightTracking" component={WeightTrackingScreen} />
+      <WorkoutStack.Screen name="WorkoutDay" component={WorkoutDayScreen} />
     </WorkoutStack.Navigator>
   );
 }

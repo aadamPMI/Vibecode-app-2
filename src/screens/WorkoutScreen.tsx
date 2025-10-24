@@ -643,18 +643,25 @@ export default function WorkoutScreen() {
 
           {/* All Expandable Content Sections - Show below all 4 cards */}
           
-          {/* Active Workout Options - Shows when clicked */}
+          {/* Active Workout 7-Day Calendar - Shows when clicked */}
           {activeView === "active" && (
-            <Animated.View 
+            <Animated.View
               entering={FadeInDown.duration(300).springify()}
               exiting={FadeOutUp.duration(200)}
-              className="mb-4"
+              className="mb-4 px-6"
             >
               <View
                 className={cn(
                   "rounded-3xl p-6",
                   isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
                 )}
+                style={{
+                  shadowColor: isDark ? "#000" : "#1f2937",
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: isDark ? 0.6 : 0.15,
+                  shadowRadius: 16,
+                  elevation: 8,
+                }}
               >
                 <Text
                   className={cn(
@@ -662,71 +669,117 @@ export default function WorkoutScreen() {
                     isDark ? "text-white" : "text-gray-900"
                   )}
                 >
-                  Start Your Workout
+                  This Week's Schedule
                 </Text>
 
-                <Pressable
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                    setIsCreateModalVisible(true);
-                  }}
-                  className="bg-blue-500 py-4 rounded-2xl mb-3 flex-row items-center justify-center"
-                >
-                  <Ionicons name="add-circle-outline" size={24} color="white" />
-                  <Text className="text-white font-bold text-base ml-2">
-                    Create New Workout
-                  </Text>
-                </Pressable>
+                {/* 7-Day Calendar */}
+                {(() => {
+                  const today = new Date();
+                  const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+                  const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-                <Pressable
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    alert("AI Workout Plan generator coming soon!");
-                  }}
-                  className={cn(
-                    "py-4 rounded-2xl mb-3 flex-row items-center justify-center",
-                    isDark ? "bg-purple-600" : "bg-purple-500"
-                  )}
-                >
-                  <Ionicons name="sparkles" size={24} color="white" />
-                  <Text className="text-white font-bold text-base ml-2">
-                    Generate AI Plan
-                  </Text>
-                </Pressable>
+                  // Calculate Monday of current week
+                  const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+                  const monday = new Date(today);
+                  monday.setDate(today.getDate() + mondayOffset);
 
-                <View className="mt-4">
-                  <Text
-                    className={cn(
-                      "text-sm font-semibold mb-2",
-                      isDark ? "text-gray-300" : "text-gray-700"
-                    )}
-                  >
-                    Quick Start Templates
-                  </Text>
-                  {["Push Day", "Pull Day", "Leg Day", "Full Body"].map((template) => (
-                    <Pressable
-                      key={template}
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        setWorkoutName(template);
-                        setIsCreateModalVisible(true);
-                      }}
-                      className={cn(
-                        "rounded-xl p-3 mb-2",
-                        isDark ? "bg-[#1a1a1a]" : "bg-white"
-                      )}
-                    >
-                      <Text
-                        className={cn(
-                          "text-base font-semibold",
-                          isDark ? "text-white" : "text-gray-900"
-                        )}
+                  return daysOfWeek.map((dayName, index) => {
+                    const currentDate = new Date(monday);
+                    currentDate.setDate(monday.getDate() + index);
+                    const dateStr = currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const isToday = currentDate.toDateString() === today.toDateString();
+
+                    // Get workout for this day from active program
+                    // For now, use placeholder logic - you'll integrate with activeProgram state
+                    const workoutName = index % 2 === 0 ? (index === 6 ? "Rest" : ["Push Day", "Pull Day", "Legs"][index % 3]) : "Rest";
+                    const isRest = workoutName === "Rest";
+
+                    return (
+                      <Animated.View
+                        key={dayName}
+                        entering={FadeInDown.delay(index * 50).duration(300).springify()}
                       >
-                        {template}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
+                        <Pressable
+                          onPress={() => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            if (!isRest) {
+                              // Navigate to workout day screen
+                              navigation.navigate('WorkoutDay', {
+                                dayName,
+                                date: currentDate.toISOString(),
+                                workoutName
+                              });
+                            }
+                          }}
+                          className={cn(
+                            "rounded-2xl p-4 mb-3",
+                            isToday
+                              ? "border-2 border-orange-500"
+                              : "",
+                            isDark ? "bg-[#0a0a0a]" : "bg-white"
+                          )}
+                          style={{
+                            shadowColor: isToday ? "#fb923c" : (isDark ? "#000" : "#1f2937"),
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowOpacity: isToday ? 0.4 : 0.1,
+                            shadowRadius: isToday ? 12 : 6,
+                            elevation: isToday ? 6 : 2,
+                          }}
+                        >
+                          <View className="flex-row items-center justify-between">
+                            <View className="flex-1">
+                              <View className="flex-row items-center mb-1">
+                                <Text
+                                  className={cn(
+                                    "text-base font-bold",
+                                    isToday
+                                      ? "text-orange-500"
+                                      : isDark
+                                      ? "text-white"
+                                      : "text-gray-900"
+                                  )}
+                                >
+                                  {dayName}
+                                </Text>
+                                {isToday && (
+                                  <View className="ml-2 bg-orange-500 px-2 py-0.5 rounded-full">
+                                    <Text className="text-white text-xs font-bold">Today</Text>
+                                  </View>
+                                )}
+                              </View>
+                              <Text
+                                className={cn(
+                                  "text-xs mb-2",
+                                  isDark ? "text-gray-500" : "text-gray-500"
+                                )}
+                              >
+                                {dateStr}
+                              </Text>
+                              <Text
+                                className={cn(
+                                  "text-sm font-semibold",
+                                  isRest
+                                    ? isDark ? "text-green-400" : "text-green-600"
+                                    : isDark ? "text-blue-400" : "text-blue-600"
+                                )}
+                              >
+                                {workoutName}
+                              </Text>
+                            </View>
+                            <Ionicons
+                              name={isRest ? "bed-outline" : "chevron-forward"}
+                              size={24}
+                              color={isRest
+                                ? isDark ? "#4ade80" : "#16a34a"
+                                : isDark ? "#60a5fa" : "#3b82f6"
+                              }
+                            />
+                          </View>
+                        </Pressable>
+                      </Animated.View>
+                    );
+                  });
+                })()}
               </View>
             </Animated.View>
           )}
