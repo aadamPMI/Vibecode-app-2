@@ -59,11 +59,7 @@ export default function ProgramWizardScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     if (currentStep === 1) {
-      if (selectedSplit === 'custom') {
-        navigation.navigate('SplitBuilder', { preset: null, programName: programName || 'Custom Program' });
-      } else {
-        setCurrentStep(2);
-      }
+      setCurrentStep(2);
     } else if (currentStep === 2) {
       // Save the day and move to step 3
       const newDay = {
