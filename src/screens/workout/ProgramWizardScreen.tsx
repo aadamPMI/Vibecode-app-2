@@ -172,27 +172,29 @@ export default function ProgramWizardScreen() {
       
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View className="px-6 pt-6 pb-4">
-          <View className="flex-row justify-between items-center mb-4">
+        <View className="px-6 pt-4 pb-6">
+          <View className="flex-row justify-between items-center mb-6">
             <View className="flex-1">
-              <Text className={cn('text-2xl font-bold', isDark ? 'text-purple-400' : 'text-purple-600')}>
+              <Text className={cn('text-3xl font-bold mb-2', isDark ? 'text-white' : 'text-gray-900')}>
                 Create Workout Program
               </Text>
-              <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                {currentStep === 1 
-                  ? 'Choose your workout split' 
-                  : currentStep === 2 
-                  ? 'Create workout days' 
+              <Text className={cn('text-base', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                {currentStep === 1
+                  ? 'Choose your workout split'
+                  : currentStep === 2
+                  ? 'Create workout days'
                   : currentStep === 3
-                  ? 'Add exercises to days'
-                  : 'Review program'}
+                  ? 'Select a day to add exercises'
+                  : currentStep === 4
+                  ? 'Add exercises to your day'
+                  : 'Review and finalize'}
               </Text>
             </View>
             <Pressable
               onPress={() => navigation.goBack()}
-              className={cn('w-10 h-10 rounded-full items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/5')}
+              className={cn('w-12 h-12 rounded-full items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/5')}
             >
-              <Ionicons name="close" size={24} color={isDark ? '#fff' : '#000'} />
+              <Ionicons name="close" size={28} color={isDark ? '#fff' : '#000'} />
             </Pressable>
           </View>
 
@@ -925,15 +927,15 @@ export default function ProgramWizardScreen() {
               entering={FadeInDown.delay(100).duration(400).springify()}
               className="mb-6"
             >
+              <View className={cn('w-16 h-16 rounded-3xl items-center justify-center mb-4', isDark ? 'bg-purple-500/20' : 'bg-purple-100')}>
+                <Ionicons name="calendar" size={32} color="#a855f7" />
+              </View>
               <Text className={cn('text-2xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
                 Select a Day to Add Exercises
               </Text>
-              <View className="flex-row items-start">
-                <Text className="text-xl mr-2">👆</Text>
-                <Text className={cn('text-sm flex-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                  Click a day below to start adding exercises
-                </Text>
-              </View>
+              <Text className={cn('text-sm', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                Click a day below to start adding exercises
+              </Text>
             </Animated.View>
 
             {/* Days List */}
