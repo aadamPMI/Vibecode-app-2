@@ -12,6 +12,8 @@ import { PremiumBackground } from '../../components/PremiumBackground';
 import { BlurView } from 'expo-blur';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { EXERCISE_LIBRARY } from '../../constants/exerciseData';
+import { useTrainingStore } from '../../state/trainingStore';
+import type { Program, WorkoutTemplate, ExerciseTarget } from '../../types/workout';
 
 type SplitType = 'push-pull-legs' | 'upper-lower' | 'full-body' | 'custom';
 type DayPreset = 'push' | 'pull' | 'legs' | 'upper' | 'lower' | 'custom';
@@ -23,6 +25,10 @@ export default function ProgramWizardScreen() {
   const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
   const isDark = resolvedTheme === "dark";
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
+
+  // Training store actions
+  const createProgram = useTrainingStore(state => state.createProgram);
+  const setActiveProgram = useTrainingStore(state => state.setActiveProgram);
   
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSplit, setSelectedSplit] = useState<SplitType | null>(null);
@@ -85,6 +91,81 @@ export default function ProgramWizardScreen() {
       // Move to step 5 (review)
       setCurrentStep(5);
     }
+  };
+
+  const handleSaveAndActivate = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    // Generate program name if not set
+    const finalProgramName = programName || `${selectedSplit?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} Program` || 'My Program';
+
+    // Create workout templates from workout days
+    const workoutTemplates: WorkoutTemplate[] = workoutDays.map((day, index) => {
+      // Find exercises in the exercise library
+      const exerciseTargets: ExerciseTarget[] = day.exercises.map((exerciseName, exIndex) => {
+        const exerciseData = EXERCISE_LIBRARY.find(ex => ex.name === exerciseName);
+        return {
+          exerciseId: exerciseData?.id || exerciseName.toLowerCase().replace(/\s+/g, '-'),
+          setScheme: {
+            type: 'fixed-reps' as const,
+            sets: 3,
+            reps: 10,
+            restSeconds: 90,
+          },
+          targetSource: 'ai-suggested' as const,
+        };
+      });
+
+      // Estimate duration: ~5 minutes per exercise
+      const estimatedDuration = day.exercises.length * 5;
+
+      return {
+        id: day.id,
+        name: day.name,
+        exercises: exerciseTargets,
+        estimatedDuration,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    });
+
+    // Create the program
+    const newProgram: Program = {
+      id: `program-${Date.now()}`,
+      name: finalProgramName,
+      description: `${selectedSplit?.replace(/-/g, ' ')} training program`,
+      version: '1.0',
+      experienceLevel: 'intermediate' as const,
+      goals: ['hypertrophy' as const],
+      durationWeeks: 8,
+      split: {
+        id: `split-${Date.now()}`,
+        name: selectedSplit || 'custom',
+        type: (selectedSplit || 'custom') as any,
+        daysPerWeek: workoutDays.length,
+        workoutTemplateIds: workoutTemplates.map(t => t.id),
+        rotationPattern: workoutDays.map(d => d.name),
+      },
+      workoutTemplates,
+      periodization: [],
+      schedule: {
+        preferredDays: [],
+        autoShiftMissed: true,
+      },
+      subRegionTargets: [],
+      isActive: true,
+      isArchived: false,
+      createdBy: 'user' as const,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Save to store and set as active
+    createProgram(newProgram);
+    setActiveProgram(newProgram.id);
+
+    // Navigate back to workout home
+    navigation.goBack();
   };
 
   const handleDayPresetSelect = (preset: DayPreset) => {
@@ -1648,11 +1729,7 @@ export default function ProgramWizardScreen() {
           </Pressable>
 
           <Pressable
-            onPress={currentStep === 5 ? () => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              // TODO: Save program and activate
-              navigation.goBack();
-            } : handleNext}
+            onPress={currentStep === 5 ? handleSaveAndActivate : handleNext}
             disabled={
               (currentStep === 1 && !selectedSplit) ||
               (currentStep === 2 && !dayName.trim() && !isRestDay) ||
