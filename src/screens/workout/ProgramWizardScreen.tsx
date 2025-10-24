@@ -11,6 +11,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { PremiumBackground } from '../../components/PremiumBackground';
 import { BlurView } from 'expo-blur';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { EXERCISE_LIBRARY } from '../../constants/exerciseData';
 
 type SplitType = 'push-pull-legs' | 'upper-lower' | 'full-body' | 'custom';
 type DayPreset = 'push' | 'pull' | 'legs' | 'upper' | 'lower' | 'custom';
@@ -42,6 +43,9 @@ export default function ProgramWizardScreen() {
     exercises: string[];
   }>>([]);
   const [selectedDayForExercises, setSelectedDayForExercises] = useState<string | null>(null);
+
+  // Step 4 - Exercise selection
+  const [exerciseSearchQuery, setExerciseSearchQuery] = useState('');
 
   const handleSplitSelect = (splitType: SplitType) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
