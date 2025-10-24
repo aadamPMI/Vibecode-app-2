@@ -17,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useSettingsStore } from "../state/settingsStore";
 import { useAuthStore } from "../state/authStore";
+import { useCalorieTargetStore } from "../state/calorieTargetStore";
 import { cn } from "../utils/cn";
 import { PremiumBackground } from "../components/PremiumBackground";
 
@@ -32,6 +33,9 @@ export default function SettingsScreen() {
   const updatePreferencesSettings = useSettingsStore((s) => s.updatePreferencesSettings);
   const updateFitnessGoals = useSettingsStore((s) => s.updateFitnessGoals);
   const resetOnboarding = useAuthStore((s) => s.resetOnboarding);
+
+  // Calorie target versioning
+  const saveCalorieTarget = useCalorieTargetStore((s) => s.saveCalorieTarget);
 
   const systemColorScheme = useColorScheme();
   const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
