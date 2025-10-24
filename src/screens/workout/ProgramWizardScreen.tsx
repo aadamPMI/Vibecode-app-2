@@ -1134,71 +1134,14 @@ export default function ProgramWizardScreen() {
                 ))}
               </View>
             </Animated.View>
-
-            {/* Create & Activate Button */}
-            <Animated.View
-              entering={FadeInDown.delay(400).duration(400).springify()}
-              className="mb-6"
-            >
-              <Pressable
-                onPress={() => {
-                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                  // TODO: Save program and activate
-                  navigation.goBack();
-                }}
-              >
-                <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
-                  <View
-                    className="bg-purple-500 p-5 flex-row items-center justify-center"
-                    style={{
-                      shadowColor: '#a855f7',
-                      shadowOffset: { width: 0, height: 8 },
-                      shadowOpacity: 0.5,
-                      shadowRadius: 16,
-                      elevation: 10,
-                    }}
-                  >
-                    <Ionicons name="checkmark-circle" size={24} color="white" />
-                    <Text className="text-white font-bold text-lg ml-2">
-                      Create & Activate Program
-                    </Text>
-                  </View>
-                </BlurView>
-              </Pressable>
-            </Animated.View>
           </View>
         )}
       </ScrollView>
 
       {/* Bottom Actions */}
       <View className="px-6 pb-6">
-        {currentStep === 4 ? (
-          // Step 4 - Only Back button
-          <Pressable
-            onPress={handleBack}
-            className="flex-1"
-          >
-            <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
-              <View 
-                className={cn('py-4 flex-row items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/5')}
-                style={{
-                  shadowColor: isDark ? '#000' : '#1f2937',
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.1,
-                  shadowRadius: 8,
-                  elevation: 3,
-                }}
-              >
-                <Ionicons name="arrow-back" size={20} color={isDark ? '#fff' : '#000'} />
-                <Text className={cn('font-bold ml-2', isDark ? 'text-white' : 'text-black')}>
-                  Back
-                </Text>
-              </View>
-            </BlurView>
-          </Pressable>
-        ) : (
-          // Steps 1-3 - Back and Next buttons
-          <View className="flex-row gap-3">
+        {/* All Steps - Back and Next/Finish buttons */}
+        <View className="flex-row gap-3">
           <Pressable
             onPress={handleBack}
             className="flex-1"
@@ -1223,7 +1166,11 @@ export default function ProgramWizardScreen() {
           </Pressable>
 
           <Pressable
-            onPress={handleNext}
+            onPress={currentStep === 4 ? () => {
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              // TODO: Save program and activate
+              navigation.goBack();
+            } : handleNext}
             disabled={
               (currentStep === 1 && !selectedSplit) ||
               (currentStep === 2 && !dayName.trim() && !isRestDay) ||
@@ -1232,10 +1179,10 @@ export default function ProgramWizardScreen() {
             className="flex-1"
           >
             <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
-              <View 
+              <View
                 className={cn(
                   'py-4 flex-row items-center justify-center',
-                  ((currentStep === 1 && selectedSplit) ||
+                  currentStep === 4 || ((currentStep === 1 && selectedSplit) ||
                    (currentStep === 2 && (dayName.trim() || isRestDay)) ||
                    (currentStep === 3 && selectedDayForExercises))
                     ? 'bg-purple-500'
@@ -1244,58 +1191,68 @@ export default function ProgramWizardScreen() {
                     : 'bg-gray-300'
                 )}
                 style={{
-                  shadowColor: 
-                    ((currentStep === 1 && selectedSplit) ||
+                  shadowColor:
+                    currentStep === 4 || ((currentStep === 1 && selectedSplit) ||
                      (currentStep === 2 && (dayName.trim() || isRestDay)) ||
                      (currentStep === 3 && selectedDayForExercises))
-                      ? '#a855f7' 
+                      ? '#a855f7'
                       : '#6b7280',
                   shadowOffset: { width: 0, height: 6 },
-                  shadowOpacity: 
-                    ((currentStep === 1 && selectedSplit) ||
+                  shadowOpacity:
+                    currentStep === 4 || ((currentStep === 1 && selectedSplit) ||
                      (currentStep === 2 && (dayName.trim() || isRestDay)) ||
                      (currentStep === 3 && selectedDayForExercises))
-                      ? 0.4 
+                      ? 0.4
                       : 0.2,
                   shadowRadius: 12,
-                  elevation: 
-                    ((currentStep === 1 && selectedSplit) ||
+                  elevation:
+                    currentStep === 4 || ((currentStep === 1 && selectedSplit) ||
                      (currentStep === 2 && (dayName.trim() || isRestDay)) ||
                      (currentStep === 3 && selectedDayForExercises))
-                      ? 8 
+                      ? 8
                       : 3,
                 }}
               >
-                <Text className={cn(
-                  'font-bold mr-2', 
-                  ((currentStep === 1 && selectedSplit) ||
-                   (currentStep === 2 && (dayName.trim() || isRestDay)) ||
-                   (currentStep === 3 && selectedDayForExercises))
-                    ? 'text-white' 
-                    : isDark 
-                    ? 'text-gray-500' 
-                    : 'text-gray-400'
-                )}>
-                  Next
-                </Text>
-                <Ionicons 
-                  name="arrow-forward" 
-                  size={20} 
-                  color={
-                    ((currentStep === 1 && selectedSplit) ||
-                     (currentStep === 2 && (dayName.trim() || isRestDay)) ||
-                     (currentStep === 3 && selectedDayForExercises))
-                      ? '#fff' 
-                      : isDark 
-                      ? '#6b7280' 
-                      : '#9ca3af'
-                  } 
-                />
+                {currentStep === 4 ? (
+                  <>
+                    <Ionicons name="checkmark-circle" size={20} color="white" />
+                    <Text className="text-white font-bold ml-2">
+                      Create & Activate
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text className={cn(
+                      'font-bold mr-2',
+                      ((currentStep === 1 && selectedSplit) ||
+                       (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                       (currentStep === 3 && selectedDayForExercises))
+                        ? 'text-white'
+                        : isDark
+                        ? 'text-gray-500'
+                        : 'text-gray-400'
+                    )}>
+                      Next
+                    </Text>
+                    <Ionicons
+                      name="arrow-forward"
+                      size={20}
+                      color={
+                        ((currentStep === 1 && selectedSplit) ||
+                         (currentStep === 2 && (dayName.trim() || isRestDay)) ||
+                         (currentStep === 3 && selectedDayForExercises))
+                          ? '#fff'
+                          : isDark
+                          ? '#6b7280'
+                          : '#9ca3af'
+                      }
+                    />
+                  </>
+                )}
               </View>
             </BlurView>
           </Pressable>
         </View>
-        )}
       </View>
     </SafeAreaView>
   );
