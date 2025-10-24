@@ -30,6 +30,10 @@ export default function WeeklyPlannerScreen() {
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlannerDay[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
+  // Shared values for drag state across all items
+  const draggingIndex = useSharedValue(-1);
+  const dragOffset = useSharedValue(0);
+
   useEffect(() => {
     if (!activeProgram) {
       navigation.replace('SelectActiveProgram');
@@ -206,6 +210,8 @@ export default function WeeklyPlannerScreen() {
                             isDark={isDark}
                             onPress={() => handleDayPress(day)}
                             onReorder={handleReorderDays}
+                            draggingIndex={draggingIndex}
+                            dragOffset={dragOffset}
                           />
                         ))}
                       </View>
@@ -273,18 +279,23 @@ interface DayRowProps {
   isDark: boolean;
   onPress: () => void;
   onReorder: (fromIndex: number, toIndex: number) => void;
+  draggingIndex: Animated.SharedValue<number>;
+  dragOffset: Animated.SharedValue<number>;
 }
 
-function DayRow({ day, index, isDark, onPress, onReorder }: DayRowProps) {
+function DayRow({ day, index, isDark, onPress, onReorder, draggingIndex, dragOffset }: DayRowProps) {
   const translateY = useSharedValue(0);
   const scale = useSharedValue(1);
   const isDragging = useSharedValue(false);
+
+  const ITEM_HEIGHT = 80;
 
   // Simultaneous long press and pan gesture
   const longPress = Gesture.LongPress()
     .minDuration(500)
     .onStart(() => {
       isDragging.value = true;
+      draggingIndex.value = index;
       scale.value = withSpring(1.05);
       runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
     });
@@ -294,9 +305,9 @@ function DayRow({ day, index, isDark, onPress, onReorder }: DayRowProps) {
     .onUpdate((event) => {
       if (isDragging.value) {
         translateY.value = event.translationY;
+        dragOffset.value = event.translationY;
 
         // Calculate which position we're dragging to
-        const ITEM_HEIGHT = 80; // Approximate height of each row
         const offset = Math.round(translateY.value / ITEM_HEIGHT);
 
         // Provide haptic feedback when crossing item boundaries
@@ -307,7 +318,6 @@ function DayRow({ day, index, isDark, onPress, onReorder }: DayRowProps) {
     })
     .onEnd(() => {
       if (isDragging.value) {
-        const ITEM_HEIGHT = 80;
         const offset = Math.round(translateY.value / ITEM_HEIGHT);
         const newIndex = Math.max(0, Math.min(6, index + offset));
 
@@ -316,6 +326,8 @@ function DayRow({ day, index, isDark, onPress, onReorder }: DayRowProps) {
         }
 
         isDragging.value = false;
+        draggingIndex.value = -1;
+        dragOffset.value = 0;
         scale.value = withSpring(1);
         translateY.value = withSpring(0);
       }
@@ -324,14 +336,57 @@ function DayRow({ day, index, isDark, onPress, onReorder }: DayRowProps) {
   // Combine gestures: long press activates dragging, pan handles the drag
   const gesture = Gesture.Simultaneous(longPress, pan);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-    zIndex: isDragging.value ? 1000 : 1,
-    opacity: isDragging.value ? withTiming(0.8) : withTiming(1),
-  }));
+  const animatedStyle = useAnimatedStyle(() => {
+    // Calculate if this item should be displaced
+    const isDraggedItem = draggingIndex.value === index;
+    const draggedItemIndex = draggingIndex.value;
+
+    if (isDraggedItem) {
+      // This is the item being dragged
+      return {
+        transform: [
+          { translateY: translateY.value },
+          { scale: scale.value },
+        ],
+        zIndex: 1000,
+        opacity: withTiming(0.8, { duration: 200 }),
+      };
+    } else if (draggedItemIndex !== -1) {
+      // This item is not being dragged, but another item is being dragged
+      const offset = Math.round(dragOffset.value / ITEM_HEIGHT);
+      const targetIndex = draggedItemIndex + offset;
+
+      let displacement = 0;
+
+      // If the dragged item is moving down and passes this item
+      if (draggedItemIndex < index && targetIndex >= index) {
+        displacement = -ITEM_HEIGHT;
+      }
+      // If the dragged item is moving up and passes this item
+      else if (draggedItemIndex > index && targetIndex <= index) {
+        displacement = ITEM_HEIGHT;
+      }
+
+      return {
+        transform: [
+          { translateY: withSpring(displacement, { damping: 20, stiffness: 300 }) },
+          { scale: 1 },
+        ],
+        zIndex: 1,
+        opacity: 1,
+      };
+    }
+
+    // Default state - no drag happening
+    return {
+      transform: [
+        { translateY: 0 },
+        { scale: 1 },
+      ],
+      zIndex: 1,
+      opacity: 1,
+    };
+  });
 
   const isRestDay = day.type === 'rest';
 
