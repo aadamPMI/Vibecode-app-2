@@ -16,6 +16,8 @@ export interface FitnessGoals {
 
 export interface ProfileSettings {
   name: string;
+  displayName?: string;
+  username?: string;
   age?: number;
   height?: number;
   weight?: number;
