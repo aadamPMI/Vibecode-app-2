@@ -25,6 +25,7 @@ export default function WeeklyPlannerScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   const activeProgram = useTrainingStore((state) => state.activeProgram);
+  const updateProgram = useTrainingStore((state) => state.updateProgram);
 
   // Initialize weekly plan from active program
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlannerDay[]>([]);
@@ -117,8 +118,26 @@ export default function WeeklyPlannerScreen() {
 
     setWeeklyPlan(updatedPlan);
 
-    // TODO: Persist to backend/database
-    // await persistWeeklyPlan(activeProgram.id, updatedPlan);
+    // Persist to store immediately
+    if (activeProgram) {
+      // Build new rotation pattern from the updated plan
+      const newRotationPattern = updatedPlan
+        .filter(day => day.type === 'workout')
+        .map(day => day.workoutName || '');
+
+      // Update the program with the new rotation pattern
+      const updatedProgram = {
+        ...activeProgram,
+        split: {
+          ...activeProgram.split,
+          rotationPattern: newRotationPattern,
+        },
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Save to store
+      updateProgram(activeProgram.id, updatedProgram);
+    }
   };
 
   const toggleExpanded = () => {
