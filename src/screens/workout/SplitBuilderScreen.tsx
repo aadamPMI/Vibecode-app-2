@@ -236,20 +236,18 @@ export default function SplitBuilderScreen() {
                 </GlassCard>
               </Animated.View>
             ))}
+
+            {/* Add Day Button - Only shown when there are existing days */}
+            <GlassButton
+              onPress={handleAddDay}
+              variant="secondary"
+              fullWidth
+              icon={<Ionicons name="add-circle-outline" size={20} color={isDark ? '#fff' : '#000'} />}
+            >
+              Add Workout Day
+            </GlassButton>
           </View>
         )}
-
-        {/* Add Day Button */}
-        <View className="px-6 mb-6">
-          <GlassButton
-            onPress={handleAddDay}
-            variant="secondary"
-            fullWidth
-            icon={<Ionicons name="add-circle-outline" size={20} color={isDark ? '#fff' : '#000'} />}
-          >
-            Add Workout Day
-          </GlassButton>
-        </View>
 
         {/* Create Program Button */}
         {days.length > 0 && (
