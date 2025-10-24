@@ -458,7 +458,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                   isDark ? "text-white" : "text-gray-900"
                 )}
               >
-                Hot
+                {friends.length} friends
               </Text>
             </View>
           </Pressable>
@@ -2032,6 +2032,170 @@ export default function CommunityScreen({ navigation, route }: any) {
               </View>
             )}
           </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      {/* Friends List Modal */}
+      <Modal
+        visible={isFriendsListVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setIsFriendsListVisible(false)}
+      >
+        <SafeAreaView className="flex-1" style={{ backgroundColor: isDark ? "#000" : "#f9fafb" }}>
+          <View className="flex-1">
+            {/* Header */}
+            <View
+              className={cn("px-6 py-4 border-b", isDark ? "border-gray-800 bg-[#0a0a0a]" : "border-gray-200 bg-white")}
+            >
+              <View className="flex-row items-center justify-between">
+                <View>
+                  <Text className={cn("text-2xl font-bold", isDark ? "text-white" : "text-gray-900")}>
+                    Friends
+                  </Text>
+                  <Text className={cn("text-sm mt-1", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Your username: {currentUserName}#{currentUserTag}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => setIsFriendsListVisible(false)}
+                  className={cn("w-10 h-10 rounded-full items-center justify-center", isDark ? "bg-gray-800" : "bg-gray-200")}
+                >
+                  <Ionicons name="close" size={24} color={isDark ? "#fff" : "#000"} />
+                </Pressable>
+              </View>
+            </View>
+
+            <ScrollView className="flex-1 px-6 py-4">
+              {/* Add Friend Section */}
+              <View className="mb-6">
+                <Text className={cn("text-lg font-bold mb-3", isDark ? "text-white" : "text-gray-900")}>
+                  Add Friend
+                </Text>
+                <View
+                  className={cn("rounded-2xl p-4", isDark ? "bg-[#1a1a1a]" : "bg-white")}
+                  style={{
+                    shadowColor: isDark ? "#000" : "#1f2937",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 4,
+                    elevation: 2,
+                  }}
+                >
+                  <Text className={cn("text-sm mb-2", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Enter friend's username#tag
+                  </Text>
+                  <View className="flex-row">
+                    <TextInput
+                      placeholder="username#1234"
+                      placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
+                      className={cn(
+                        "flex-1 px-4 py-3 rounded-xl mr-2",
+                        isDark ? "bg-[#0a0a0a] text-white" : "bg-gray-100 text-gray-900"
+                      )}
+                    />
+                    <Pressable
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        // TODO: Implement add friend logic
+                        alert("Add friend functionality coming soon!");
+                      }}
+                      className="bg-purple-600 px-6 rounded-xl items-center justify-center"
+                    >
+                      <Ionicons name="person-add" size={20} color="white" />
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+
+              {/* Friends List */}
+              <Text className={cn("text-lg font-bold mb-3", isDark ? "text-white" : "text-gray-900")}>
+                My Friends ({friends.length})
+              </Text>
+
+              {friends.length === 0 ? (
+                <View className="items-center py-12">
+                  <Ionicons name="people-outline" size={64} color={isDark ? "#6b7280" : "#9ca3af"} />
+                  <Text className={cn("text-lg mt-4", isDark ? "text-gray-400" : "text-gray-600")}>
+                    No friends yet
+                  </Text>
+                  <Text className={cn("text-sm mt-2 text-center", isDark ? "text-gray-500" : "text-gray-500")}>
+                    Add friends to see their progress
+                  </Text>
+                </View>
+              ) : (
+                <View className="space-y-3">
+                  {friends.map((friend) => (
+                    <Pressable
+                      key={friend.id}
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        // Navigate to friend profile
+                        navigation.navigate('FriendProfile', { friendId: friend.id });
+                        setIsFriendsListVisible(false);
+                      }}
+                      className={cn(
+                        "rounded-2xl p-4 mb-3",
+                        isDark ? "bg-[#1a1a1a]" : "bg-white"
+                      )}
+                      style={{
+                        shadowColor: isDark ? "#000" : "#1f2937",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 4,
+                        elevation: 2,
+                      }}
+                    >
+                      <View className="flex-row items-center">
+                        <View
+                          className="w-12 h-12 rounded-full items-center justify-center mr-3"
+                          style={{ backgroundColor: isDark ? "#9333ea" : "#e9d5ff" }}
+                        >
+                          <Text className={cn("text-xl font-bold", isDark ? "text-white" : "text-purple-700")}>
+                            {friend.username.charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                        <View className="flex-1">
+                          <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+                            {friend.username}
+                          </Text>
+                          <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                            #{friend.tag}
+                          </Text>
+                        </View>
+                        <Ionicons name="chevron-forward" size={20} color={isDark ? "#6b7280" : "#9ca3af"} />
+                      </View>
+
+                      {/* Sharing indicators */}
+                      <View className="flex-row mt-3 space-x-2">
+                        {friend.sharesSplits && (
+                          <View className={cn("px-2 py-1 rounded-full", isDark ? "bg-blue-500/20" : "bg-blue-100")}>
+                            <Text className={cn("text-xs font-semibold", isDark ? "text-blue-400" : "text-blue-700")}>
+                              Splits
+                            </Text>
+                          </View>
+                        )}
+                        {friend.sharesNutrition && (
+                          <View className={cn("px-2 py-1 rounded-full ml-2", isDark ? "bg-green-500/20" : "bg-green-100")}>
+                            <Text className={cn("text-xs font-semibold", isDark ? "text-green-400" : "text-green-700")}>
+                              Nutrition
+                            </Text>
+                          </View>
+                        )}
+                        {friend.sharesWorkouts && (
+                          <View className={cn("px-2 py-1 rounded-full ml-2", isDark ? "bg-purple-500/20" : "bg-purple-100")}>
+                            <Text className={cn("text-xs font-semibold", isDark ? "text-purple-400" : "text-purple-700")}>
+                              Workouts
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </Pressable>
+                  ))}
+                </View>
+              )}
+            </ScrollView>
+          </View>
         </SafeAreaView>
       </Modal>
     </SafeAreaView>
