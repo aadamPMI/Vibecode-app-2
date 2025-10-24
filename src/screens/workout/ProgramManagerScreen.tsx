@@ -354,7 +354,7 @@ export default function ProgramManagerScreen() {
                         </Pressable>
                       )}
                       <Pressable
-                        onPress={() => navigation.navigate('ProgramBuilder', { programId: program.id })}
+                        onPress={() => navigation.navigate('ProgramWizard', { programId: program.id })}
                         className={cn(program.isActive ? 'flex-1' : 'flex-1')}
                       >
                         <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">

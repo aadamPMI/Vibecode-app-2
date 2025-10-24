@@ -1,12 +1,12 @@
-// Program Wizard Screen - Step-by-step program creation
-import React, { useState } from 'react';
+// Program Wizard Screen - Step-by-step program creation and editing
+import React, { useState, useEffect } from 'react';
 import { View, Text, Pressable, TextInput, useColorScheme, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { cn } from '../../utils/cn';
 import { useSettingsStore } from '../../state/settingsStore';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { PremiumBackground } from '../../components/PremiumBackground';
 import { BlurView } from 'expo-blur';
@@ -25,11 +25,18 @@ export default function ProgramWizardScreen() {
   const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
   const isDark = resolvedTheme === "dark";
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const route = useRoute();
+
+  // Get programId from route params if editing
+  const programId = (route.params as any)?.programId;
+  const isEditMode = !!programId;
 
   // Training store actions
   const createProgram = useTrainingStore(state => state.createProgram);
+  const updateProgram = useTrainingStore(state => state.updateProgram);
   const setActiveProgram = useTrainingStore(state => state.setActiveProgram);
-  
+  const programs = useTrainingStore(state => state.programs);
+
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSplit, setSelectedSplit] = useState<SplitType | null>(null);
   const [programName, setProgramName] = useState('');
@@ -52,6 +59,40 @@ export default function ProgramWizardScreen() {
 
   // Step 4 - Exercise selection
   const [exerciseSearchQuery, setExerciseSearchQuery] = useState('');
+
+  // Load existing programme data when editing
+  useEffect(() => {
+    if (isEditMode && programId) {
+      const existingProgram = programs.find(p => p.id === programId);
+      if (existingProgram) {
+        // Set program name
+        setProgramName(existingProgram.name);
+
+        // Set split type
+        setSelectedSplit(existingProgram.split.type as SplitType);
+
+        // Convert workout templates to workout days format
+        const days = existingProgram.workoutTemplates.map((template) => {
+          // Extract exercise names from the template
+          const exerciseNames = template.exercises.map(ex => {
+            // Try to find the exercise in the library to get the proper name
+            const exerciseData = EXERCISE_LIBRARY.find(e => e.id === ex.exerciseId);
+            return exerciseData?.name || ex.exerciseId;
+          });
+
+          return {
+            id: template.id,
+            name: template.name,
+            muscleGroups: [] as MuscleGroup[], // We don't store this in templates, but it's okay
+            isRestDay: false,
+            exercises: exerciseNames,
+          };
+        });
+
+        setWorkoutDays(days);
+      }
+    }
+  }, [isEditMode, programId, programs]);
 
   const handleSplitSelect = (splitType: SplitType) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -129,38 +170,63 @@ export default function ProgramWizardScreen() {
       };
     });
 
-    // Create the program
-    const newProgram: Program = {
-      id: `program-${Date.now()}`,
-      name: finalProgramName,
-      description: `${selectedSplit?.replace(/-/g, ' ')} training program`,
-      version: '1.0',
-      goals: ['hypertrophy' as const],
-      split: {
-        id: `split-${Date.now()}`,
-        name: selectedSplit || 'custom',
-        type: (selectedSplit || 'custom') as any,
-        daysPerWeek: workoutDays.length,
-        workoutTemplateIds: workoutTemplates.map(t => t.id),
-        rotationPattern: workoutDays.map(d => d.name),
-      },
-      workoutTemplates,
-      periodization: [],
-      schedule: {
-        preferredDays: [],
-        autoShiftMissed: true,
-      },
-      subRegionTargets: [],
-      isActive: true,
-      isArchived: false,
-      createdBy: 'user' as const,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    if (isEditMode && programId) {
+      // Update existing program
+      const existingProgram = programs.find(p => p.id === programId);
+      if (existingProgram) {
+        const updatedProgram: Program = {
+          ...existingProgram,
+          name: finalProgramName,
+          description: `${selectedSplit?.replace(/-/g, ' ')} training program`,
+          split: {
+            ...existingProgram.split,
+            name: selectedSplit || 'custom',
+            type: (selectedSplit || 'custom') as any,
+            daysPerWeek: workoutDays.length,
+            workoutTemplateIds: workoutTemplates.map(t => t.id),
+            rotationPattern: workoutDays.map(d => d.name),
+          },
+          workoutTemplates,
+          updatedAt: new Date().toISOString(),
+        };
 
-    // Save to store and set as active
-    createProgram(newProgram);
-    setActiveProgram(newProgram.id);
+        // Update in store
+        updateProgram(programId, updatedProgram);
+      }
+    } else {
+      // Create new program
+      const newProgram: Program = {
+        id: `program-${Date.now()}`,
+        name: finalProgramName,
+        description: `${selectedSplit?.replace(/-/g, ' ')} training program`,
+        version: '1.0',
+        goals: ['hypertrophy' as const],
+        split: {
+          id: `split-${Date.now()}`,
+          name: selectedSplit || 'custom',
+          type: (selectedSplit || 'custom') as any,
+          daysPerWeek: workoutDays.length,
+          workoutTemplateIds: workoutTemplates.map(t => t.id),
+          rotationPattern: workoutDays.map(d => d.name),
+        },
+        workoutTemplates,
+        periodization: [],
+        schedule: {
+          preferredDays: [],
+          autoShiftMissed: true,
+        },
+        subRegionTargets: [],
+        isActive: true,
+        isArchived: false,
+        createdBy: 'user' as const,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Save to store and set as active
+      createProgram(newProgram);
+      setActiveProgram(newProgram.id);
+    }
 
     // Navigate back to workout home
     navigation.goBack();
@@ -251,7 +317,7 @@ export default function ProgramWizardScreen() {
           <View className="flex-row justify-between items-center mb-6">
             <View className="flex-1">
               <Text className={cn('text-3xl font-bold mb-2', isDark ? 'text-white' : 'text-gray-900')}>
-                Create Workout Program
+                {isEditMode ? 'Edit Programme' : 'Create Workout Program'}
               </Text>
               <Text className={cn('text-base', isDark ? 'text-gray-400' : 'text-gray-600')}>
                 {currentStep === 1
@@ -1785,7 +1851,7 @@ export default function ProgramWizardScreen() {
                   <>
                     <Ionicons name="checkmark-circle" size={20} color="white" />
                     <Text className="text-white font-bold ml-2">
-                      Create & Activate
+                      {isEditMode ? 'Update Programme' : 'Create & Activate'}
                     </Text>
                   </>
                 ) : (
