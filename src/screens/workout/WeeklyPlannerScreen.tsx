@@ -39,22 +39,38 @@ export default function WeeklyPlannerScreen() {
     // Initialize the weekly plan from the program's rotation pattern
     const plan: WeeklyPlannerDay[] = WEEKDAYS.map((dayLabel, index) => {
       const weekday = index + 1; // 1=Mon, 7=Sun
+
+      // Check if this day exceeds the program's days per week
+      const isRestDay = index >= activeProgram.split.daysPerWeek;
+
+      if (isRestDay) {
+        // Automatic rest day for non-training days
+        return {
+          weekday,
+          dayLabel,
+          type: 'rest',
+          workoutName: undefined,
+          workoutTemplateId: undefined,
+        };
+      }
+
+      // Get the workout for this training day
       const rotationIndex = index % activeProgram.split.rotationPattern.length;
       const dayName = activeProgram.split.rotationPattern[rotationIndex];
 
-      // Check if this is a rest day
-      const isRest = dayName.toLowerCase().includes('rest');
+      // Check if this is an explicit rest day in the pattern
+      const isExplicitRest = dayName.toLowerCase().includes('rest');
 
       // Find the corresponding workout template
-      const template = !isRest ? activeProgram.workoutTemplates.find(t =>
+      const template = !isExplicitRest ? activeProgram.workoutTemplates.find(t =>
         t.name.toLowerCase() === dayName.toLowerCase()
       ) : undefined;
 
       return {
         weekday,
         dayLabel,
-        type: isRest ? 'rest' : 'workout',
-        workoutName: isRest ? undefined : dayName,
+        type: isExplicitRest ? 'rest' : 'workout',
+        workoutName: isExplicitRest ? undefined : dayName,
         workoutTemplateId: template?.id,
       };
     });
@@ -264,18 +280,49 @@ function DayRow({ day, index, isDark, onPress, onReorder }: DayRowProps) {
   const scale = useSharedValue(1);
   const isDragging = useSharedValue(false);
 
-  const gesture = Gesture.LongPress()
+  // Simultaneous long press and pan gesture
+  const longPress = Gesture.LongPress()
     .minDuration(500)
     .onStart(() => {
       isDragging.value = true;
       scale.value = withSpring(1.05);
       runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+    });
+
+  const pan = Gesture.Pan()
+    .activeOffsetY([-10, 10])
+    .onUpdate((event) => {
+      if (isDragging.value) {
+        translateY.value = event.translationY;
+
+        // Calculate which position we're dragging to
+        const ITEM_HEIGHT = 80; // Approximate height of each row
+        const offset = Math.round(translateY.value / ITEM_HEIGHT);
+
+        // Provide haptic feedback when crossing item boundaries
+        if (Math.abs(translateY.value % ITEM_HEIGHT) < 10 && offset !== 0) {
+          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+        }
+      }
     })
     .onEnd(() => {
-      isDragging.value = false;
-      scale.value = withSpring(1);
-      translateY.value = withSpring(0);
+      if (isDragging.value) {
+        const ITEM_HEIGHT = 80;
+        const offset = Math.round(translateY.value / ITEM_HEIGHT);
+        const newIndex = Math.max(0, Math.min(6, index + offset));
+
+        if (newIndex !== index) {
+          runOnJS(onReorder)(index, newIndex);
+        }
+
+        isDragging.value = false;
+        scale.value = withSpring(1);
+        translateY.value = withSpring(0);
+      }
     });
+
+  // Combine gestures: long press activates dragging, pan handles the drag
+  const gesture = Gesture.Simultaneous(longPress, pan);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -283,6 +330,7 @@ function DayRow({ day, index, isDark, onPress, onReorder }: DayRowProps) {
       { scale: scale.value },
     ],
     zIndex: isDragging.value ? 1000 : 1,
+    opacity: isDragging.value ? withTiming(0.8) : withTiming(1),
   }));
 
   const isRestDay = day.type === 'rest';
@@ -293,7 +341,7 @@ function DayRow({ day, index, isDark, onPress, onReorder }: DayRowProps) {
         <Pressable onPress={onPress}>
           <View
             className={cn(
-              'rounded-2xl p-4 flex-row items-center justify-between',
+              'rounded-2xl p-4 flex-row items-center justify-between mb-3',
               isDark ? 'bg-[#1a1a1a]' : 'bg-gray-100'
             )}
             style={{
