@@ -25,6 +25,7 @@ import {
   Post,
   Challenge,
 } from "../state/communityStore";
+import { useFriendsStore } from "../state/friendsStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { cn } from "../utils/cn";
 
@@ -42,6 +43,18 @@ export default function CommunityScreen({ navigation, route }: any) {
   const currentUserId = useCommunityStore((s) => s.currentUserId);
   const currentUserName = useCommunityStore((s) => s.currentUserName);
 
+  // Friends store
+  const friends = useFriendsStore((s) => s.friends);
+  const currentUserTag = useFriendsStore((s) => s.currentUserTag);
+  const generateUserTag = useFriendsStore((s) => s.generateUserTag);
+
+  // Generate user tag if not exists
+  useEffect(() => {
+    if (!currentUserTag) {
+      generateUserTag();
+    }
+  }, [currentUserTag, generateUserTag]);
+
   const systemColorScheme = useColorScheme();
   const resolvedTheme = theme === "system" ? (systemColorScheme || "light") : theme;
   const isDark = resolvedTheme === "dark";
@@ -52,7 +65,8 @@ export default function CommunityScreen({ navigation, route }: any) {
   );
   const [isCreatePostModalVisible, setIsCreatePostModalVisible] =
     useState(false);
-  const [activeView, setActiveView] = useState<"my" | "discover" | "trending" | null>(null);
+  const [activeView, setActiveView] = useState<"my" | "discover" | "friends" | null>(null);
+  const [isFriendsListVisible, setIsFriendsListVisible] = useState(false);
   const [isCommunityDetailVisible, setIsCommunityDetailVisible] = useState(false);
   const [detailCommunity, setDetailCommunity] = useState<Community | null>(null);
   const [activeTab, setActiveTab] = useState<"members" | "leaderboard" | "challenges">("members");
@@ -376,33 +390,29 @@ export default function CommunityScreen({ navigation, route }: any) {
             </View>
           </Pressable>
 
-          {/* Trending Card */}
+          {/* Friends Card */}
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-              setActiveView(activeView === "trending" ? null : "trending");
+              setIsFriendsListVisible(true);
             }}
             className={cn(
               "flex-1 rounded-3xl p-6 ml-2",
-              activeView === "trending"
-                ? "border-2 border-orange-500"
-                : isDark
-                ? "bg-[#1a1a1a]"
-                : "bg-white"
+              isDark ? "bg-[#1a1a1a]" : "bg-white"
             )}
             style={{
-              shadowColor: activeView === "trending" ? "#f97316" : (isDark ? "#000" : "#1f2937"),
-              shadowOffset: { width: 0, height: activeView === "trending" ? 8 : 6 },
-              shadowOpacity: activeView === "trending" ? 0.5 : (isDark ? 0.6 : 0.25),
-              shadowRadius: activeView === "trending" ? 20 : 12,
-              elevation: activeView === "trending" ? 10 : 8,
+              shadowColor: isDark ? "#000" : "#1f2937",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: isDark ? 0.6 : 0.25,
+              shadowRadius: 12,
+              elevation: 8,
             }}
           >
             <View
               className="rounded-2xl p-4 mb-4"
-              style={{ 
-                backgroundColor: isDark ? "rgba(251, 146, 60, 0.15)" : "#fed7aa",
-                shadowColor: "#f97316",
+              style={{
+                backgroundColor: isDark ? "rgba(147, 51, 234, 0.15)" : "#e9d5ff",
+                shadowColor: "#9333ea",
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.3,
                 shadowRadius: 8,
@@ -410,9 +420,9 @@ export default function CommunityScreen({ navigation, route }: any) {
               }}
             >
               <Ionicons
-                name="flame"
+                name="people"
                 size={32}
-                color={isDark ? "#fb923c" : "#f97316"}
+                color={isDark ? "#c084fc" : "#9333ea"}
               />
             </View>
             <Text
@@ -421,7 +431,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                 isDark ? "text-white" : "text-gray-900"
               )}
             >
-              Trending
+              Friends
             </Text>
             <Text
               className={cn(
@@ -429,7 +439,7 @@ export default function CommunityScreen({ navigation, route }: any) {
                 isDark ? "text-gray-400" : "text-gray-600"
               )}
             >
-              Popular & active
+              Connect & share progress
             </Text>
             <View
               className={cn(
@@ -438,9 +448,9 @@ export default function CommunityScreen({ navigation, route }: any) {
               )}
             >
               <Ionicons
-                name="flame"
+                name="people"
                 size={12}
-                color={isDark ? "#fb923c" : "#f97316"}
+                color={isDark ? "#c084fc" : "#9333ea"}
               />
               <Text
                 className={cn(
@@ -590,47 +600,6 @@ export default function CommunityScreen({ navigation, route }: any) {
                 </View>
               </Pressable>
             ))}
-          </Animated.View>
-        )}
-
-        {/* Trending Communities - Shows when activeView is "trending" */}
-        {activeView === "trending" && (
-          <Animated.View 
-            entering={FadeInDown.duration(300).springify()}
-            exiting={FadeOutUp.duration(200)}
-            className="px-4 mb-20"
-          >
-            <Text
-              className={cn(
-                "text-xl font-bold mb-3",
-                isDark ? "text-white" : "text-gray-900"
-              )}
-            >
-              Trending Communities
-            </Text>
-            <View className="items-center py-12">
-              <Ionicons
-                name="flame-outline"
-                size={64}
-                color={isDark ? "#6b7280" : "#9ca3af"}
-              />
-              <Text
-                className={cn(
-                  "text-lg mt-4",
-                  isDark ? "text-gray-400" : "text-gray-600"
-                )}
-              >
-                No trending communities
-              </Text>
-              <Text
-                className={cn(
-                  "text-sm mt-2 text-center",
-                  isDark ? "text-gray-500" : "text-gray-500"
-                )}
-              >
-                Check back later for hot communities
-              </Text>
-            </View>
           </Animated.View>
         )}
 
