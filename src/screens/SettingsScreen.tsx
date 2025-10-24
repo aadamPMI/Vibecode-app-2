@@ -58,8 +58,6 @@ export default function SettingsScreen() {
 
   // Profile form state
   const [name, setName] = useState(profileSettings.name);
-  const [displayName, setDisplayName] = useState(profileSettings.displayName || "");
-  const [username, setUsername] = useState(profileSettings.username || "");
   const [age, setAge] = useState(profileSettings.age?.toString() || "");
   const [height, setHeight] = useState(profileSettings.height?.toString() || "");
   const [weight, setWeight] = useState(profileSettings.weight?.toString() || "");
@@ -92,13 +90,15 @@ export default function SettingsScreen() {
     if (!currentUserTag) {
       generateUserTag();
     }
-  }, [currentUserTag, generateUserTag]);
+    // Sync the tag to profileSettings if not already there
+    if (currentUserTag && !profileSettings.usernameTag) {
+      updateProfileSettings({ usernameTag: currentUserTag });
+    }
+  }, [currentUserTag, generateUserTag, profileSettings.usernameTag, updateProfileSettings]);
 
   const handleSaveProfile = () => {
     updateProfileSettings({
       name,
-      displayName: displayName || undefined,
-      username: username || undefined,
       age: age ? parseInt(age) : undefined,
       height: height ? parseFloat(height) : undefined,
       weight: weight ? parseFloat(weight) : undefined,
@@ -111,8 +111,6 @@ export default function SettingsScreen() {
   const handleSaveProfileModal = () => {
     updateProfileSettings({
       name,
-      displayName: displayName || undefined,
-      username: username || undefined,
       age: age ? parseInt(age) : undefined,
       email: email || undefined,
     });
@@ -231,30 +229,15 @@ export default function SettingsScreen() {
 
                 <View className="mb-6">
                   <Text className={cn("text-base font-semibold mb-3", isDark ? "text-gray-300" : "text-gray-700")}>
-                    Display Name
+                    Username Tag
                   </Text>
-                  <TextInput
-                    value={displayName}
-                    onChangeText={setDisplayName}
-                    placeholder="Enter display name (optional)"
-                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn("rounded-2xl p-4 text-lg", isDark ? "bg-black/40 text-white border border-gray-700/30" : "bg-white text-gray-900 border border-gray-300")}
-                  />
-                </View>
-
-                <View className="mb-6">
-                  <Text className={cn("text-base font-semibold mb-3", isDark ? "text-gray-300" : "text-gray-700")}>
-                    Username
-                  </Text>
-                  <TextInput
-                    value={username}
-                    onChangeText={setUsername}
-                    placeholder="Enter username"
-                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn("rounded-2xl p-4 text-lg", isDark ? "bg-black/40 text-white border border-gray-700/30" : "bg-white text-gray-900 border border-gray-300")}
-                  />
+                  <View className={cn("rounded-2xl p-4", isDark ? "bg-black/40 border border-gray-700/30" : "bg-white border border-gray-300")}>
+                    <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
+                      #{currentUserTag || "----"}
+                    </Text>
+                  </View>
                   <Text className={cn("text-xs mt-2", isDark ? "text-gray-500" : "text-gray-600")}>
-                    Your full username: {username || "username"}#{currentUserTag}
+                    Share this tag with friends to connect
                   </Text>
                 </View>
 
@@ -753,34 +736,18 @@ export default function SettingsScreen() {
                   />
                 </View>
 
-                {/* Display Name Input */}
+                {/* Username Tag - Read Only */}
                 <View className="mb-6">
                   <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
-                    Display Name
+                    Username Tag
                   </Text>
-                  <TextInput
-                    value={displayName}
-                    onChangeText={setDisplayName}
-                    placeholder="Enter display name (optional)"
-                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-[#1a1a1a] text-white" : "bg-gray-100 text-gray-900")}
-                  />
-                </View>
-
-                {/* Username Input */}
-                <View className="mb-6">
-                  <Text className={cn("text-sm font-semibold mb-2", isDark ? "text-gray-300" : "text-gray-700")}>
-                    Username
-                  </Text>
-                  <TextInput
-                    value={username}
-                    onChangeText={setUsername}
-                    placeholder="Enter username"
-                    placeholderTextColor={isDark ? "#6b7280" : "#9ca3af"}
-                    className={cn("rounded-xl p-4 text-base", isDark ? "bg-[#1a1a1a] text-white" : "bg-gray-100 text-gray-900")}
-                  />
+                  <View className={cn("rounded-xl p-4", isDark ? "bg-[#1a1a1a]" : "bg-gray-100")}>
+                    <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+                      #{currentUserTag || "----"}
+                    </Text>
+                  </View>
                   <Text className={cn("text-xs mt-2", isDark ? "text-gray-500" : "text-gray-600")}>
-                    Your full username: {username || "username"}#{currentUserTag}
+                    Share this tag with friends to connect
                   </Text>
                 </View>
 

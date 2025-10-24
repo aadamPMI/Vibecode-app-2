@@ -31,6 +31,7 @@ import { cn } from "../utils/cn";
 
 export default function CommunityScreen({ navigation, route }: any) {
   const theme = useSettingsStore((s) => s.theme);
+  const profileSettings = useSettingsStore((s) => s.profileSettings);
   const communities = useCommunityStore((s) => s.communities);
   const createCommunity = useCommunityStore((s) => s.createCommunity);
   const joinCommunity = useCommunityStore((s) => s.joinCommunity);
@@ -41,7 +42,7 @@ export default function CommunityScreen({ navigation, route }: any) {
   const addChallenge = useCommunityStore((s) => s.addChallenge);
   const joinChallenge = useCommunityStore((s) => s.joinChallenge);
   const currentUserId = useCommunityStore((s) => s.currentUserId);
-  const currentUserName = useCommunityStore((s) => s.currentUserName);
+  const currentUserName = profileSettings.name; // Use name from profileSettings
 
   // Friends store
   const friends = useFriendsStore((s) => s.friends);

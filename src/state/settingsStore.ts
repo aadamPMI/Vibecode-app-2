@@ -15,9 +15,8 @@ export interface FitnessGoals {
 }
 
 export interface ProfileSettings {
-  name: string;
-  displayName?: string;
-  username?: string;
+  name: string; // This is the display name shown everywhere
+  usernameTag?: string; // Auto-generated unique 4-digit tag for adding friends (e.g., "1234")
   age?: number;
   height?: number;
   weight?: number;
