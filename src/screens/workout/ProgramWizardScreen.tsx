@@ -336,149 +336,232 @@ export default function ProgramWizardScreen() {
         {/* Step 2 - Create Workout Day */}
         {currentStep === 2 && (
           <View className="px-6">
-            {/* Day Preset Buttons - 2 Column Grid */}
-            <View className="mb-6">
-              <View className="flex-row flex-wrap gap-3">
-                {/* Push */}
+            {/* Day Preset Buttons - Vertical Stack */}
+            <View className="mb-6 gap-3">
+              {/* Push */}
+              <Animated.View
+                entering={FadeInDown.delay(100).duration(400).springify()}
+              >
                 <Pressable
                   onPress={() => handleDayPresetSelect('push')}
-                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-6 items-center aspect-square justify-center',
+                        'p-5',
                         selectedDayPreset === 'push' ? 'border-2 border-purple-500' : '',
-                        'bg-blue-500/20'
+                        isDark ? 'bg-white/5' : 'bg-white/40'
                       )}
                       style={{
                         shadowColor: selectedDayPreset === 'push' ? '#a855f7' : isDark ? '#000' : '#1f2937',
-                        shadowOffset: { width: 0, height: 6 },
-                        shadowOpacity: selectedDayPreset === 'push' ? 0.4 : 0.2,
-                        shadowRadius: 12,
-                        elevation: selectedDayPreset === 'push' ? 8 : 4,
+                        shadowOffset: { width: 0, height: 8 },
+                        shadowOpacity: selectedDayPreset === 'push' ? 0.4 : isDark ? 0.3 : 0.1,
+                        shadowRadius: 16,
+                        elevation: selectedDayPreset === 'push' ? 10 : 5,
                       }}
                     >
-                      <Ionicons name="fitness" size={40} color="#3b82f6" />
-                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
-                        Push
-                      </Text>
+                      <View className="flex-row items-center">
+                        <View className={cn('w-16 h-16 rounded-2xl items-center justify-center mr-4', 'bg-blue-500/20')}>
+                          <Ionicons name="fitness" size={32} color="#3b82f6" />
+                        </View>
+                        <View className="flex-1">
+                          <Text className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                            Push
+                          </Text>
+                          <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Chest, Shoulders, Triceps
+                          </Text>
+                        </View>
+                        {selectedDayPreset === 'push' && (
+                          <View className="w-8 h-8 rounded-full bg-purple-500 items-center justify-center">
+                            <Ionicons name="checkmark" size={20} color="white" />
+                          </View>
+                        )}
+                      </View>
                     </View>
                   </BlurView>
                 </Pressable>
+              </Animated.View>
 
-                {/* Pull */}
+              {/* Pull */}
+              <Animated.View
+                entering={FadeInDown.delay(200).duration(400).springify()}
+              >
                 <Pressable
                   onPress={() => handleDayPresetSelect('pull')}
-                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-6 items-center aspect-square justify-center',
+                        'p-5',
                         selectedDayPreset === 'pull' ? 'border-2 border-purple-500' : '',
-                        'bg-pink-500/20'
+                        isDark ? 'bg-white/5' : 'bg-white/40'
                       )}
                       style={{
                         shadowColor: selectedDayPreset === 'pull' ? '#a855f7' : isDark ? '#000' : '#1f2937',
-                        shadowOffset: { width: 0, height: 6 },
-                        shadowOpacity: selectedDayPreset === 'pull' ? 0.4 : 0.2,
-                        shadowRadius: 12,
-                        elevation: selectedDayPreset === 'pull' ? 8 : 4,
+                        shadowOffset: { width: 0, height: 8 },
+                        shadowOpacity: selectedDayPreset === 'pull' ? 0.4 : isDark ? 0.3 : 0.1,
+                        shadowRadius: 16,
+                        elevation: selectedDayPreset === 'pull' ? 10 : 5,
                       }}
                     >
-                      <Ionicons name="contract" size={40} color="#ec4899" />
-                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
-                        Pull
-                      </Text>
+                      <View className="flex-row items-center">
+                        <View className={cn('w-16 h-16 rounded-2xl items-center justify-center mr-4', 'bg-pink-500/20')}>
+                          <Ionicons name="contract" size={32} color="#ec4899" />
+                        </View>
+                        <View className="flex-1">
+                          <Text className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                            Pull
+                          </Text>
+                          <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Back, Biceps
+                          </Text>
+                        </View>
+                        {selectedDayPreset === 'pull' && (
+                          <View className="w-8 h-8 rounded-full bg-purple-500 items-center justify-center">
+                            <Ionicons name="checkmark" size={20} color="white" />
+                          </View>
+                        )}
+                      </View>
                     </View>
                   </BlurView>
                 </Pressable>
+              </Animated.View>
 
-                {/* Legs */}
+              {/* Legs */}
+              <Animated.View
+                entering={FadeInDown.delay(300).duration(400).springify()}
+              >
                 <Pressable
                   onPress={() => handleDayPresetSelect('legs')}
-                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-6 items-center aspect-square justify-center',
+                        'p-5',
                         selectedDayPreset === 'legs' ? 'border-2 border-purple-500' : '',
-                        'bg-green-500/20'
+                        isDark ? 'bg-white/5' : 'bg-white/40'
                       )}
                       style={{
                         shadowColor: selectedDayPreset === 'legs' ? '#a855f7' : isDark ? '#000' : '#1f2937',
-                        shadowOffset: { width: 0, height: 6 },
-                        shadowOpacity: selectedDayPreset === 'legs' ? 0.4 : 0.2,
-                        shadowRadius: 12,
-                        elevation: selectedDayPreset === 'legs' ? 8 : 4,
+                        shadowOffset: { width: 0, height: 8 },
+                        shadowOpacity: selectedDayPreset === 'legs' ? 0.4 : isDark ? 0.3 : 0.1,
+                        shadowRadius: 16,
+                        elevation: selectedDayPreset === 'legs' ? 10 : 5,
                       }}
                     >
-                      <Ionicons name="walk" size={40} color="#22c55e" />
-                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
-                        Legs
-                      </Text>
+                      <View className="flex-row items-center">
+                        <View className={cn('w-16 h-16 rounded-2xl items-center justify-center mr-4', 'bg-green-500/20')}>
+                          <Ionicons name="walk" size={32} color="#22c55e" />
+                        </View>
+                        <View className="flex-1">
+                          <Text className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                            Legs
+                          </Text>
+                          <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Quads, Hamstrings, Glutes, Calves
+                          </Text>
+                        </View>
+                        {selectedDayPreset === 'legs' && (
+                          <View className="w-8 h-8 rounded-full bg-purple-500 items-center justify-center">
+                            <Ionicons name="checkmark" size={20} color="white" />
+                          </View>
+                        )}
+                      </View>
                     </View>
                   </BlurView>
                 </Pressable>
+              </Animated.View>
 
-                {/* Upper */}
+              {/* Upper */}
+              <Animated.View
+                entering={FadeInDown.delay(400).duration(400).springify()}
+              >
                 <Pressable
                   onPress={() => handleDayPresetSelect('upper')}
-                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-6 items-center aspect-square justify-center',
+                        'p-5',
                         selectedDayPreset === 'upper' ? 'border-2 border-purple-500' : '',
-                        'bg-purple-500/20'
+                        isDark ? 'bg-white/5' : 'bg-white/40'
                       )}
                       style={{
                         shadowColor: selectedDayPreset === 'upper' ? '#a855f7' : isDark ? '#000' : '#1f2937',
-                        shadowOffset: { width: 0, height: 6 },
-                        shadowOpacity: selectedDayPreset === 'upper' ? 0.4 : 0.2,
-                        shadowRadius: 12,
-                        elevation: selectedDayPreset === 'upper' ? 8 : 4,
+                        shadowOffset: { width: 0, height: 8 },
+                        shadowOpacity: selectedDayPreset === 'upper' ? 0.4 : isDark ? 0.3 : 0.1,
+                        shadowRadius: 16,
+                        elevation: selectedDayPreset === 'upper' ? 10 : 5,
                       }}
                     >
-                      <Ionicons name="body" size={40} color="#a855f7" />
-                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
-                        Upper
-                      </Text>
+                      <View className="flex-row items-center">
+                        <View className={cn('w-16 h-16 rounded-2xl items-center justify-center mr-4', 'bg-purple-500/20')}>
+                          <Ionicons name="body" size={32} color="#a855f7" />
+                        </View>
+                        <View className="flex-1">
+                          <Text className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                            Upper
+                          </Text>
+                          <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Chest, Back, Shoulders, Arms
+                          </Text>
+                        </View>
+                        {selectedDayPreset === 'upper' && (
+                          <View className="w-8 h-8 rounded-full bg-purple-500 items-center justify-center">
+                            <Ionicons name="checkmark" size={20} color="white" />
+                          </View>
+                        )}
+                      </View>
                     </View>
                   </BlurView>
                 </Pressable>
+              </Animated.View>
 
-                {/* Custom */}
+              {/* Custom */}
+              <Animated.View
+                entering={FadeInDown.delay(500).duration(400).springify()}
+              >
                 <Pressable
                   onPress={() => handleDayPresetSelect('custom')}
-                  className="w-[48%]"
                 >
                   <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} className="rounded-3xl overflow-hidden">
                     <View
                       className={cn(
-                        'p-6 items-center aspect-square justify-center',
+                        'p-5',
                         selectedDayPreset === 'custom' ? 'border-2 border-purple-500' : '',
-                        'bg-orange-500/20'
+                        isDark ? 'bg-white/5' : 'bg-white/40'
                       )}
                       style={{
                         shadowColor: selectedDayPreset === 'custom' ? '#a855f7' : isDark ? '#000' : '#1f2937',
-                        shadowOffset: { width: 0, height: 6 },
-                        shadowOpacity: selectedDayPreset === 'custom' ? 0.4 : 0.2,
-                        shadowRadius: 12,
-                        elevation: selectedDayPreset === 'custom' ? 8 : 4,
+                        shadowOffset: { width: 0, height: 8 },
+                        shadowOpacity: selectedDayPreset === 'custom' ? 0.4 : isDark ? 0.3 : 0.1,
+                        shadowRadius: 16,
+                        elevation: selectedDayPreset === 'custom' ? 10 : 5,
                       }}
                     >
-                      <Ionicons name="add" size={40} color="#f97316" />
-                      <Text className={cn('text-base font-bold mt-3', isDark ? 'text-white' : 'text-black')}>
-                        Custom
-                      </Text>
+                      <View className="flex-row items-center">
+                        <View className={cn('w-16 h-16 rounded-2xl items-center justify-center mr-4', 'bg-orange-500/20')}>
+                          <Ionicons name="add" size={32} color="#f97316" />
+                        </View>
+                        <View className="flex-1">
+                          <Text className={cn('text-xl font-bold', isDark ? 'text-white' : 'text-black')}>
+                            Custom
+                          </Text>
+                          <Text className={cn('text-sm mt-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                            Choose your own muscle groups
+                          </Text>
+                        </View>
+                        {selectedDayPreset === 'custom' && (
+                          <View className="w-8 h-8 rounded-full bg-purple-500 items-center justify-center">
+                            <Ionicons name="checkmark" size={20} color="white" />
+                          </View>
+                        )}
+                      </View>
                     </View>
                   </BlurView>
                 </Pressable>
-              </View>
+              </Animated.View>
             </View>
 
             {/* Day Name Input */}
