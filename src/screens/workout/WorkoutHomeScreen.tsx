@@ -60,9 +60,19 @@ export default function WorkoutHomeScreen() {
         <Animated.View entering={FadeInDown.delay(200)} className="px-6 mb-4">
           <View className="flex-row gap-4 mb-4">
             {/* Active Workout Card */}
-            <Pressable 
+            <Pressable
               className="flex-1"
-              onPress={() => handleCardPress('workout')}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // Check if there's an active program
+                if (activeProgram) {
+                  // Navigate to weekly planner
+                  navigation.navigate('WeeklyPlanner');
+                } else {
+                  // Navigate to select active program
+                  navigation.navigate('SelectActiveProgram');
+                }
+              }}
             >
               <View 
                 className={cn(
@@ -93,19 +103,23 @@ export default function WorkoutHomeScreen() {
                     Active{'\n'}Workout
                   </Text>
                   <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
-                    {todaysWorkout?.template ? todaysWorkout.template.name : 'Start training'}
+                    {activeProgram ? activeProgram.name : 'Select a program'}
                   </Text>
-                  {activeSession ? (
+                  {activeProgram ? (
                     <View className="flex-row items-center">
-                      <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-                      <Text className="text-green-500 text-xs font-semibold">In Progress</Text>
+                      <Ionicons name="calendar-outline" size={14} color="#6b7280" />
+                      <Text className={cn('text-xs font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                        Weekly Plan
+                      </Text>
                     </View>
-                  ) : todaysWorkout?.template ? (
+                  ) : (
                     <View className="flex-row items-center">
-                      <Ionicons name="play" size={14} color="#6b7280" />
-                      <Text className={cn('text-xs font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>Start</Text>
+                      <Ionicons name="add-circle-outline" size={14} color="#6b7280" />
+                      <Text className={cn('text-xs font-semibold ml-1', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                        Get Started
+                      </Text>
                     </View>
-                  ) : null}
+                  )}
                 </View>
               </View>
             </Pressable>

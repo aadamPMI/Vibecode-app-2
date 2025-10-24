@@ -396,3 +396,27 @@ export interface WorkoutStats {
   }[];
 }
 
+// ============= PROGRAM DAY & WEEKLY LAYOUT =============
+
+export type DayType = 'workout' | 'rest';
+
+export interface ProgramDay {
+  id: string;
+  programId: string;
+  weekday: number; // 1=Mon, 2=Tue, ..., 7=Sun
+  type: DayType;
+  workoutTemplateId?: string; // null if rest day
+  workoutName?: string; // denormalized for quick display
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WeeklyPlannerDay {
+  weekday: number; // 1=Mon, 2=Tue, ..., 7=Sun
+  dayLabel: string; // 'Mon', 'Tue', etc.
+  type: DayType;
+  workoutName?: string;
+  workoutTemplateId?: string;
+  programDayId?: string;
+}
+

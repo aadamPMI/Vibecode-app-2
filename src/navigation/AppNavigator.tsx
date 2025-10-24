@@ -15,6 +15,8 @@ import ActiveWorkoutScreen from "../screens/workout/ActiveWorkoutScreen";
 import WorkoutSummaryScreen from "../screens/workout/WorkoutSummaryScreen";
 import WorkoutHistoryScreen from "../screens/workout/WorkoutHistoryScreen";
 import WorkoutDayScreen from "../screens/workout/WorkoutDayScreen";
+import SelectActiveProgramScreen from "../screens/workout/SelectActiveProgramScreen";
+import WeeklyPlannerScreen from "../screens/workout/WeeklyPlannerScreen";
 import NutritionScreen from "../screens/NutritionScreen";
 import CommunityScreen from "../screens/CommunityScreen";
 import MyCommunitiesScreen from "../screens/MyCommunitiesScreen";
@@ -53,11 +55,13 @@ export type WorkoutStackParamList = {
   ExerciseLibrary: undefined;
   ExerciseSelector: { returnScreen?: string };
   ExerciseStats: undefined;
-  ActiveWorkout: undefined;
+  ActiveWorkout: { templateId?: string; dayName?: string } | undefined;
   WorkoutSummary: { sessionId: string };
   WorkoutHistory: undefined;
   WeightTracking: undefined;
   WorkoutDay: { dayName: string; date: string; workoutName: string };
+  SelectActiveProgram: undefined;
+  WeeklyPlanner: undefined;
 };
 
 export type CommunityStackParamList = {
@@ -86,6 +90,8 @@ function WorkoutStackNavigator() {
       <WorkoutStack.Screen name="ExerciseLibrary" component={ExerciseLibraryScreen} />
       <WorkoutStack.Screen name="ExerciseSelector" component={ExerciseSelectorScreen} />
       <WorkoutStack.Screen name="ExerciseStats" component={ExerciseStatsScreen} />
+      <WorkoutStack.Screen name="SelectActiveProgram" component={SelectActiveProgramScreen} />
+      <WorkoutStack.Screen name="WeeklyPlanner" component={WeeklyPlannerScreen} />
       <WorkoutStack.Screen name="ActiveWorkout" component={ActiveWorkoutScreen} />
       <WorkoutStack.Screen name="WorkoutSummary" component={WorkoutSummaryScreen} />
       <WorkoutStack.Screen name="WorkoutHistory" component={WorkoutHistoryScreen} />
