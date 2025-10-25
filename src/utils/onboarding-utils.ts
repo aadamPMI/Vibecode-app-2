@@ -21,6 +21,13 @@ export function saveOnboardingToStores(
     weight: data.currentWeightKg,
   });
 
+  // Map new goal types to legacy types if needed
+  const legacyGoal = data.primaryGoal === "get_stronger"
+    ? "strength_training"
+    : data.primaryGoal === "lose_fat"
+    ? "lose_weight"
+    : data.primaryGoal;
+
   // Update fitness goals
   updateFitnessGoals({
     targetWeight: data.targetWeightKg,
@@ -29,11 +36,11 @@ export function saveOnboardingToStores(
     targetCarbs: aiResults.carbs,
     targetFats: aiResults.fats,
     weeklyWorkouts: data.trainingFrequency,
-    goal: data.primaryGoal,
+    goal: (legacyGoal || "build_muscle") as "lose_weight" | "build_muscle" | "improve_endurance" | "general_fitness" | "strength_training",
     fitnessLevel:
-      data.trainingIntensity === "light"
+      data.experienceLevel === "beginner"
         ? "beginner"
-        : data.trainingIntensity === "intense"
+        : data.experienceLevel === "advanced"
         ? "advanced"
         : "intermediate",
   });

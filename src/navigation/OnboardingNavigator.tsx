@@ -1,25 +1,43 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WelcomeScreen from "../screens/onboarding/WelcomeScreen";
-import PersonalInfoScreen from "../screens/onboarding/PersonalInfoScreen";
-import WeightScreen from "../screens/onboarding/WeightScreen";
-import TimeframeScreen from "../screens/onboarding/TimeframeScreen";
+import IntroPromoScreen from "../screens/onboarding/IntroPromoScreen";
+import GenderScreen from "../screens/onboarding/GenderScreen";
+import WorkoutFrequencyScreen from "../screens/onboarding/WorkoutFrequencyScreen";
+import ExperienceLevelScreen from "../screens/onboarding/ExperienceLevelScreen";
+import EquipmentAccessScreen from "../screens/onboarding/EquipmentAccessScreen";
+import MotivationPromoScreen from "../screens/onboarding/MotivationPromoScreen";
+import HeightWeightScreen from "../screens/onboarding/HeightWeightScreen";
+import AgeScreen from "../screens/onboarding/AgeScreen";
 import FitnessGoalScreen from "../screens/onboarding/FitnessGoalScreen";
-import TrainingScreen from "../screens/onboarding/TrainingScreen";
-import InjuriesScreen from "../screens/onboarding/InjuriesScreen";
+import ProgressProjectionScreen from "../screens/onboarding/ProgressProjectionScreen";
+import CommunityScreen from "../screens/onboarding/CommunityScreen";
+import ExistingPlansScreen from "../screens/onboarding/ExistingPlansScreen";
+import FinalPromoScreen from "../screens/onboarding/FinalPromoScreen";
+import ProgramPreviewScreen from "../screens/onboarding/ProgramPreviewScreen";
 import GeneratingScreen from "../screens/onboarding/GeneratingScreen";
-import ResultsScreen from "../screens/onboarding/ResultsScreen";
+import PlanSummaryScreen from "../screens/onboarding/PlanSummaryScreen";
+import ReadyScreen from "../screens/onboarding/ReadyScreen";
 
 export type OnboardingStackParamList = {
   Welcome: undefined;
-  PersonalInfo: undefined;
-  Weight: undefined;
-  Timeframe: undefined;
+  IntroPromo: undefined;
+  Gender: undefined;
+  WorkoutFrequency: undefined;
+  ExperienceLevel: undefined;
+  EquipmentAccess: undefined;
+  MotivationPromo: undefined;
+  HeightWeight: undefined;
+  Age: undefined;
   FitnessGoal: undefined;
-  Training: undefined;
-  Injuries: undefined;
+  ProgressProjection: undefined;
+  Community: undefined;
+  ExistingPlans: undefined;
+  FinalPromo: undefined;
+  ProgramPreview: undefined;
   Generating: undefined;
-  Results: undefined;
+  PlanSummary: undefined;
+  Ready: undefined;
 };
 
 const Stack = createNativeStackNavigator<OnboardingStackParamList>();
@@ -35,14 +53,23 @@ export default function OnboardingNavigator() {
       }}
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
-      <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
-      <Stack.Screen name="Weight" component={WeightScreen} />
-      <Stack.Screen name="Timeframe" component={TimeframeScreen} />
+      <Stack.Screen name="IntroPromo" component={IntroPromoScreen} />
+      <Stack.Screen name="Gender" component={GenderScreen} />
+      <Stack.Screen name="WorkoutFrequency" component={WorkoutFrequencyScreen} />
+      <Stack.Screen name="ExperienceLevel" component={ExperienceLevelScreen} />
+      <Stack.Screen name="EquipmentAccess" component={EquipmentAccessScreen} />
+      <Stack.Screen name="MotivationPromo" component={MotivationPromoScreen} />
+      <Stack.Screen name="HeightWeight" component={HeightWeightScreen} />
+      <Stack.Screen name="Age" component={AgeScreen} />
       <Stack.Screen name="FitnessGoal" component={FitnessGoalScreen} />
-      <Stack.Screen name="Training" component={TrainingScreen} />
-      <Stack.Screen name="Injuries" component={InjuriesScreen} />
+      <Stack.Screen name="ProgressProjection" component={ProgressProjectionScreen} />
+      <Stack.Screen name="Community" component={CommunityScreen} />
+      <Stack.Screen name="ExistingPlans" component={ExistingPlansScreen} />
+      <Stack.Screen name="FinalPromo" component={FinalPromoScreen} />
+      <Stack.Screen name="ProgramPreview" component={ProgramPreviewScreen} />
       <Stack.Screen name="Generating" component={GeneratingScreen} />
-      <Stack.Screen name="Results" component={ResultsScreen} />
+      <Stack.Screen name="PlanSummary" component={PlanSummaryScreen} />
+      <Stack.Screen name="Ready" component={ReadyScreen} />
     </Stack.Navigator>
   );
 }

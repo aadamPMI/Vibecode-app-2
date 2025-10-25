@@ -3,30 +3,34 @@ import { View, Text, Pressable, ScrollView, useColorScheme } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { ProgressIndicator } from "../../components/onboarding/ProgressIndicator";
+import Slider from "@react-native-community/slider";
 import { OnboardingButton } from "../../components/onboarding/OnboardingButton";
 import { useOnboardingStore } from "../../state/onboardingStore";
 import { cn } from "../../utils/cn";
 
-type Goal = "lose_weight" | "build_muscle" | "improve_endurance" | "general_fitness" | "strength_training";
+type Goal = "build_muscle" | "get_stronger" | "lose_fat" | "improve_endurance";
 
 export default function FitnessGoalScreen({ navigation }: any) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
   const { data, updateOnboardingData } = useOnboardingStore();
   const [goal, setGoal] = useState<Goal | undefined>(data.primaryGoal);
+  const [bodyFocus, setBodyFocus] = useState<number>(data.bodyFocus === "strength" ? 0 : data.bodyFocus === "hypertrophy" ? 100 : 50);
 
   const goals = [
-    { value: "lose_weight" as const, label: "Lose Weight", icon: "scale-outline", color: "#ef4444", desc: "Burn fat and slim down" },
     { value: "build_muscle" as const, label: "Build Muscle", icon: "barbell-outline", color: "#fb923c", desc: "Gain size and strength" },
+    { value: "get_stronger" as const, label: "Get Stronger", icon: "medal-outline", color: "#a855f7", desc: "Build raw power" },
+    { value: "lose_fat" as const, label: "Lose Fat", icon: "scale-outline", color: "#ef4444", desc: "Burn fat and get lean" },
     { value: "improve_endurance" as const, label: "Improve Endurance", icon: "bicycle-outline", color: "#3b82f6", desc: "Boost stamina and cardio" },
-    { value: "general_fitness" as const, label: "General Fitness", icon: "fitness-outline", color: "#10b981", desc: "Stay healthy and active" },
-    { value: "strength_training" as const, label: "Strength Training", icon: "medal-outline", color: "#a855f7", desc: "Build raw power" },
   ];
 
   const handleContinue = () => {
-    updateOnboardingData({ primaryGoal: goal });
-    navigation.navigate("Training");
+    const focusValue = bodyFocus < 33 ? "strength" : bodyFocus > 66 ? "hypertrophy" : "balanced";
+    updateOnboardingData({
+      primaryGoal: goal,
+      bodyFocus: focusValue as "strength" | "hypertrophy" | "balanced"
+    });
+    navigation.navigate("ProgressProjection");
   };
 
   return (
@@ -36,14 +40,14 @@ export default function FitnessGoalScreen({ navigation }: any) {
           <Pressable onPress={() => navigation.goBack()} className="mb-4">
             <Ionicons name="chevron-back" size={28} color={isDark ? "#fff" : "#000"} />
           </Pressable>
-          <ProgressIndicator currentStep={4} totalSteps={7} isDark={isDark} />
-          <Text className={cn("text-4xl font-bold mt-6 mb-3", isDark ? "text-white" : "text-gray-900")}>
+
+          <Text className={cn("text-4xl font-bold mt-2 mb-3", isDark ? "text-white" : "text-gray-900")}>
             What's your primary goal?
           </Text>
           <Text className={cn("text-base mb-8", isDark ? "text-gray-400" : "text-gray-600")}>
             We'll customize your plan accordingly
           </Text>
-          <View className="flex-row flex-wrap">
+          <View className="flex-row flex-wrap mb-8">
             {goals.map((g) => (
               <Pressable
                 key={g.value}
@@ -54,7 +58,7 @@ export default function FitnessGoalScreen({ navigation }: any) {
                 className={cn(
                   "w-[48%] rounded-3xl p-5 mb-4",
                   goal === g.value ? "bg-blue-500" : isDark ? "bg-[#1a1a1a]" : "bg-gray-100",
-                  g.value === "lose_weight" || g.value === "improve_endurance" ? "mr-[4%]" : ""
+                  g.value === "build_muscle" || g.value === "lose_fat" ? "mr-[4%]" : ""
                 )}
                 style={{
                   shadowColor: goal === g.value ? "#3b82f6" : "transparent",
@@ -81,6 +85,36 @@ export default function FitnessGoalScreen({ navigation }: any) {
               </Pressable>
             ))}
           </View>
+
+          {/* Body Focus Slider */}
+          {(goal === "build_muscle" || goal === "get_stronger") && (
+            <View className={cn("p-6 rounded-3xl mb-6", isDark ? "bg-[#1a1a1a]" : "bg-gray-100")}>
+              <Text className={cn("text-lg font-semibold mb-4", isDark ? "text-white" : "text-gray-900")}>
+                Body Focus
+              </Text>
+              <View className="flex-row justify-between mb-2">
+                <Text className={cn("text-sm", bodyFocus < 33 ? "font-bold text-blue-500" : isDark ? "text-gray-400" : "text-gray-600")}>
+                  Strength
+                </Text>
+                <Text className={cn("text-sm", bodyFocus > 33 && bodyFocus < 66 ? "font-bold text-blue-500" : isDark ? "text-gray-400" : "text-gray-600")}>
+                  Balanced
+                </Text>
+                <Text className={cn("text-sm", bodyFocus > 66 ? "font-bold text-blue-500" : isDark ? "text-gray-400" : "text-gray-600")}>
+                  Hypertrophy
+                </Text>
+              </View>
+              <Slider
+                style={{ width: "100%", height: 40 }}
+                minimumValue={0}
+                maximumValue={100}
+                value={bodyFocus}
+                onValueChange={(value) => setBodyFocus(value)}
+                minimumTrackTintColor="#3b82f6"
+                maximumTrackTintColor={isDark ? "#333" : "#ddd"}
+                thumbTintColor="#3b82f6"
+              />
+            </View>
+          )}
         </View>
       </ScrollView>
       <View className="px-6 pb-6">

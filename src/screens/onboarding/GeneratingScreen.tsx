@@ -15,10 +15,11 @@ export default function GeneratingScreen({ navigation }: any) {
   const [error, setError] = useState<string | null>(null);
 
   const statuses = [
-    "Analyzing your goals...",
-    "Calculating optimal calories...",
-    "Designing your workout plan...",
-    "Customizing for your needs...",
+    "Calibrating volume targets...",
+    "Balancing push/pull ratios...",
+    "Estimating recovery windows...",
+    "Personalizing accessory pools...",
+    "Generating starter weights...",
   ];
 
   const rotation = useSharedValue(0);
@@ -46,7 +47,7 @@ export default function GeneratingScreen({ navigation }: any) {
         
         // Small delay for better UX
         setTimeout(() => {
-          navigation.navigate("Results", { plan: result });
+          navigation.navigate("PlanSummary", { plan: result });
         }, 1000);
       } catch (err) {
         console.error("Error generating plan:", err);
