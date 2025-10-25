@@ -11,7 +11,6 @@ import AgeScreen from "../screens/onboarding/AgeScreen";
 import FitnessGoalScreen from "../screens/onboarding/FitnessGoalScreen";
 import ProgressProjectionScreen from "../screens/onboarding/ProgressProjectionScreen";
 import CommunityScreen from "../screens/onboarding/CommunityScreen";
-import ExistingPlansScreen from "../screens/onboarding/ExistingPlansScreen";
 import FinalPromoScreen from "../screens/onboarding/FinalPromoScreen";
 import ProgramPreviewScreen from "../screens/onboarding/ProgramPreviewScreen";
 import GeneratingScreen from "../screens/onboarding/GeneratingScreen";
@@ -30,7 +29,6 @@ export type OnboardingStackParamList = {
   FitnessGoal: undefined;
   ProgressProjection: undefined;
   Community: undefined;
-  ExistingPlans: undefined;
   FinalPromo: undefined;
   ProgramPreview: undefined;
   Generating: undefined;
@@ -61,7 +59,6 @@ export default function OnboardingNavigator() {
       <Stack.Screen name="FitnessGoal" component={FitnessGoalScreen} />
       <Stack.Screen name="ProgressProjection" component={ProgressProjectionScreen} />
       <Stack.Screen name="Community" component={CommunityScreen} />
-      <Stack.Screen name="ExistingPlans" component={ExistingPlansScreen} />
       <Stack.Screen name="FinalPromo" component={FinalPromoScreen} />
       <Stack.Screen name="ProgramPreview" component={ProgramPreviewScreen} />
       <Stack.Screen name="Generating" component={GeneratingScreen} />

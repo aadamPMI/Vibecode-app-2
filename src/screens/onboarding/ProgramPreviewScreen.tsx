@@ -17,6 +17,39 @@ export default function ProgramPreviewScreen({ navigation }: any) {
 
   const days = ["Mon", "Wed", "Fri"];
 
+  // Calculate calorie goals based on user data
+  const calculateCalories = () => {
+    if (!data.currentWeightKg || !data.age || !data.gender) {
+      return { maintenance: 2200, target: 2400 };
+    }
+
+    // Simple BMR calculation (Mifflin-St Jeor)
+    let bmr = 0;
+    if (data.gender === "male") {
+      bmr = 10 * data.currentWeightKg + 6.25 * (data.heightCm || 175) - 5 * data.age + 5;
+    } else {
+      bmr = 10 * data.currentWeightKg + 6.25 * (data.heightCm || 165) - 5 * data.age - 161;
+    }
+
+    // Activity multiplier based on workout frequency
+    const activityMultiplier = frequency === "6+" ? 1.725 : frequency === "3-5" ? 1.55 : 1.375;
+    const maintenance = Math.round(bmr * activityMultiplier);
+
+    // Adjust based on goal
+    let target = maintenance;
+    if (data.primaryGoal === "build_muscle") {
+      target = Math.round(maintenance + 300);
+    } else if (data.primaryGoal === "get_stronger") {
+      target = Math.round(maintenance + 200);
+    } else if (data.primaryGoal === "lose_fat") {
+      target = Math.round(maintenance - 500);
+    }
+
+    return { maintenance, target };
+  };
+
+  const { maintenance, target } = calculateCalories();
+
   return (
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-white")}>
       <ScrollView className="flex-1 px-6 py-8" showsVerticalScrollIndicator={false}>
@@ -30,6 +63,23 @@ export default function ProgramPreviewScreen({ navigation }: any) {
           <Text className={cn("text-lg text-center mb-8", isDark ? "text-gray-400" : "text-gray-600")}>
             Based on your preferences
           </Text>
+        </Animated.View>
+
+        {/* Motivational Message */}
+        <Animated.View
+          entering={FadeInDown.delay(500)}
+          className={cn("p-6 rounded-3xl mb-6", isDark ? "bg-blue-950/30" : "bg-blue-50")}
+          style={{
+            borderWidth: 1,
+            borderColor: "rgba(59, 130, 246, 0.2)",
+          }}
+        >
+          <View className="flex-row items-start mb-2">
+            <Ionicons name="checkmark-circle" size={24} color="#3b82f6" style={{ marginRight: 12, marginTop: 2 }} />
+            <Text className={cn("text-base leading-6 flex-1", isDark ? "text-gray-300" : "text-gray-700")}>
+              Your goals seem realistic and achievable as long as you have the right structured plan in place and you stay consistent.
+            </Text>
+          </View>
         </Animated.View>
 
         {/* Program Summary */}
@@ -47,6 +97,32 @@ export default function ProgramPreviewScreen({ navigation }: any) {
             <Text className={cn("text-base", isDark ? "text-gray-400" : "text-gray-600")}>
               45–60 min • {equipment.charAt(0).toUpperCase() + equipment.slice(1)}
             </Text>
+          </View>
+
+          {/* Calorie Goals */}
+          <View className="mb-6">
+            <Text className={cn("text-lg font-semibold mb-4", isDark ? "text-white" : "text-gray-900")}>
+              Daily Calorie Target
+            </Text>
+            <View className="flex-row justify-around">
+              <View className="items-center flex-1">
+                <Text className={cn("text-3xl font-bold mb-1", isDark ? "text-gray-400" : "text-gray-600")}>
+                  {maintenance}
+                </Text>
+                <Text className={cn("text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
+                  Maintenance
+                </Text>
+              </View>
+              <View className="w-px bg-gray-300 dark:bg-gray-700 mx-4" />
+              <View className="items-center flex-1">
+                <Text className={cn("text-3xl font-bold mb-1 text-blue-500")}>
+                  {target}
+                </Text>
+                <Text className={cn("text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
+                  Your Target
+                </Text>
+              </View>
+            </View>
           </View>
 
           {/* Weekly Schedule */}

@@ -1,9 +1,16 @@
-import React from "react";
-import { View, Text, Pressable, useColorScheme, ScrollView } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
-import * as Haptics from "expo-haptics";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, {
+  FadeInDown,
+  useSharedValue,
+  useAnimatedStyle,
+  withDelay,
+  withSpring,
+  withRepeat
+} from "react-native-reanimated";
+import { Ionicons } from "@expo/vector-icons";
 import { OnboardingButton } from "../../components/onboarding/OnboardingButton";
 import { cn } from "../../utils/cn";
 
@@ -11,12 +18,28 @@ export default function CommunityScreen({ navigation }: any) {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  const crews = [
-    { name: "No-Gym Crew", members: "1.2k", color: "#10b981" },
-    { name: "Beginner Strength", members: "850", color: "#3b82f6" },
-    { name: "Dubai Runners", members: "324", color: "#ef4444" },
-    { name: "Morning Lifters", members: "567", color: "#f59e0b" },
-  ];
+  // Animation values for progress bars
+  const progress1 = useSharedValue(0);
+  const progress2 = useSharedValue(0);
+  const progress3 = useSharedValue(0);
+
+  useEffect(() => {
+    progress1.value = withDelay(600, withSpring(0.7, { damping: 15 }));
+    progress2.value = withDelay(800, withSpring(0.85, { damping: 15 }));
+    progress3.value = withDelay(1000, withSpring(0.6, { damping: 15 }));
+  }, []);
+
+  const progress1Style = useAnimatedStyle(() => ({
+    width: `${progress1.value * 100}%`,
+  }));
+
+  const progress2Style = useAnimatedStyle(() => ({
+    width: `${progress2.value * 100}%`,
+  }));
+
+  const progress3Style = useAnimatedStyle(() => ({
+    width: `${progress3.value * 100}%`,
+  }));
 
   return (
     <View className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-white")}>
@@ -30,68 +53,103 @@ export default function CommunityScreen({ navigation }: any) {
       />
 
       <SafeAreaView className="flex-1 px-6 py-12">
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <Animated.View entering={FadeInDown.delay(200)}>
-            <Text className={cn("text-4xl font-bold text-center mb-4", isDark ? "text-white" : "text-gray-900")}>
-              Progress is easier with others
-            </Text>
-          </Animated.View>
+        <View className="flex-1 justify-between">
+          <View className="flex-1 justify-center">
+            <Animated.View entering={FadeInDown.delay(200)}>
+              <Text className={cn("text-4xl font-bold text-center mb-4", isDark ? "text-white" : "text-gray-900")}>
+                Progress is easier with others
+              </Text>
+            </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(400)}>
-            <Text className={cn("text-lg text-center mb-12", isDark ? "text-gray-400" : "text-gray-600")}>
-              Join a Crew that fits you
-            </Text>
-          </Animated.View>
+            <Animated.View entering={FadeInDown.delay(400)}>
+              <Text className={cn("text-lg text-center mb-12", isDark ? "text-gray-400" : "text-gray-600")}>
+                Train with a community and see better results
+              </Text>
+            </Animated.View>
 
-          <View className="mb-8">
-            {crews.map((crew, index) => (
-              <Animated.View key={crew.name} entering={FadeInDown.delay(600 + index * 100)}>
-                <Pressable
-                  onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-                  className={cn("p-6 rounded-3xl mb-4", isDark ? "bg-[#1a1a1a]" : "bg-white")}
-                  style={{
-                    shadowColor: crew.color,
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 8,
-                    elevation: 3,
-                  }}
-                >
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center flex-1">
-                      <View
-                        className="w-12 h-12 rounded-full items-center justify-center mr-4"
-                        style={{ backgroundColor: crew.color + "20" }}
-                      >
-                        <View className="w-6 h-6 rounded-full" style={{ backgroundColor: crew.color }} />
-                      </View>
-                      <View className="flex-1">
-                        <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
-                          {crew.name}
-                        </Text>
-                        <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                          {crew.members} members
-                        </Text>
-                      </View>
-                    </View>
+            {/* Progress Visualization */}
+            <Animated.View
+              entering={FadeInDown.delay(500)}
+              className={cn("p-8 rounded-3xl mb-8", isDark ? "bg-[#1a1a1a]" : "bg-gray-50")}
+            >
+              {/* Person 1 */}
+              <View className="mb-6">
+                <View className="flex-row items-center mb-2">
+                  <View className="w-10 h-10 rounded-full bg-blue-500 items-center justify-center mr-3">
+                    <Ionicons name="person" size={20} color="#fff" />
                   </View>
-                </Pressable>
-              </Animated.View>
-            ))}
-          </View>
-        </ScrollView>
+                  <Text className={cn("text-base font-semibold flex-1", isDark ? "text-white" : "text-gray-900")}>
+                    Member
+                  </Text>
+                  <Text className={cn("text-sm font-bold text-blue-500")}>
+                    +70%
+                  </Text>
+                </View>
+                <View className={cn("h-3 rounded-full overflow-hidden", isDark ? "bg-[#2a2a2a]" : "bg-gray-200")}>
+                  <Animated.View
+                    style={[progress1Style, { backgroundColor: "#3b82f6" }]}
+                    className="h-full rounded-full"
+                  />
+                </View>
+              </View>
 
-        <Animated.View entering={FadeInDown.delay(1000)}>
-          <OnboardingButton
-            title="Continue"
-            onPress={() => navigation.navigate("ExistingPlans")}
-          />
-          <Pressable onPress={() => navigation.navigate("ExistingPlans")} className="mt-4">
-            <Text className={cn("text-center text-sm", isDark ? "text-gray-500" : "text-gray-500")}>
-              Skip for now
-            </Text>
-          </Pressable>
-        </Animated.View>
+              {/* Person 2 */}
+              <View className="mb-6">
+                <View className="flex-row items-center mb-2">
+                  <View className="w-10 h-10 rounded-full bg-green-500 items-center justify-center mr-3">
+                    <Ionicons name="person" size={20} color="#fff" />
+                  </View>
+                  <Text className={cn("text-base font-semibold flex-1", isDark ? "text-white" : "text-gray-900")}>
+                    Member
+                  </Text>
+                  <Text className={cn("text-sm font-bold text-green-500")}>
+                    +85%
+                  </Text>
+                </View>
+                <View className={cn("h-3 rounded-full overflow-hidden", isDark ? "bg-[#2a2a2a]" : "bg-gray-200")}>
+                  <Animated.View
+                    style={[progress2Style, { backgroundColor: "#10b981" }]}
+                    className="h-full rounded-full"
+                  />
+                </View>
+              </View>
+
+              {/* Person 3 */}
+              <View>
+                <View className="flex-row items-center mb-2">
+                  <View className="w-10 h-10 rounded-full bg-purple-500 items-center justify-center mr-3">
+                    <Ionicons name="person" size={20} color="#fff" />
+                  </View>
+                  <Text className={cn("text-base font-semibold flex-1", isDark ? "text-white" : "text-gray-900")}>
+                    Member
+                  </Text>
+                  <Text className={cn("text-sm font-bold text-purple-500")}>
+                    +60%
+                  </Text>
+                </View>
+                <View className={cn("h-3 rounded-full overflow-hidden", isDark ? "bg-[#2a2a2a]" : "bg-gray-200")}>
+                  <Animated.View
+                    style={[progress3Style, { backgroundColor: "#a855f7" }]}
+                    className="h-full rounded-full"
+                  />
+                </View>
+              </View>
+            </Animated.View>
+
+            <Animated.View entering={FadeInDown.delay(1200)}>
+              <Text className={cn("text-sm text-center px-8", isDark ? "text-gray-500" : "text-gray-500")}>
+                Or you can still train solo using the app and make significant progress
+              </Text>
+            </Animated.View>
+          </View>
+
+          <Animated.View entering={FadeInDown.delay(1400)}>
+            <OnboardingButton
+              title="Continue"
+              onPress={() => navigation.navigate("FinalPromo")}
+            />
+          </Animated.View>
+        </View>
       </SafeAreaView>
     </View>
   );
