@@ -21,7 +21,7 @@ export default function ExperienceLevelScreen({ navigation }: any) {
 
   const handleContinue = () => {
     updateOnboardingData({ experienceLevel: level });
-    navigation.navigate("EquipmentAccess");
+    navigation.navigate("MotivationPromo");
   };
 
   return (
