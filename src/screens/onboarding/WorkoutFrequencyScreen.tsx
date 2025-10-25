@@ -3,7 +3,7 @@ import { View, Text, Pressable, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { OnboardingButton } from "../../components/onboarding/OnboardingButton";
+import { OnboardingNavigation } from "../../components/onboarding/OnboardingNavigation";
 import { useOnboardingStore } from "../../state/onboardingStore";
 import { cn } from "../../utils/cn";
 
@@ -26,10 +26,8 @@ export default function WorkoutFrequencyScreen({ navigation }: any) {
 
   return (
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#0a0a0a]" : "bg-white")}>
-      <View className="flex-1 px-6 py-8">
-        <Pressable onPress={() => navigation.goBack()} className="mb-4">
-          <Ionicons name="chevron-back" size={28} color={isDark ? "#fff" : "#000"} />
-        </Pressable>
+      <View className="flex-1">
+        <View className="flex-1 px-6 py-8">
 
         <Text className={cn("text-4xl font-bold mb-3", isDark ? "text-white" : "text-gray-900")}>
           How often do you plan to workout?
@@ -72,8 +70,13 @@ export default function WorkoutFrequencyScreen({ navigation }: any) {
             </Pressable>
           ))}
         </View>
+        </View>
 
-        <OnboardingButton title="Continue" onPress={handleContinue} disabled={!frequency} />
+        <OnboardingNavigation
+          onBack={() => navigation.goBack()}
+          onNext={handleContinue}
+          canGoNext={!!frequency}
+        />
       </View>
     </SafeAreaView>
   );

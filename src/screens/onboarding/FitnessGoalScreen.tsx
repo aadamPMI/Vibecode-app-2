@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Slider from "@react-native-community/slider";
 import Animated, { FadeInDown, FadeIn, useAnimatedStyle, useSharedValue, withSpring, withSequence } from "react-native-reanimated";
-import { OnboardingButton } from "../../components/onboarding/OnboardingButton";
+import { OnboardingNavigation } from "../../components/onboarding/OnboardingNavigation";
 import { useOnboardingStore } from "../../state/onboardingStore";
 import { cn } from "../../utils/cn";
 
@@ -149,9 +149,11 @@ export default function FitnessGoalScreen({ navigation }: any) {
           )}
         </View>
       </ScrollView>
-      <View className="px-6 pb-6">
-        <OnboardingButton title="Continue" onPress={handleContinue} disabled={!goal} />
-      </View>
+      <OnboardingNavigation
+        onBack={() => navigation.goBack()}
+        onNext={handleContinue}
+        canGoNext={!!goal}
+      />
     </SafeAreaView>
   );
 }

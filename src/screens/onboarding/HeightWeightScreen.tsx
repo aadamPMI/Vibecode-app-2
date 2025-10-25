@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, useColorScheme, TextInput, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import { OnboardingButton } from "../../components/onboarding/OnboardingButton";
+import { OnboardingNavigation } from "../../components/onboarding/OnboardingNavigation";
 import { useOnboardingStore } from "../../state/onboardingStore";
 import { cn } from "../../utils/cn";
 
@@ -234,7 +234,11 @@ export default function HeightWeightScreen({ navigation }: any) {
       </ScrollView>
 
       <View className="px-6 pb-6">
-        <OnboardingButton title="Continue" onPress={handleContinue} disabled={!isValid || !isWeightValid} />
+        <OnboardingNavigation
+          onBack={() => navigation.goBack()}
+          onNext={handleContinue}
+          canGoNext={!!(isValid && isWeightValid)}
+        />
       </View>
     </SafeAreaView>
   );

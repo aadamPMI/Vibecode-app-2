@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { OnboardingButton } from "../../components/onboarding/OnboardingButton";
+import { OnboardingNavigation } from "../../components/onboarding/OnboardingNavigation";
 import { useOnboardingStore } from "../../state/onboardingStore";
 import { cn } from "../../utils/cn";
 
@@ -106,7 +106,11 @@ export default function AgeScreen({ navigation }: any) {
           )}
         </View>
 
-        <OnboardingButton title="Continue" onPress={handleContinue} />
+        <OnboardingNavigation
+          onBack={() => navigation.goBack()}
+          onNext={handleContinue}
+          canGoNext={true}
+        />
       </View>
     </SafeAreaView>
   );
