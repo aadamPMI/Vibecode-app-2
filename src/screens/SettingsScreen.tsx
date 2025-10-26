@@ -389,7 +389,7 @@ export default function SettingsScreen() {
             <Ionicons name="chevron-forward" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
           </Pressable>
 
-          {/* Invite Friends Card */}
+          {/* Home Screen Widgets Card */}
           <View
             className={cn("rounded-3xl p-6 mb-6", isDark ? "bg-white/5" : "bg-white")}
             style={{
@@ -400,24 +400,69 @@ export default function SettingsScreen() {
               elevation: 4,
             }}
           >
-            <View className="flex-row items-center mb-4">
-              <Ionicons name="people-outline" size={24} color={isDark ? "#fff" : "#000"} />
-              <Text className={cn("text-base font-bold ml-2", isDark ? "text-white" : "text-black")}>
-                Invite friends
-              </Text>
-            </View>
-
-            {/* Image Banner */}
-            <View className="rounded-2xl overflow-hidden bg-gray-800 h-48 items-center justify-center">
-              <Text className="text-white text-base font-bold text-center px-6 mb-2">
-                The journey is easier together
-              </Text>
-              <View className="bg-white rounded-full px-6 py-3 mt-2">
-                <Text className="text-black font-bold text-xs">
-                  Earn $10 for each friend referred
+            <View className="flex-row items-center justify-between mb-4">
+              <View className="flex-row items-center">
+                <Ionicons name="grid-outline" size={24} color={isDark ? "#fff" : "#000"} />
+                <Text className={cn("text-base font-bold ml-2", isDark ? "text-white" : "text-black")}>
+                  Home Screen Widgets
                 </Text>
               </View>
+              <View className="bg-purple-500/20 px-3 py-1 rounded-full">
+                <Text className="text-purple-500 text-xs font-bold">Coming Soon</Text>
+              </View>
             </View>
+
+            <Text className={cn("text-sm mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
+              Add quick-glance widgets to your phone's home screen
+            </Text>
+
+            {/* Widget Preview - Calories Left Today */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // TODO: Open widget configuration when feature is ready
+              }}
+              className={cn("rounded-2xl p-4 mb-3", isDark ? "bg-black/40" : "bg-gray-100")}
+            >
+              <View className="flex-row items-center">
+                <View className="w-12 h-12 rounded-full bg-green-500/20 items-center justify-center mr-3">
+                  <Ionicons name="flame" size={24} color="#10b981" />
+                </View>
+                <View className="flex-1">
+                  <Text className={cn("text-sm font-bold mb-1", isDark ? "text-white" : "text-black")}>
+                    Calories Left Today
+                  </Text>
+                  <Text className={cn("text-xs", isDark ? "text-gray-400" : "text-gray-600")}>
+                    Track remaining calories at a glance
+                  </Text>
+                </View>
+                <Ionicons name="add-circle-outline" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
+              </View>
+            </Pressable>
+
+            {/* Widget Preview - Upcoming Workouts */}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // TODO: Open widget configuration when feature is ready
+              }}
+              className={cn("rounded-2xl p-4", isDark ? "bg-black/40" : "bg-gray-100")}
+            >
+              <View className="flex-row items-center">
+                <View className="w-12 h-12 rounded-full bg-blue-500/20 items-center justify-center mr-3">
+                  <Ionicons name="barbell" size={24} color="#3b82f6" />
+                </View>
+                <View className="flex-1">
+                  <Text className={cn("text-sm font-bold mb-1", isDark ? "text-white" : "text-black")}>
+                    Upcoming Workouts
+                  </Text>
+                  <Text className={cn("text-xs", isDark ? "text-gray-400" : "text-gray-600")}>
+                    See today's and this week's workouts
+                  </Text>
+                </View>
+                <Ionicons name="add-circle-outline" size={24} color={isDark ? "#9ca3af" : "#6b7280"} />
+              </View>
+            </Pressable>
           </View>
 
           {/* Settings Menu Card */}
