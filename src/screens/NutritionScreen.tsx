@@ -231,6 +231,24 @@ export default function NutritionScreen() {
   const targetCarbs = fitnessGoals.targetCarbs || 200;
   const targetFats = fitnessGoals.targetFats || 67;
 
+  // Animated calorie progress
+  const caloriePercentage = Math.min((totals.calories / targetCalories) * 100, 100);
+  const calorieProgress = useSharedValue(caloriePercentage);
+
+  useEffect(() => {
+    calorieProgress.value = withSpring(caloriePercentage, {
+      damping: 20,
+      stiffness: 90,
+      mass: 0.5,
+    });
+  }, [caloriePercentage]);
+
+  const calorieAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      width: `${calorieProgress.value}%`,
+    };
+  });
+
   const handleDayPress = (date: Date) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSelectedDate(date);
@@ -438,15 +456,17 @@ export default function NutritionScreen() {
               >
                 <Animated.View
                   className="h-full rounded-full"
-                  style={{
-                    width: `${Math.min((totals.calories / targetCalories) * 100, 100)}%`,
-                    backgroundColor: isDark ? "#ffffff" : "#3b82f6",
-                    shadowColor: isDark ? "#ffffff" : "#3b82f6",
-                    shadowOffset: { width: 0, height: 0 },
-                    shadowOpacity: 1,
-                    shadowRadius: 20,
-                    elevation: 15,
-                  }}
+                  style={[
+                    calorieAnimatedStyle,
+                    {
+                      backgroundColor: isDark ? "#ffffff" : "#3b82f6",
+                      shadowColor: isDark ? "#ffffff" : "#3b82f6",
+                      shadowOffset: { width: 0, height: 0 },
+                      shadowOpacity: 1,
+                      shadowRadius: 20,
+                      elevation: 15,
+                    }
+                  ]}
                 />
                 {/* Extra glow layer for more dopamine */}
                 <View
@@ -1502,15 +1522,18 @@ function MacroRow({
   showTotals: boolean;
   onToggle: () => void;
 }) {
-  const progress = useSharedValue(0);
+  const targetPercentage = Math.min((value / target) * 100, 100);
+  const progress = useSharedValue(targetPercentage);
   const isComplete = value >= target;
 
   useEffect(() => {
-    progress.value = withSpring(Math.min((value / target) * 100, 100), {
-      damping: 15,
-      stiffness: 100,
+    // Smoothly animate to new percentage value
+    progress.value = withSpring(targetPercentage, {
+      damping: 20,
+      stiffness: 90,
+      mass: 0.5,
     });
-  }, [value, target]);
+  }, [targetPercentage]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -1524,7 +1547,7 @@ function MacroRow({
         <View className="flex-row items-center">
           <View
             className="w-4 h-4 rounded-full mr-3"
-            style={{ 
+            style={{
               backgroundColor: color,
               shadowColor: color,
               shadowOffset: { width: 0, height: 1 },
@@ -1554,7 +1577,7 @@ function MacroRow({
                 : isDark ? "text-white" : "text-gray-900"
             )}
           >
-            {showTotals 
+            {showTotals
               ? `${value}g / ${target}g`
               : `${Math.max(0, target - value)}g left`}
           </Text>
@@ -1576,8 +1599,8 @@ function MacroRow({
         <Animated.View
           className="h-full rounded-full"
           style={[
-            animatedStyle, 
-            { 
+            animatedStyle,
+            {
               backgroundColor: color,
               shadowColor: color,
               shadowOffset: { width: 0, height: 0 },

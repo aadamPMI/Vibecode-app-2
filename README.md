@@ -259,7 +259,20 @@ npx expo start
 
 ## Recent Updates
 
-### Community Section Enhancements (Latest)
+### Nutrition Screen Animation Improvements (Latest)
+- **Smooth Progress Bar Transitions**: Fixed jarring reset animations when switching between days
+  - Calorie progress bar now animates fluidly from previous value to new value
+  - Protein, Carbs, and Fat macro bars transition seamlessly between days
+  - Eliminated "reset to zero then jump to max" behavior
+  - Implemented spring animations with optimized damping (20), stiffness (90), and mass (0.5)
+  - Progress bars now show true consumption amounts with smooth interpolation
+- **Technical Implementation**:
+  - Calorie bar uses `useSharedValue` and `useAnimatedStyle` for smooth width transitions
+  - Macro bars calculate target percentage upfront to ensure stable animation reference
+  - All animations respond to day changes with consistent spring physics
+  - No more abrupt jumps when data changes dramatically between days
+
+### Community Section Enhancements
 
 #### Core Features
 - **Floating Action Button (FAB)** with radial menu for quick actions:
