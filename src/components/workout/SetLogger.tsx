@@ -346,7 +346,7 @@ export const SetLogger: React.FC<SetLoggerProps> = ({
             style={[animatedStyle, styles.completeButton]}
           >
             <LinearGradient
-              colors={workoutTheme.colors.success.colors}
+              colors={workoutTheme.colors.success.colors as unknown as readonly [string, string, ...string[]]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.completeGradient}

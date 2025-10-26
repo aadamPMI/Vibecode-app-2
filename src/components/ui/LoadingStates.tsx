@@ -121,7 +121,7 @@ export const AIThinking: React.FC<AIThinkingProps> = ({
   return (
     <View style={styles.aiThinkingContainer}>
       <LinearGradient
-        colors={workoutTheme.colors.primary.colors}
+        colors={workoutTheme.colors.primary.colors as unknown as readonly [string, string, ...string[]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.aiIconContainer}
@@ -141,7 +141,7 @@ export const AIThinking: React.FC<AIThinkingProps> = ({
       <View style={styles.dotsContainer}>
         <Animated.View style={[styles.dot, dot1Style]}>
           <LinearGradient
-            colors={workoutTheme.colors.primary.colors}
+            colors={workoutTheme.colors.primary.colors as unknown as readonly [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.dotGradient}
@@ -149,7 +149,7 @@ export const AIThinking: React.FC<AIThinkingProps> = ({
         </Animated.View>
         <Animated.View style={[styles.dot, dot2Style]}>
           <LinearGradient
-            colors={workoutTheme.colors.primary.colors}
+            colors={workoutTheme.colors.primary.colors as unknown as readonly [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.dotGradient}
@@ -157,7 +157,7 @@ export const AIThinking: React.FC<AIThinkingProps> = ({
         </Animated.View>
         <Animated.View style={[styles.dot, dot3Style]}>
           <LinearGradient
-            colors={workoutTheme.colors.primary.colors}
+            colors={workoutTheme.colors.primary.colors as unknown as readonly [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.dotGradient}
@@ -254,7 +254,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       {actionLabel && onAction && (
         <Animated.View>
           <LinearGradient
-            colors={workoutTheme.colors.primary.colors}
+            colors={workoutTheme.colors.primary.colors as unknown as readonly [string, string, ...string[]]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.emptyStateButton}

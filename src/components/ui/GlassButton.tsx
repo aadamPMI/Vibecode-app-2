@@ -70,20 +70,20 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     onPress();
   };
 
-  const getGradientColors = () => {
+  const getGradientColors = (): readonly [string, string, ...string[]] => {
     switch (variant) {
       case 'primary':
-        return workoutTheme.colors.primary.colors;
+        return workoutTheme.colors.primary.colors as unknown as readonly [string, string, ...string[]];
       case 'success':
-        return workoutTheme.colors.success.colors;
+        return workoutTheme.colors.success.colors as unknown as readonly [string, string, ...string[]];
       case 'warning':
-        return workoutTheme.colors.warning.colors;
+        return workoutTheme.colors.warning.colors as unknown as readonly [string, string, ...string[]];
       case 'secondary':
-        return ['#6b7280', '#4b5563'];
+        return ['#6b7280', '#4b5563'] as const;
       case 'ghost':
-        return ['transparent', 'transparent'];
+        return ['transparent', 'transparent'] as const;
       default:
-        return workoutTheme.colors.primary.colors;
+        return workoutTheme.colors.primary.colors as unknown as readonly [string, string, ...string[]];
     }
   };
 

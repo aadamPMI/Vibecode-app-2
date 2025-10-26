@@ -533,7 +533,7 @@ const SetSchemeModal: React.FC<SetSchemeModalProps> = ({ visible, exercise, onCl
             />
           </View>
 
-          <GlassButton onPress={handleConfirm} variant="success" size="lg" fullWidth haptic="success">
+          <GlassButton onPress={handleConfirm} variant="success" size="lg" fullWidth haptic="medium">
             Add Exercise
           </GlassButton>
         </ScrollView>

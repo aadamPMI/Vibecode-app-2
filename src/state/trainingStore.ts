@@ -658,14 +658,14 @@ export const useTrainingStore = create<TrainingState>()(
               return set.actualLoad > best.actualLoad ? set : best;
             }, completedSets[0]);
 
-            const e1rm = bestSetThisSession
+            const e1rmResult = bestSetThisSession
               ? calculateE1RM(bestSetThisSession.actualLoad, bestSetThisSession.actualReps)
               : undefined;
 
             recentSessions.push({
               date: session.completedAt!,
               volume: sessionVolume,
-              e1rm,
+              e1rm: e1rmResult?.e1rm,
             });
           }
         });

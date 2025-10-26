@@ -57,16 +57,16 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     ],
   }));
 
-  const getGradientColors = (): string[] => {
+  const getGradientColors = (): readonly [string, string, ...string[]] => {
     switch (status) {
       case 'improving':
-        return workoutTheme.colors.success.colors;
+        return workoutTheme.colors.success.colors as unknown as readonly [string, string, ...string[]];
       case 'declining':
-        return workoutTheme.colors.warning.colors;
+        return workoutTheme.colors.warning.colors as unknown as readonly [string, string, ...string[]];
       case 'matching':
-        return ['#f59e0b', '#eab308'];
+        return ['#f59e0b', '#eab308'] as const;
       default:
-        return workoutTheme.colors.primary.colors;
+        return workoutTheme.colors.primary.colors as unknown as readonly [string, string, ...string[]];
     }
   };
 

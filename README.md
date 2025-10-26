@@ -144,6 +144,8 @@ npx expo start
 ## Recent Updates
 
 ### Community Section Enhancements (Latest)
+
+#### Core Features
 - **Floating Action Button (FAB)** with radial menu for quick actions:
   - Create Community
   - Share Invite Code
@@ -167,6 +169,95 @@ npx expo start
   - Dynamic metric display
 - **Copy-to-Clipboard** functionality with animated success toast
 - All UI elements maintain existing rounded corners (16-20px) and shadow effects
+
+#### UX Enhancements (NEW)
+
+**Loading States:**
+- Skeleton loaders for all list views (communities, members, leaderboard)
+- Shimmer placeholders for header stats
+- Smooth loading animations with realistic timing
+- Components: `SkeletonLoader.tsx`
+
+**Success Animations:**
+- 🎉 **Confetti Burst** - Triggered on Create Community action
+  - 30 animated particles with random colors and trajectories
+  - 2-second animation with fade out
+- ✨ **Pulse Glow** - Applied to Join button on successful join
+  - Soft scaling animation with colored glow ring
+  - 1-second duration with spring physics
+- 🏆 **Badge Pop** - Displayed when user rank changes
+  - Rotating badge entrance with trophy icon
+  - Expanding glow effect for celebration
+  - Shows new rank number prominently
+- Components: `SuccessAnimations.tsx`
+
+**Toast Notifications:**
+- Four toast types: Success, Error, Info, Warning
+- Each with unique icon and gradient colors
+- Auto-dismiss after 3 seconds (configurable)
+- Smooth slide-down entrance animation
+- Safe area aware positioning
+- Toast triggers:
+  - ✅ Copy Invite Code → Success toast
+  - ✅ Joined Community → Success toast
+  - ⚠️ Left Community → Info toast
+  - 📤 Join Request Sent → Success toast
+  - ✅ Request Accepted → Success toast
+  - ⚠️ Request Declined → Warning toast
+  - ❌ Invalid Code → Error toast
+- Components: `Toast.tsx` with `ToastProvider` context
+
+**Empty & Error States:**
+- Beautifully designed empty states with gradient icons
+- Actionable CTAs for each scenario
+- Tab-specific empty states:
+  - **Communities Tab**: "No Communities Yet" with Create CTA
+  - **Members Tab**: "No Members Yet" encouraging first join
+  - **Leaderboard Tab**: "No Rankings Yet" prompting workouts
+  - **Search**: "No Results Found" with helpful message
+- Error states with retry functionality:
+  - Network errors with connection icon
+  - Load failures with retry button
+  - Invalid invite codes with key icon
+  - Join failures with error messaging
+- Components: `EmptyErrorStates.tsx`
+
+**Pull-to-Refresh:**
+- Native RefreshControl on all scrollable lists
+- Theme-aware spinner colors (blue/purple gradient)
+- Haptic feedback on pull start
+- Success haptic + toast on complete
+- Scroll position restoration after refresh
+- Implementation in `IntegrationExample.tsx`
+
+**Haptic Feedback:**
+- Comprehensive haptic system already implemented in `src/utils/haptics.ts`
+- Applied to all key actions:
+  - **Light haptic**: Join, Leave, Copy actions
+  - **Medium haptic**: Create Community, Send Request
+  - **Success haptic**: Request Accepted, Rank Up
+  - **Error haptic**: Failed actions, Invalid codes
+- Special patterns:
+  - `hapticCelebration()` - Triple burst for major achievements
+  - `hapticPR()` - Progressive pattern for personal records
+- Debounced to prevent over-firing (50ms threshold)
+
+**Integration Example:**
+- Complete reference implementation in `IntegrationExample.tsx`
+- Shows proper usage of all UX features together
+- Includes state management patterns
+- Demonstrates async action handling
+- Example screens for all three tabs
+
+**File Structure:**
+```
+components/communities/
+├── SkeletonLoader.tsx          # Shimmer loading states
+├── SuccessAnimations.tsx       # Confetti, pulse, badge pop
+├── Toast.tsx                   # Toast notification system
+├── EmptyErrorStates.tsx        # Empty & error state components
+└── IntegrationExample.tsx      # Complete usage reference
+```
 
 ### Onboarding Redesign
 - Complete 18-step onboarding flow

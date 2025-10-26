@@ -17,6 +17,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { cn } from '../../utils/cn';
 import { useSettingsStore } from '../../state/settingsStore';
 import { useTrainingStore } from '../../state/trainingStore';
+import type { SetLog } from '../../types/workout';
 import { GlassCard } from '../../components/ui/GlassCard';
 import { GlassButton } from '../../components/ui/GlassButton';
 import { EmptyState } from '../../components/ui/LoadingStates';
@@ -70,7 +71,7 @@ export default function ExerciseStatsScreen() {
 
   return (
     <SafeAreaView className={cn('flex-1', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
-      <PremiumBackground theme={theme} variant="workout" />
+      <PremiumBackground theme={theme as 'light' | 'dark' | 'system'} variant="workout" />
 
       {/* Header */}
       <View className="px-6 pt-6 pb-4">
@@ -165,10 +166,10 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({ exerciseId, onB
   }
 
   // Calculate PRs
-  const allSets = history.flatMap((h) => h.sets);
-  const maxWeight = allSets.length > 0 ? Math.max(...allSets.map((s) => s.weight)) : 0;
-  const maxReps = allSets.length > 0 ? Math.max(...allSets.map((s) => s.reps)) : 0;
-  const maxVolume = allSets.length > 0 ? Math.max(...allSets.map((s) => s.weight * s.reps)) : 0;
+  const allSets = history.flatMap((h) => h.exerciseData.sets);
+  const maxWeight = allSets.length > 0 ? Math.max(...allSets.map((s: SetLog) => s.actualLoad)) : 0;
+  const maxReps = allSets.length > 0 ? Math.max(...allSets.map((s: SetLog) => s.actualReps)) : 0;
+  const maxVolume = allSets.length > 0 ? Math.max(...allSets.map((s: SetLog) => s.actualLoad * s.actualReps)) : 0;
 
   // Calculate estimated 1RM (Epley formula)
   const calculate1RM = (weight: number, reps: number): number => {
@@ -176,17 +177,17 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({ exerciseId, onB
     return weight * (1 + reps / 30);
   };
 
-  const max1RM = allSets.length > 0 ? Math.max(...allSets.map((s) => calculate1RM(s.weight, s.reps))) : 0;
+  const max1RM = allSets.length > 0 ? Math.max(...allSets.map((s: SetLog) => calculate1RM(s.actualLoad, s.actualReps))) : 0;
 
   // Prepare chart data
   const chartData = history.slice(-10).reverse().map((h) => {
-    const totalVolume = h.sets.reduce((sum, s) => sum + s.weight * s.reps, 0);
+    const totalVolume = h.exerciseData.sets.reduce((sum: number, s: SetLog) => sum + s.actualLoad * s.actualReps, 0);
     return totalVolume;
   });
 
   const chartLabels = history.slice(-10).reverse().map((h, index) => {
     if (index % 2 === 0 || history.length <= 5) {
-      const date = new Date(h.date);
+      const date = new Date(h.session.completedAt!);
       return `${date.getMonth() + 1}/${date.getDate()}`;
     }
     return '';
@@ -196,7 +197,7 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({ exerciseId, onB
 
   return (
     <SafeAreaView className={cn('flex-1', isDark ? 'bg-[#0a0a0a]' : 'bg-gray-50')}>
-      <PremiumBackground theme={theme} variant="workout" />
+      <PremiumBackground theme={theme as 'light' | 'dark' | 'system'} variant="workout" />
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
@@ -320,12 +321,12 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({ exerciseId, onB
                 Recent Workouts
               </Text>
               {history.slice(0, 10).map((workout, index) => {
-                const date = new Date(workout.date);
-                const totalVolume = workout.sets.reduce((sum, s) => sum + s.weight * s.reps, 0);
+                const date = new Date(workout.session.completedAt!);
+                const totalVolume = workout.exerciseData.sets.reduce((sum: number, s: SetLog) => sum + s.actualLoad * s.actualReps, 0);
 
                 return (
                   <Animated.View
-                    key={workout.sessionId}
+                    key={workout.session.id}
                     entering={FadeInDown.delay(index * 50).duration(300)}
                   >
                     <GlassCard intensity={60} isDark={isDark} className="p-4 mb-3">
@@ -338,13 +339,13 @@ const ExerciseDetailView: React.FC<ExerciseDetailViewProps> = ({ exerciseId, onB
                         </Text>
                       </View>
                       <View className="flex-row flex-wrap gap-2">
-                        {workout.sets.map((set, setIndex) => (
+                        {workout.exerciseData.sets.map((set: SetLog, setIndex: number) => (
                           <View
                             key={setIndex}
                             className={cn('px-3 py-1 rounded', isDark ? 'bg-[#1a1a1a]' : 'bg-gray-100')}
                           >
                             <Text className={cn('text-sm', isDark ? 'text-white' : 'text-gray-900')}>
-                              {set.weight}kg × {set.reps}
+                              {set.actualLoad}kg × {set.actualReps}
                             </Text>
                           </View>
                         ))}

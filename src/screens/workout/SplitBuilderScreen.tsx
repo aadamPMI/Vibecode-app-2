@@ -258,7 +258,7 @@ export default function SplitBuilderScreen() {
               size="lg"
               fullWidth
               icon={<Ionicons name="checkmark-circle-outline" size={24} color="white" />}
-              haptic="success"
+              haptic="medium"
             >
               Create Program
             </GlassButton>
@@ -436,7 +436,7 @@ const DayEditorModal: React.FC<DayEditorModalProps> = ({ visible, day, onSave, o
             variant="success"
             size="lg"
             fullWidth
-            haptic="success"
+            haptic="medium"
             className="mb-6"
           >
             Save Day
