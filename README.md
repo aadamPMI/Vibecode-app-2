@@ -259,7 +259,25 @@ npx expo start
 
 ## Recent Updates
 
-### Nutrition Screen Animation Improvements (Latest)
+### Nutrition Calendar Sliding Function (Latest)
+- **Fixed Calendar Sliding/Swiping**: Complete overhaul of the weekly calendar navigation
+  - Extended day range from 7 to 21 days (10 days before and after selected date)
+  - Implemented proper scroll handling with `onMomentumScrollEnd` to detect swipe completion
+  - Added automatic date updates when users swipe left/right through the calendar
+  - Scroll automatically centers on selected date when day is tapped
+  - Added proper snap-to-interval behavior with spacing between day items
+  - Calendar now initializes centered on current selected date
+  - Fixed key prop warning by using unique date-based keys instead of index
+  - Smooth haptic feedback on date changes via swipe
+- **Technical Implementation**:
+  - ScrollView ref for programmatic scrolling to center position
+  - Dynamic date calculation based on scroll position offset
+  - Proper handling of day width + spacing for accurate snap points
+  - Auto-scroll on mount to center the selected date
+  - useEffect hook to handle initial positioning
+  - NativeScrollEvent types for TypeScript safety
+
+### Nutrition Screen Animation Improvements
 - **Smooth Progress Bar Transitions**: Fixed jarring reset animations when switching between days
   - Calorie progress bar now animates fluidly from previous value to new value
   - Protein, Carbs, and Fat macro bars transition seamlessly between days

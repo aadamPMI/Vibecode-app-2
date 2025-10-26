@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   Platform,
   ScrollView,
   useColorScheme,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -42,10 +44,15 @@ export default function NutritionScreen() {
   const [isManualEntryVisible, setIsManualEntryVisible] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  
+
   // Calendar constants
   const DAY_WIDTH = 52; // Width of each day item
+  const DAY_SPACING = 4; // Space between days
   const VISIBLE_DAYS = 7; // Always show 7 days
+  const TOTAL_DAYS = 21; // Show 21 days total (past, present, future)
+
+  // Scroll ref for calendar
+  const scrollViewRef = useRef<ScrollView>(null);
   
   // Form state
   const [foodName, setFoodName] = useState("");
@@ -124,21 +131,50 @@ export default function NutritionScreen() {
     }
   };
 
-  // Get 7 days centered around the selected date
+  // Get extended range of days for smooth infinite scrolling
   const getVisibleDays = () => {
     const dates = [];
-    const centerOffset = 3; // Show 3 days before and 3 days after
-    
+    const centerOffset = Math.floor(TOTAL_DAYS / 2); // Show days before and after
+
     for (let i = -centerOffset; i <= centerOffset; i++) {
       const date = new Date(selectedDate);
       date.setDate(selectedDate.getDate() + i);
       dates.push(date);
     }
-    
+
     return dates;
   };
 
   const getWeekDates = getVisibleDays;
+
+  // Scroll to center on mount and when date changes externally
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const centerIndex = Math.floor(TOTAL_DAYS / 2);
+      const scrollToX = centerIndex * (DAY_WIDTH + DAY_SPACING);
+      scrollViewRef.current?.scrollTo({ x: scrollToX, animated: false });
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Handle scroll end - update selected date based on scroll position
+  const handleScrollEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const scrollX = event.nativeEvent.contentOffset.x;
+    const centerIndex = Math.floor(TOTAL_DAYS / 2);
+    const itemWidth = DAY_WIDTH + DAY_SPACING;
+
+    // Calculate which day index is now in the center
+    const scrolledIndex = Math.round(scrollX / itemWidth);
+    const dayOffset = scrolledIndex - centerIndex;
+
+    if (dayOffset !== 0) {
+      const newDate = new Date(selectedDate);
+      newDate.setDate(selectedDate.getDate() + dayOffset);
+      setSelectedDate(newDate);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  };
 
   const getDayTotals = (date: Date) => {
     const dateStr = date.toISOString().split("T")[0];
@@ -252,6 +288,11 @@ export default function NutritionScreen() {
   const handleDayPress = (date: Date) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setSelectedDate(date);
+
+    // Scroll to center the selected date
+    const centerIndex = Math.floor(TOTAL_DAYS / 2);
+    const scrollToX = centerIndex * (DAY_WIDTH + DAY_SPACING);
+    scrollViewRef.current?.scrollTo({ x: scrollToX, animated: true });
   };
 
   return (
@@ -300,12 +341,16 @@ export default function NutritionScreen() {
         {/* Week Calendar - Smooth Swipe */}
         <View className="mb-3">
           <ScrollView
+            ref={scrollViewRef}
             horizontal
             showsHorizontalScrollIndicator={false}
-            pagingEnabled
-            snapToInterval={DAY_WIDTH}
+            snapToInterval={DAY_WIDTH + DAY_SPACING}
             decelerationRate="fast"
-            contentContainerStyle={{ paddingHorizontal: 24 }}
+            onMomentumScrollEnd={handleScrollEnd}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              gap: DAY_SPACING,
+            }}
           >
             {getWeekDates().map((date, index) => {
               const isToday =
@@ -321,7 +366,7 @@ export default function NutritionScreen() {
               
               return (
                 <Pressable
-                  key={index}
+                  key={`${date.toISOString()}-${index}`}
                   onPress={() => handleDayPress(date)}
                   className="items-center"
                   style={{ width: DAY_WIDTH }}
