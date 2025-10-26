@@ -256,8 +256,231 @@ components/communities/
 ├── SuccessAnimations.tsx       # Confetti, pulse, badge pop
 ├── Toast.tsx                   # Toast notification system
 ├── EmptyErrorStates.tsx        # Empty & error state components
-└── IntegrationExample.tsx      # Complete usage reference
+├── IntegrationExample.tsx      # Complete usage reference
+├── FlipCard.tsx                # Discover card flip interaction
+├── AnimatedDropdown.tsx        # Animated dropdowns with persistence
+├── MembersList.tsx             # Members list with lazy-load & alphabetic nav
+├── MemberProfileModal.tsx      # Member profile modal with full details
+├── LeaderboardCard.tsx         # Animated leaderboard with count-up & tooltips
+├── JoinViaCodeDialog.tsx       # Enhanced join code dialog
+├── LeaveConfirmDialog.tsx      # Leave confirmation with role transfer notice
+├── EnhancedFAB.tsx             # FAB with long-press labels
+└── USAGE_GUIDE.md             # Comprehensive usage documentation
 ```
+
+#### Component Interactions & Details (NEW)
+
+**Discover Card Flip:**
+- Front/back flip interaction with smooth 3D rotation
+- Auto-flip back after 3-5 seconds (configurable)
+- Manual toggle on tap with haptic feedback
+- Front shows: community image, title, description, member count, activity
+- Back shows: full details, creator info, creation date, tags
+- Preserves flip state during animation
+- Components: `FlipCard.tsx`
+
+**Metric/Timeframe Dropdowns:**
+- Smooth animated open/close with spring physics
+- Keyboard accessible (up/down arrows, enter to select)
+- **Persists last selection per community** using AsyncStorage
+- Storage key format: `dropdown_{persistKey}_{communityId}`
+- Modal presentation with backdrop blur
+- Checkmark on selected item
+- Icon support for options
+- Auto-loads saved preference on mount
+- Components: `AnimatedDropdown.tsx`
+
+**Members List Enhancements:**
+- **Lazy-loading** with pagination (20 items per page)
+- "Loading more..." indicator at bottom
+- **Alphabetic jump navigation** (A-Z + #)
+  - Shows on scroll, auto-hides after 2s
+  - Only active letters are clickable
+  - Smooth scroll to section on tap
+- Alphabetic section headers
+- **Tap member → Profile modal** with full details
+- Role badges (Owner: star, Admin: shield)
+- Online status indicators
+- Member stats (workouts, points, streak)
+- Staggered entrance animations
+- Components: `MembersList.tsx`, `MemberProfileModal.tsx`
+
+**Member Profile Modal:**
+- Full-screen modal with blur backdrop
+- Large gradient avatar with online indicator
+- Role badge with appropriate colors
+- Stats grid (Workouts, Points, Streak)
+- Join date and online status
+- Action buttons:
+  - Send Message (for all users)
+  - Promote to Admin (owners/admins only)
+  - Remove Member (owners/admins only)
+- Gradient styling for owners (gold)
+- Manages permissions based on current user role
+- Components: `MemberProfileModal.tsx`
+
+**Leaderboard Animations:**
+- **Animated count-up numbers** (0 → final value)
+- Staggered animation (1s base + 100ms per rank)
+- Easing with cubic out for smooth deceleration
+- **Podium styling for top 3:**
+  - Rank 1: Gold gradient (#fbbf24 → #f59e0b)
+  - Rank 2: Silver gradient (#d1d5db → #9ca3af)
+  - Rank 3: Bronze gradient (#cd7f32 → #92400e)
+- **Tie handling badge** (link icon) for tied ranks
+- **Hover/tap tooltip** shows:
+  - Current metric value
+  - Change vs last period (with trend icon)
+  - Tied status if applicable
+- Long-press or tap to show tooltip
+- Change indicators (↑ green, ↓ red, — gray)
+- Components: `LeaderboardCard.tsx`
+
+**Join via Code Dialog:**
+- **Automatic paste detection** from clipboard
+- Auto-fills if valid 8-character code found
+- **Automatic uppercase formatting**
+- Only allows alphanumeric characters (A-Z, 0-9)
+- **Real-time validity check** with 500ms debounce
+- Visual states:
+  - Idle: gray border
+  - Valid: green border + checkmark
+  - Invalid: red border + X icon
+  - Validating: blue sync icon
+- Manual paste button when input empty
+- Character counter (0/8)
+- Error messages for invalid codes
+- Disabled join button until valid
+- Auto-focus on open
+- Components: `JoinViaCodeDialog.tsx`
+
+**Leave Confirmation Dialog:**
+- **Role-specific messaging:**
+  - Members: standard leave confirmation
+  - Admins: can leave freely
+  - Owners: shows transfer notice
+- **Owner with other members:**
+  - Warning about automatic ownership transfer
+  - Shows most senior admin will become owner
+  - Displays remaining member count
+  - Yellow warning badge with star icon
+- **Owner with no members:**
+  - Critical warning: community will be deleted
+  - Red danger badge with alert icon
+  - Emphasizes permanent deletion
+  - Button text changes to "Delete & Leave"
+- **Consequences list:**
+  - Lose access to content
+  - Progress hidden
+  - Can rejoin with code
+- Gradient warning icon (orange → red)
+- Separate cancel/confirm buttons
+- Confirm button in red gradient
+- Components: `LeaveConfirmDialog.tsx`
+
+**Enhanced FAB (Floating Action Button):**
+- **Long-press shows labels** for all actions
+- Labels appear with staggered animation
+- Tap outside to dismiss (backdrop + blur)
+- Radial menu with staggered entrance (50ms delay each)
+- Main button rotates 135° when expanded
+- Action buttons:
+  - Custom icon per action
+  - Custom color per action
+  - Custom label (shown on long-press)
+- Spring physics for smooth animations
+- Scale feedback on press
+- Position: bottom-right, 24px margin
+- Shadow elevation increases when expanded
+- Components: `EnhancedFAB.tsx`
+
+**Usage Examples:**
+```tsx
+// Flip Card
+<FlipCard
+  frontContent={{
+    title: "Fitness Warriors",
+    description: "Join us for daily challenges",
+    members: 124,
+    activity: "Active today"
+  }}
+  backContent={{
+    details: "A community focused on strength training...",
+    creator: "John Doe",
+    createdDate: "Jan 15, 2024",
+    tags: ["Strength", "Motivation", "Daily Challenges"]
+  }}
+  autoFlipDuration={4000}
+  isDark={isDark}
+/>
+
+// Animated Dropdown with Persistence
+<AnimatedDropdown
+  label="Metric"
+  options={[
+    { label: "Workouts", value: "workouts", icon: "barbell" },
+    { label: "Points", value: "points", icon: "trophy" },
+    { label: "Streak", value: "streak", icon: "flame" }
+  ]}
+  selectedValue={metric}
+  onSelect={setMetric}
+  persistKey="leaderboard_metric"
+  communityId={communityId}
+  isDark={isDark}
+/>
+
+// Members List with Lazy Load
+<MembersList
+  members={members}
+  onMemberPress={(member) => setSelectedMember(member)}
+  onLoadMore={loadMoreMembers}
+  isLoadingMore={loading}
+  hasMore={hasMore}
+  isDark={isDark}
+/>
+
+// Leaderboard Card
+<LeaderboardCard
+  entry={{
+    id: "1",
+    rank: 1,
+    name: "Jane Doe",
+    value: 156,
+    change: 12,
+    isTied: false
+  }}
+  metric="workouts"
+  isDark={isDark}
+  index={0}
+  onPress={(entry) => console.log(entry)}
+/>
+
+// Enhanced FAB
+<EnhancedFAB
+  actions={[
+    {
+      icon: "add-circle",
+      label: "Create Community",
+      color: "#3b82f6",
+      onPress: handleCreate
+    },
+    {
+      icon: "share-social",
+      label: "Share Invite",
+      color: "#10b981",
+      onPress: handleShare
+    },
+    {
+      icon: "create",
+      label: "New Post",
+      color: "#f59e0b",
+      onPress: handlePost
+    }
+  ]}
+  isDark={isDark}
+/>
+```
+
 
 ### Onboarding Redesign
 - Complete 18-step onboarding flow
