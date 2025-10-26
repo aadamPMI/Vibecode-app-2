@@ -1605,11 +1605,12 @@ export default function ProgramWizardScreen() {
               </ScrollView>
             </Animated.View>
 
-            {/* Save Day Button */}
+            {/* Action Buttons */}
             <Animated.View
               entering={FadeInDown.delay(500).duration(400).springify()}
-              className="mb-6"
+              className="mb-6 gap-3"
             >
+              {/* Save & Continue Button */}
               <Pressable
                 onPress={() => {
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -1629,9 +1630,29 @@ export default function ProgramWizardScreen() {
                 <View className="flex-row items-center justify-center">
                   <Ionicons name="checkmark-circle" size={24} color="white" />
                   <Text className="text-white font-bold text-lg ml-2">
-                    Save Day
+                    Save & Continue
                   </Text>
                 </View>
+              </Pressable>
+
+              {/* Back to Review Button */}
+              <Pressable
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setSelectedDayForExercises(null);
+                  setCurrentStep(5);
+                }}
+              >
+                <BlurView intensity={60} tint={isDark ? 'dark' : 'light'} className="rounded-2xl overflow-hidden">
+                  <View
+                    className={cn('py-3 flex-row items-center justify-center', isDark ? 'bg-white/10' : 'bg-black/5')}
+                  >
+                    <Ionicons name="eye-outline" size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                    <Text className={cn('font-semibold ml-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                      Back to Review
+                    </Text>
+                  </View>
+                </BlurView>
               </Pressable>
             </Animated.View>
           </View>
@@ -1679,10 +1700,10 @@ export default function ProgramWizardScreen() {
 
               <View className="gap-4">
                 {workoutDays.map((day, index) => (
-                  <BlurView 
+                  <BlurView
                     key={day.id}
-                    intensity={60} 
-                    tint={isDark ? 'dark' : 'light'} 
+                    intensity={60}
+                    tint={isDark ? 'dark' : 'light'}
                     className="rounded-3xl overflow-hidden"
                   >
                     <View
@@ -1695,9 +1716,27 @@ export default function ProgramWizardScreen() {
                         elevation: 5,
                       }}
                     >
-                      <Text className={cn('text-xl font-bold mb-3', isDark ? 'text-white' : 'text-black')}>
-                        {day.name}
-                      </Text>
+                      <View className="flex-row items-start justify-between mb-3">
+                        <Text className={cn('text-xl font-bold flex-1', isDark ? 'text-white' : 'text-black')}>
+                          {day.name}
+                        </Text>
+
+                        {/* Edit Button */}
+                        <Pressable
+                          onPress={() => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            setSelectedDayForExercises(day.id);
+                            setCurrentStep(4);
+                          }}
+                          className={cn(
+                            'px-3 py-1.5 rounded-full flex-row items-center',
+                            isDark ? 'bg-purple-500/20' : 'bg-purple-100'
+                          )}
+                        >
+                          <Ionicons name="pencil" size={14} color="#a855f7" />
+                          <Text className="text-purple-500 text-xs font-bold ml-1">Edit</Text>
+                        </Pressable>
+                      </View>
 
                       {/* Muscle Groups */}
                       {!day.isRestDay && day.muscleGroups.length > 0 && (
@@ -1725,11 +1764,11 @@ export default function ProgramWizardScreen() {
                         <Text className={cn('text-xs font-semibold mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
                           Exercises ({day.exercises.length})
                         </Text>
-                        
+
                         {day.exercises.length > 0 ? (
                           <View className="gap-1">
                             {day.exercises.map((exercise, idx) => (
-                              <Text 
+                              <Text
                                 key={idx}
                                 className={cn('text-sm', isDark ? 'text-gray-300' : 'text-gray-700')}
                               >

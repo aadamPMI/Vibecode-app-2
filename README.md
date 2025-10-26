@@ -621,6 +621,26 @@ components/communities/
 - Comprehensive plan summary screen
 - Improved data collection for better personalization
 
+### Workout Program Creation Wizard
+- **5-Step Program Creation Flow**:
+  1. Choose workout split (Push/Pull/Legs, Upper/Lower, Full Body, Custom)
+  2. Create workout days with muscle group selection
+  3. Select days to add exercises
+  4. Add exercises to each day with AI suggestions
+  5. Review and finalize program
+- **Edit from Review Screen**: Users can now edit workout days directly from the review screen (Step 5)
+  - Each workout day card has an "Edit" button
+  - Clicking "Edit" navigates back to Step 4 with that day selected
+  - Allows adding/removing/reordering exercises at any time
+  - "Back to Review" button returns to Step 5 for final review
+- **AI Exercise Suggestions**: Smart exercise recommendations based on selected muscle groups
+- **Exercise Management**:
+  - Add exercises from library with search
+  - Reorder exercises with up/down buttons
+  - Remove exercises with trash button
+  - Visual exercise count per day
+- **Flexible Navigation**: Can move between steps 3, 4, and 5 freely to refine program before activation
+
 ## Notes
 
 - All screens support both light and dark mode
