@@ -143,7 +143,32 @@ npx expo start
 
 ## Recent Updates
 
-### Onboarding Redesign (Latest)
+### Community Section Enhancements (Latest)
+- **Floating Action Button (FAB)** with radial menu for quick actions:
+  - Create Community
+  - Share Invite Code
+  - New Post
+- **Enhanced Header** with "GainAI • Community" branding and user avatar button
+- **My Communities Screen** improvements:
+  - Activity status chips (Active today, Active Xd ago)
+  - Improved action buttons (View, Copy Invite)
+  - Better visual hierarchy with glass morphism effects
+- **Community Detail Modal** enhancements:
+  - Improved copy invite functionality with success toast
+  - Better button styling and interactions
+- **Members Tab** upgrades:
+  - Avatar initials display
+  - Online status indicators (green dot)
+  - Enhanced member cards with role badges
+- **Leaderboard Tab** improvements:
+  - Dropdown filters for Metric (Workouts, Points, Streak)
+  - Dropdown filters for Timeframe (Week, Month, All Time)
+  - Podium-style gold/silver/bronze gradients for top 3
+  - Dynamic metric display
+- **Copy-to-Clipboard** functionality with animated success toast
+- All UI elements maintain existing rounded corners (16-20px) and shadow effects
+
+### Onboarding Redesign
 - Complete 18-step onboarding flow
 - Added body focus slider for strength vs hypertrophy preference
 - Equipment multi-select functionality

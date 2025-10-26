@@ -5,6 +5,7 @@ import {
   Pressable,
   ScrollView,
   useColorScheme,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -113,158 +114,202 @@ export default function MyCommunitiesScreen({ navigation }: any) {
           </View>
         ) : (
           <Animated.View entering={FadeInDown.duration(300).springify()}>
-            {joinedCommunities.map((community) => (
-              <Pressable
-                key={community.id}
-                onPress={() => handleCommunityPress(community)}
-                className="rounded-2xl overflow-hidden mb-4"
-                style={{
-                  backgroundColor: isDark ? "rgba(30, 30, 40, 0.6)" : "rgba(255, 255, 255, 0.7)",
-                  borderWidth: 1,
-                  borderColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
-                  shadowColor: "#ec4899",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: isDark ? 0.3 : 0.15,
-                  shadowRadius: 16,
-                  elevation: 8,
-                }}
-              >
-                {/* Glass morphism backdrop */}
-                <View
+            {joinedCommunities.map((community) => {
+              // Simulate activity status
+              const isActiveToday = Math.random() > 0.3;
+              const lastActivityText = isActiveToday ? "Active today" : `Active ${Math.floor(Math.random() * 7) + 1}d ago`;
+
+              return (
+                <Pressable
+                  key={community.id}
+                  onPress={() => handleCommunityPress(community)}
+                  className="rounded-2xl overflow-hidden mb-4"
                   style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    backgroundColor: isDark 
-                      ? "rgba(236, 72, 153, 0.08)" 
-                      : "rgba(236, 72, 153, 0.05)",
+                    backgroundColor: isDark ? "rgba(30, 30, 40, 0.6)" : "rgba(255, 255, 255, 0.7)",
+                    borderWidth: 1,
+                    borderColor: isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+                    shadowColor: "#ec4899",
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: isDark ? 0.3 : 0.15,
+                    shadowRadius: 16,
+                    elevation: 8,
                   }}
-                />
-
-                {/* Content */}
-                <View className="flex-row items-center p-4">
-                  {/* Community Icon */}
+                >
+                  {/* Glass morphism backdrop */}
                   <View
-                    className="w-14 h-14 rounded-2xl items-center justify-center mr-4"
                     style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
                       backgroundColor: isDark
-                        ? "rgba(236, 72, 153, 0.25)"
-                        : "rgba(236, 72, 153, 0.15)",
-                      shadowColor: "#ec4899",
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.3,
-                      shadowRadius: 8,
-                      elevation: 4,
+                        ? "rgba(236, 72, 153, 0.08)"
+                        : "rgba(236, 72, 153, 0.05)",
                     }}
-                  >
-                    <Ionicons 
-                      name="people" 
-                      size={28} 
-                      color={isDark ? "#f9a8d4" : "#ec4899"} 
-                    />
-                  </View>
+                  />
 
-                  {/* Community Info */}
-                  <View className="flex-1">
-                    <View className="flex-row items-center mb-1">
-                      <Text
-                        className={cn(
-                          "text-lg font-bold flex-1",
-                          isDark ? "text-white" : "text-gray-900"
-                        )}
-                        numberOfLines={1}
+                  {/* Content */}
+                  <View className="p-4">
+                    <View className="flex-row items-center mb-3">
+                      {/* Community Icon */}
+                      <View
+                        className="w-14 h-14 rounded-2xl items-center justify-center mr-4"
+                        style={{
+                          backgroundColor: isDark
+                            ? "rgba(236, 72, 153, 0.25)"
+                            : "rgba(236, 72, 153, 0.15)",
+                          shadowColor: "#ec4899",
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 8,
+                          elevation: 4,
+                        }}
                       >
-                        {community.name}
-                      </Text>
-                      {community.isPrivate && (
-                        <View className="bg-purple-500/20 px-2 py-1 rounded-lg ml-2">
-                          <Ionicons name="lock-closed" size={12} color="#a855f7" />
-                        </View>
-                      )}
-                    </View>
-                    
-                    {community.description && (
-                      <Text
-                        className={cn(
-                          "text-sm mb-2",
-                          isDark ? "text-gray-400" : "text-gray-600"
-                        )}
-                        numberOfLines={1}
-                      >
-                        {community.description}
-                      </Text>
-                    )}
-
-                    <View className="flex-row items-center">
-                      <View className="flex-row items-center mr-4">
                         <Ionicons
                           name="people"
-                          size={14}
-                          color={isDark ? "#9ca3af" : "#6b7280"}
+                          size={28}
+                          color={isDark ? "#f9a8d4" : "#ec4899"}
                         />
-                        <Text
-                          className={cn(
-                            "text-xs font-semibold ml-1",
-                            isDark ? "text-gray-400" : "text-gray-600"
-                          )}
-                        >
-                          {community.members.length} members
-                        </Text>
                       </View>
-                      {community.challenges && community.challenges.length > 0 && (
-                        <View className="flex-row items-center mr-4">
-                          <Ionicons
-                            name="flag"
-                            size={14}
-                            color={isDark ? "#9ca3af" : "#6b7280"}
-                          />
+
+                      {/* Community Info */}
+                      <View className="flex-1">
+                        <View className="flex-row items-center mb-1">
                           <Text
                             className={cn(
-                              "text-xs font-semibold ml-1",
+                              "text-lg font-bold flex-1",
+                              isDark ? "text-white" : "text-gray-900"
+                            )}
+                            numberOfLines={1}
+                          >
+                            {community.name}
+                          </Text>
+                          {community.isPrivate && (
+                            <View className="bg-purple-500/20 px-2 py-1 rounded-lg ml-2">
+                              <Ionicons name="lock-closed" size={12} color="#a855f7" />
+                            </View>
+                          )}
+                        </View>
+
+                        {community.description && (
+                          <Text
+                            className={cn(
+                              "text-sm mb-2",
                               isDark ? "text-gray-400" : "text-gray-600"
                             )}
+                            numberOfLines={1}
                           >
-                            {community.challenges.length} challenges
+                            {community.description}
                           </Text>
-                        </View>
-                      )}
-                      <View className="flex-row items-center">
-                        <View
-                          className="w-2 h-2 rounded-full mr-1.5"
-                          style={{ backgroundColor: "#22c55e" }}
-                        />
-                        <Text
-                          className={cn(
-                            "text-xs font-semibold",
-                            isDark ? "text-gray-400" : "text-gray-600"
+                        )}
+
+                        <View className="flex-row items-center flex-wrap">
+                          {/* Activity Chip */}
+                          <View
+                            className="flex-row items-center px-2 py-1 rounded-full mr-2 mb-1"
+                            style={{
+                              backgroundColor: isActiveToday
+                                ? (isDark ? "rgba(34, 197, 94, 0.2)" : "rgba(34, 197, 94, 0.15)")
+                                : (isDark ? "rgba(156, 163, 175, 0.2)" : "rgba(156, 163, 175, 0.15)"),
+                            }}
+                          >
+                            <View
+                              className="w-2 h-2 rounded-full mr-1.5"
+                              style={{ backgroundColor: isActiveToday ? "#22c55e" : "#9ca3af" }}
+                            />
+                            <Text
+                              className={cn(
+                                "text-xs font-semibold",
+                                isActiveToday ? "text-green-500" : (isDark ? "text-gray-400" : "text-gray-600")
+                              )}
+                            >
+                              {lastActivityText}
+                            </Text>
+                          </View>
+
+                          {/* Members count */}
+                          <View className="flex-row items-center mr-2 mb-1">
+                            <Ionicons
+                              name="people"
+                              size={14}
+                              color={isDark ? "#9ca3af" : "#6b7280"}
+                            />
+                            <Text
+                              className={cn(
+                                "text-xs font-semibold ml-1",
+                                isDark ? "text-gray-400" : "text-gray-600"
+                              )}
+                            >
+                              {community.members.length}
+                            </Text>
+                          </View>
+
+                          {/* Challenges count */}
+                          {community.challenges && community.challenges.length > 0 && (
+                            <View className="flex-row items-center mb-1">
+                              <Ionicons
+                                name="flag"
+                                size={14}
+                                color={isDark ? "#9ca3af" : "#6b7280"}
+                              />
+                              <Text
+                                className={cn(
+                                  "text-xs font-semibold ml-1",
+                                  isDark ? "text-gray-400" : "text-gray-600"
+                                )}
+                              >
+                                {community.challenges.length} challenges
+                              </Text>
+                            </View>
                           )}
-                        >
-                          Active
-                        </Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
 
-                  {/* Chevron */}
-                  <View
-                    className="w-8 h-8 rounded-full items-center justify-center ml-2"
-                    style={{
-                      backgroundColor: isDark
-                        ? "rgba(255, 255, 255, 0.08)"
-                        : "rgba(0, 0, 0, 0.04)",
-                    }}
-                  >
-                    <Ionicons
-                      name="chevron-forward"
-                      size={18}
-                      color={isDark ? "#9ca3af" : "#6b7280"}
-                    />
+                    {/* Action Buttons */}
+                    <View className="flex-row space-x-2">
+                      <Pressable
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleCommunityPress(community);
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        }}
+                        className="flex-1 bg-pink-500 py-2.5 rounded-xl flex-row items-center justify-center"
+                        style={{
+                          shadowColor: "#ec4899",
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.3,
+                          shadowRadius: 4,
+                        }}
+                      >
+                        <Ionicons name="eye" size={16} color="white" />
+                        <Text className="text-white font-bold ml-2 text-sm">View</Text>
+                      </Pressable>
+
+                      {community.joinCode && (
+                        <Pressable
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            Alert.alert("Invite Code", community.joinCode);
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          }}
+                          className={cn(
+                            "px-4 py-2.5 rounded-xl flex-row items-center justify-center",
+                            isDark ? "bg-[#1a1a1a]" : "bg-gray-200"
+                          )}
+                        >
+                          <Ionicons name="copy-outline" size={16} color={isDark ? "#fff" : "#000"} />
+                          <Text className={cn("font-bold ml-2 text-sm", isDark ? "text-white" : "text-gray-900")}>
+                            Copy
+                          </Text>
+                        </Pressable>
+                      )}
+                    </View>
                   </View>
-                </View>
-              </Pressable>
-            ))}
+                </Pressable>
+              );
+            })}
           </Animated.View>
         )}
       </ScrollView>

@@ -11,6 +11,7 @@ import {
   ScrollView,
   Switch,
   useColorScheme,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -48,6 +49,9 @@ export default function CommunityScreen({ navigation, route }: any) {
   const friends = useFriendsStore((s) => s.friends);
   const currentUserTag = useFriendsStore((s) => s.currentUserTag);
   const generateUserTag = useFriendsStore((s) => s.generateUserTag);
+
+  // FAB radial menu state
+  const [isFabMenuOpen, setIsFabMenuOpen] = useState(false);
 
   // Generate user tag if not exists
   useEffect(() => {
@@ -101,6 +105,15 @@ export default function CommunityScreen({ navigation, route }: any) {
   const [challengeType, setChallengeType] = useState<"pb" | "calorie_streak" | "workout_streak" | "custom">("workout_streak");
   const [challengeTargetValue, setChallengeTargetValue] = useState("");
   const [challengeTargetDays, setChallengeTargetDays] = useState("");
+
+  // Leaderboard filters
+  const [selectedMetric, setSelectedMetric] = useState<"workouts" | "points" | "streak">("workouts");
+  const [selectedTimeframe, setSelectedTimeframe] = useState<"week" | "month" | "all">("week");
+  const [showMetricDropdown, setShowMetricDropdown] = useState(false);
+  const [showTimeframeDropdown, setShowTimeframeDropdown] = useState(false);
+
+  // Toast state for copy success
+  const [showCopyToast, setShowCopyToast] = useState(false);
 
   const handleCreateCommunity = () => {
     if (communityName.trim()) {
@@ -225,26 +238,62 @@ export default function CommunityScreen({ navigation, route }: any) {
     });
   };
 
+  // Copy to clipboard function
+  const handleCopyInviteCode = (code: string) => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setShowCopyToast(true);
+    setTimeout(() => setShowCopyToast(false), 2000);
+    // In a real app, you'd use Clipboard API here
+    Alert.alert("Invite Code Copied!", code);
+  };
+
   return (
     <SafeAreaView className={cn("flex-1", isDark ? "bg-[#1a1a1a]" : "bg-white")}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Header */}
+        {/* Header with App Brand and User Avatar */}
         <View className="px-4 pt-4 pb-4">
+          <View className="flex-row items-center justify-between mb-4">
+            <View className="flex-row items-center">
+              <Text
+                className={cn(
+                  "text-lg font-bold",
+                  isDark ? "text-white" : "text-gray-900"
+                )}
+              >
+                GainAI
+              </Text>
+              <Text className="text-gray-500 mx-2">•</Text>
+              <Text
+                className={cn(
+                  "text-lg",
+                  isDark ? "text-gray-400" : "text-gray-600"
+                )}
+              >
+                Community
+              </Text>
+            </View>
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                navigation.navigate("Profile");
+              }}
+              className="w-10 h-10 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: isDark ? "#9333ea" : "#e9d5ff",
+              }}
+            >
+              <Text className={cn("text-lg font-bold", isDark ? "text-white" : "text-purple-700")}>
+                {currentUserName.charAt(0).toUpperCase()}
+              </Text>
+            </Pressable>
+          </View>
           <Text
             className={cn(
               "text-3xl font-bold",
               isDark ? "text-white" : "text-gray-900"
             )}
           >
-            POTTY AI
-          </Text>
-          <Text
-            className={cn(
-              "text-sm mt-1",
-              isDark ? "text-gray-400" : "text-gray-600"
-            )}
-          >
-            Community
+            Communities
           </Text>
         </View>
 
@@ -647,24 +696,184 @@ export default function CommunityScreen({ navigation, route }: any) {
         )}
       </ScrollView>
 
-      {/* Floating Create Button */}
+      {/* Floating Action Button with Radial Menu */}
+      {isFabMenuOpen && (
+        <Pressable
+          onPress={() => setIsFabMenuOpen(false)}
+          className="absolute inset-0 bg-black/50"
+          style={{ zIndex: 999 }}
+        />
+      )}
+
+      {/* FAB Menu Items */}
+      {isFabMenuOpen && (
+        <Animated.View
+          entering={FadeInDown.duration(200)}
+          className="absolute bottom-44 right-6"
+          style={{ zIndex: 1000 }}
+        >
+          {/* Create Community */}
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              setIsCreateModalVisible(true);
+              setIsFabMenuOpen(false);
+            }}
+            className="flex-row items-center mb-4"
+          >
+            <View
+              className="bg-purple-600 px-4 py-2 rounded-2xl mr-3"
+              style={{
+                shadowColor: "#9333ea",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.4,
+                shadowRadius: 8,
+              }}
+            >
+              <Text className="text-white font-bold text-sm">Create Community</Text>
+            </View>
+            <View
+              className="w-12 h-12 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: "#9333ea",
+                shadowColor: "#9333ea",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.4,
+                shadowRadius: 8,
+              }}
+            >
+              <Ionicons name="people" size={24} color="white" />
+            </View>
+          </Pressable>
+
+          {/* Share Invite */}
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              const joinedCommunities = getJoinedCommunities();
+              if (joinedCommunities.length > 0) {
+                const community = joinedCommunities[0];
+                if (community.joinCode) {
+                  handleCopyInviteCode(community.joinCode);
+                } else {
+                  Alert.alert("Info", "This community doesn't have an invite code");
+                }
+              } else {
+                Alert.alert("Info", "Join a community first to share invites");
+              }
+              setIsFabMenuOpen(false);
+            }}
+            className="flex-row items-center mb-4"
+          >
+            <View
+              className="bg-blue-600 px-4 py-2 rounded-2xl mr-3"
+              style={{
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.4,
+                shadowRadius: 8,
+              }}
+            >
+              <Text className="text-white font-bold text-sm">Share Invite</Text>
+            </View>
+            <View
+              className="w-12 h-12 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: "#3b82f6",
+                shadowColor: "#3b82f6",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.4,
+                shadowRadius: 8,
+              }}
+            >
+              <Ionicons name="share-social" size={24} color="white" />
+            </View>
+          </Pressable>
+
+          {/* New Post */}
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              const joinedCommunities = getJoinedCommunities();
+              if (joinedCommunities.length > 0) {
+                setSelectedCommunity(joinedCommunities[0]);
+                setIsCreatePostModalVisible(true);
+              } else {
+                Alert.alert("Info", "Join a community first to create posts");
+              }
+              setIsFabMenuOpen(false);
+            }}
+            className="flex-row items-center"
+          >
+            <View
+              className="bg-green-600 px-4 py-2 rounded-2xl mr-3"
+              style={{
+                shadowColor: "#16a34a",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.4,
+                shadowRadius: 8,
+              }}
+            >
+              <Text className="text-white font-bold text-sm">New Post</Text>
+            </View>
+            <View
+              className="w-12 h-12 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: "#16a34a",
+                shadowColor: "#16a34a",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.4,
+                shadowRadius: 8,
+              }}
+            >
+              <Ionicons name="create" size={24} color="white" />
+            </View>
+          </Pressable>
+        </Animated.View>
+      )}
+
+      {/* Main FAB Button */}
       <Pressable
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          setIsCreateModalVisible(true);
+          setIsFabMenuOpen(!isFabMenuOpen);
         }}
         className="absolute bottom-24 right-6 w-16 h-16 rounded-full items-center justify-center"
         style={{
-          backgroundColor: "#3b82f6",
-          shadowColor: "#3b82f6",
+          backgroundColor: isFabMenuOpen ? "#ef4444" : "#3b82f6",
+          shadowColor: isFabMenuOpen ? "#ef4444" : "#3b82f6",
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.4,
           shadowRadius: 12,
           elevation: 8,
+          transform: [{ rotate: isFabMenuOpen ? "45deg" : "0deg" }],
+          zIndex: 1001,
         }}
       >
         <Ionicons name="add" size={32} color="white" />
       </Pressable>
+
+      {/* Copy Toast */}
+      {showCopyToast && (
+        <Animated.View
+          entering={FadeInDown.duration(200)}
+          exiting={FadeOutUp.duration(200)}
+          className="absolute top-20 self-center px-6 py-3 rounded-2xl"
+          style={{
+            backgroundColor: "#22c55e",
+            shadowColor: "#22c55e",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.4,
+            shadowRadius: 8,
+            zIndex: 1002,
+          }}
+        >
+          <View className="flex-row items-center">
+            <Ionicons name="checkmark-circle" size={20} color="white" />
+            <Text className="text-white font-bold ml-2">Invite code copied!</Text>
+          </View>
+        </Animated.View>
+      )}
 
       {/* Create Community Modal */}
       <Modal
@@ -1301,6 +1510,11 @@ export default function CommunityScreen({ navigation, route }: any) {
               <Pressable
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  if (detailCommunity?.joinCode) {
+                    handleCopyInviteCode(detailCommunity.joinCode);
+                  } else {
+                    Alert.alert("Info", "This community doesn't have an invite code");
+                  }
                 }}
                 className={cn(
                   "px-6 py-3 rounded-2xl flex-row items-center justify-center",
@@ -1421,44 +1635,212 @@ export default function CommunityScreen({ navigation, route }: any) {
                 <Text className={cn("text-sm mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
                   {detailCommunity?.members.length} member{detailCommunity?.members.length !== 1 ? "s" : ""} in this community
                 </Text>
-                {detailCommunity?.members.map((memberId, index) => (
-                  <View
-                    key={memberId}
-                    className={cn(
-                      "rounded-2xl p-4 mb-3 flex-row items-center",
-                      isDark ? "bg-[#1a1a1a]" : "bg-gray-50"
-                    )}
-                  >
+                {detailCommunity?.members.map((memberId, index) => {
+                  // Simulate online status (in real app, this would come from user data)
+                  const isOnline = Math.random() > 0.5;
+
+                  return (
                     <View
-                      className="w-12 h-12 rounded-full items-center justify-center mr-3"
-                      style={{
-                        backgroundColor: isDark ? "rgba(147, 51, 234, 0.2)" : "rgba(147, 51, 234, 0.1)",
-                      }}
+                      key={memberId}
+                      className={cn(
+                        "rounded-2xl p-4 mb-3 flex-row items-center",
+                        isDark ? "bg-[#1a1a1a]" : "bg-gray-50"
+                      )}
                     >
-                      <Ionicons name="person" size={24} color="#9333ea" />
-                    </View>
-                    <View className="flex-1">
-                      <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
-                        {memberId === currentUserId ? currentUserName : `Member ${index + 1}`}
-                      </Text>
-                      <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
-                        {memberId === detailCommunity?.createdBy ? "Creator" : "Member"}
-                      </Text>
-                    </View>
-                    {memberId === currentUserId && (
-                      <View className="bg-purple-500/20 px-3 py-1 rounded-full">
-                        <Text className="text-purple-500 text-xs font-bold">You</Text>
+                      <View className="relative mr-3">
+                        <View
+                          className="w-12 h-12 rounded-full items-center justify-center"
+                          style={{
+                            backgroundColor: isDark ? "rgba(147, 51, 234, 0.2)" : "rgba(147, 51, 234, 0.1)",
+                          }}
+                        >
+                          <Text className={cn("text-xl font-bold", isDark ? "text-purple-400" : "text-purple-600")}>
+                            {(memberId === currentUserId ? currentUserName : `Member ${index + 1}`).charAt(0).toUpperCase()}
+                          </Text>
+                        </View>
+                        {/* Online indicator */}
+                        {isOnline && (
+                          <View
+                            className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2"
+                            style={{
+                              backgroundColor: "#22c55e",
+                              borderColor: isDark ? "#1a1a1a" : "#f9fafb",
+                            }}
+                          />
+                        )}
                       </View>
-                    )}
-                  </View>
-                ))}
+                      <View className="flex-1">
+                        <Text className={cn("text-base font-bold", isDark ? "text-white" : "text-gray-900")}>
+                          {memberId === currentUserId ? currentUserName : `Member ${index + 1}`}
+                        </Text>
+                        <View className="flex-row items-center mt-1">
+                          <Text className={cn("text-sm", isDark ? "text-gray-400" : "text-gray-600")}>
+                            {memberId === detailCommunity?.createdBy ? "Creator" : "Member"}
+                          </Text>
+                          {isOnline && (
+                            <>
+                              <View className="w-1 h-1 rounded-full bg-gray-500 mx-2" />
+                              <Text className="text-green-500 text-xs font-semibold">Online</Text>
+                            </>
+                          )}
+                        </View>
+                      </View>
+                      {memberId === currentUserId && (
+                        <View className="bg-purple-500/20 px-3 py-1 rounded-full">
+                          <Text className="text-purple-500 text-xs font-bold">You</Text>
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
               </View>
             )}
 
             {activeTab === "leaderboard" && (
               <View>
+                {/* Filter Dropdowns */}
+                <View className="flex-row mb-4 space-x-2">
+                  {/* Metric Dropdown */}
+                  <View className="flex-1">
+                    <Pressable
+                      onPress={() => {
+                        setShowMetricDropdown(!showMetricDropdown);
+                        setShowTimeframeDropdown(false);
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }}
+                      className={cn(
+                        "flex-row items-center justify-between px-4 py-3 rounded-2xl",
+                        isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
+                      )}
+                    >
+                      <Text className={cn("font-semibold", isDark ? "text-white" : "text-gray-900")}>
+                        {selectedMetric === "workouts" ? "Workouts" : selectedMetric === "points" ? "Points" : "Streak"}
+                      </Text>
+                      <Ionicons name="chevron-down" size={18} color={isDark ? "#fff" : "#000"} />
+                    </Pressable>
+
+                    {showMetricDropdown && (
+                      <Animated.View
+                        entering={FadeInDown.duration(150)}
+                        className={cn(
+                          "absolute top-14 left-0 right-0 rounded-2xl p-2 z-50",
+                          isDark ? "bg-[#0a0a0a]" : "bg-white"
+                        )}
+                        style={{
+                          shadowColor: "#000",
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.2,
+                          shadowRadius: 8,
+                          elevation: 5,
+                        }}
+                      >
+                        {["workouts", "points", "streak"].map((metric) => (
+                          <Pressable
+                            key={metric}
+                            onPress={() => {
+                              setSelectedMetric(metric as "workouts" | "points" | "streak");
+                              setShowMetricDropdown(false);
+                              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            }}
+                            className={cn(
+                              "px-4 py-3 rounded-xl",
+                              selectedMetric === metric
+                                ? "bg-purple-500/20"
+                                : isDark
+                                ? "bg-transparent"
+                                : "bg-transparent"
+                            )}
+                          >
+                            <Text
+                              className={cn(
+                                "font-semibold",
+                                selectedMetric === metric
+                                  ? "text-purple-500"
+                                  : isDark
+                                  ? "text-white"
+                                  : "text-gray-900"
+                              )}
+                            >
+                              {metric === "workouts" ? "Workouts" : metric === "points" ? "Points" : "Streak"}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </Animated.View>
+                    )}
+                  </View>
+
+                  {/* Timeframe Dropdown */}
+                  <View className="flex-1">
+                    <Pressable
+                      onPress={() => {
+                        setShowTimeframeDropdown(!showTimeframeDropdown);
+                        setShowMetricDropdown(false);
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      }}
+                      className={cn(
+                        "flex-row items-center justify-between px-4 py-3 rounded-2xl",
+                        isDark ? "bg-[#1a1a1a]" : "bg-gray-100"
+                      )}
+                    >
+                      <Text className={cn("font-semibold", isDark ? "text-white" : "text-gray-900")}>
+                        {selectedTimeframe === "week" ? "Week" : selectedTimeframe === "month" ? "Month" : "All Time"}
+                      </Text>
+                      <Ionicons name="chevron-down" size={18} color={isDark ? "#fff" : "#000"} />
+                    </Pressable>
+
+                    {showTimeframeDropdown && (
+                      <Animated.View
+                        entering={FadeInDown.duration(150)}
+                        className={cn(
+                          "absolute top-14 left-0 right-0 rounded-2xl p-2 z-50",
+                          isDark ? "bg-[#0a0a0a]" : "bg-white"
+                        )}
+                        style={{
+                          shadowColor: "#000",
+                          shadowOffset: { width: 0, height: 2 },
+                          shadowOpacity: 0.2,
+                          shadowRadius: 8,
+                          elevation: 5,
+                        }}
+                      >
+                        {["week", "month", "all"].map((timeframe) => (
+                          <Pressable
+                            key={timeframe}
+                            onPress={() => {
+                              setSelectedTimeframe(timeframe as "week" | "month" | "all");
+                              setShowTimeframeDropdown(false);
+                              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                            }}
+                            className={cn(
+                              "px-4 py-3 rounded-xl",
+                              selectedTimeframe === timeframe
+                                ? "bg-purple-500/20"
+                                : isDark
+                                ? "bg-transparent"
+                                : "bg-transparent"
+                            )}
+                          >
+                            <Text
+                              className={cn(
+                                "font-semibold",
+                                selectedTimeframe === timeframe
+                                  ? "text-purple-500"
+                                  : isDark
+                                  ? "text-white"
+                                  : "text-gray-900"
+                              )}
+                            >
+                              {timeframe === "week" ? "Week" : timeframe === "month" ? "Month" : "All Time"}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </Animated.View>
+                    )}
+                  </View>
+                </View>
+
                 <Text className={cn("text-sm mb-4", isDark ? "text-gray-400" : "text-gray-600")}>
-                  Top performers based on total workouts completed
+                  Top performers - {selectedMetric === "workouts" ? "Most workouts" : selectedMetric === "points" ? "Highest points" : "Longest streak"}
                 </Text>
                 {detailCommunity?.members.map((memberId, index) => (
                   <View
