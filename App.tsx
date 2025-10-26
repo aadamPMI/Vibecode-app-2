@@ -4,6 +4,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AppNavigator from "./src/navigation/AppNavigator";
 import { useSettingsStore } from "./src/state/settingsStore";
+import { QueryProvider } from "./providers/QueryProvider";
+import { Toast } from "./src/components/Toast";
 
 /*
 IMPORTANT NOTICE: DO NOT REMOVE
@@ -30,13 +32,16 @@ export default function App() {
   const theme = useSettingsStore((s) => s.theme);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <NavigationContainer>
-          <AppNavigator />
-          <StatusBar style={theme === "dark" ? "light" : "dark"} />
-        </NavigationContainer>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <QueryProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <NavigationContainer>
+            <AppNavigator />
+            <StatusBar style={theme === "dark" ? "light" : "dark"} />
+            <Toast />
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </QueryProvider>
   );
 }

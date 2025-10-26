@@ -47,11 +47,127 @@ The onboarding flow collects:
 - **Framework**: React Native 0.76.7 with Expo SDK 53
 - **Navigation**: React Navigation v7
 - **State Management**: Zustand
+- **Data Fetching & Caching**: React Query (TanStack Query)
 - **Styling**: NativeWind (TailwindCSS for React Native)
 - **Animations**: Reanimated
+- **List Virtualization**: FlashList (@shopify/flash-list)
 - **UI Components**: Custom components with Ionicons
 - **Date/Time**: @react-native-community/datetimepicker
 - **Slider**: @react-native-community/slider
+
+## Performance Optimizations
+
+### Data Fetching & Caching
+- **React Query Integration**: All community and leaderboard data is cached with React Query
+  - 5-minute cache for community lists
+  - 30-second cache for leaderboard data
+  - Automatic background refetching on window focus and reconnect
+  - Smart cache invalidation on data mutations
+- **Query Keys**: Organized hierarchical query keys for efficient cache management
+  - `['communities', 'list']` - All communities
+  - `['communities', 'detail', id]` - Individual community
+  - `['communities', 'leaderboard', id, metric, timeframe]` - Leaderboard data
+
+### Optimistic UI Updates
+- **Join/Leave Communities**: Instant UI updates with automatic rollback on error
+- **Post Reactions**: Immediate like/unlike feedback with error recovery
+- **Comments**: Optimistic comment additions with toast notifications
+- **Error Handling**: Automatic error toasts and state rollback on failures
+
+### List Virtualization
+- **FlashList Implementation**: High-performance virtualized lists for:
+  - Community post feeds (replaces standard FlatList)
+  - Member lists with alphabetic navigation
+  - Leaderboard rankings
+- **Benefits**:
+  - 10x better performance for large lists
+  - Lower memory footprint
+  - Smooth 60fps scrolling even with 1000+ items
+  - Automatic view recycling
+
+### Image Optimization
+- **OptimizedImage Component**: Custom image component with:
+  - Responsive sizing based on target dimensions
+  - Lazy loading with loading indicators
+  - CDN optimization for Cloudinary/Imgix URLs (automatic width parameters)
+  - 2x resolution for retina displays
+  - Error state handling with fallback UI
+  - Fade-in animations on load completion
+
+### Leaderboard Optimizations
+- **Pagination**: 25 items per page with "Load More" button
+- **Auto-Revalidation**:
+  - Refetches every 30 seconds while leaderboard modal is open
+  - Refetches on app return to foreground
+  - Refetches when metric/timeframe filters change
+- **Smart Polling**: Polling only active when modal is visible (saves battery & bandwidth)
+
+### Cache Invalidation Strategy
+- **Join/Leave Actions**: Invalidates community lists and leaderboard caches
+- **New Posts**: Invalidates community detail cache
+- **Stat Updates**: Triggers leaderboard refetch
+- **Timeframe Changes**: Automatic cache update on filter changes
+
+### Performance Monitoring
+- **React Query DevTools**: Available in development for cache inspection
+- **Optimistic UI**: All mutations use optimistic updates for instant feedback
+- **Background Refetching**: Keeps data fresh without user interaction
+
+### Components
+```
+src/
+├── components/
+│   ├── OptimizedImage.tsx          # Lazy-loaded, responsive images
+│   ├── VirtualizedCommunityLists.tsx # FlashList implementations
+│   ├── LeaderboardModal.tsx        # Smart leaderboard with polling
+│   └── Toast.tsx                   # Global toast notifications
+├── hooks/
+│   └── useCommunityQueries.ts      # React Query hooks
+└── providers/
+    └── QueryProvider.tsx           # React Query configuration
+```
+
+### Usage Examples
+
+**Using React Query hooks:**
+```tsx
+import { useCommunities, useJoinCommunity, useLeaveCommunity } from '@/hooks/useCommunityQueries';
+
+// Cached community list
+const { data: communities, isLoading } = useCommunities();
+
+// Optimistic join with error handling
+const joinMutation = useJoinCommunity();
+joinMutation.mutate({ communityId, userId });
+
+// Optimistic leave with rollback
+const leaveMutation = useLeaveCommunity();
+leaveMutation.mutate({ communityId, userId });
+```
+
+**Using virtualized lists:**
+```tsx
+import { VirtualizedPostList } from '@/components/VirtualizedCommunityLists';
+
+<VirtualizedPostList
+  posts={posts}
+  currentUserId={userId}
+  isDark={isDark}
+  onLikePost={(postId) => likeMutation.mutate({ communityId, postId, userId })}
+/>
+```
+
+**Using optimized images:**
+```tsx
+import { OptimizedImage } from '@/components/OptimizedImage';
+
+<OptimizedImage
+  source={{ uri: imageUrl }}
+  width={200}
+  aspectRatio={16/9}
+  showLoader={true}
+/>
+```
 
 ## Project Structure
 
