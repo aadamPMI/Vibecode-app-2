@@ -615,3 +615,373 @@ components/communities/
 - Animations for smooth UX transitions
 - Progress indicators removed from individual screens for cleaner design
 - Metric and imperial unit support throughout
+
+## Design System & Theming
+
+### Centralized Design Tokens
+
+The app uses a comprehensive design token system located in `src/theme/designTokens.ts` for consistent visual styling across all components.
+
+#### Spacing System (8pt Grid)
+```typescript
+spacing = {
+  xs: 4,    sm: 8,    md: 12,   base: 16,
+  lg: 20,   xl: 24,   '2xl': 32, '3xl': 40,
+  '4xl': 48, '5xl': 64, '6xl': 80
+}
+```
+
+#### Border Radius
+```typescript
+radius = {
+  none: 0,   sm: 8,    md: 12,   base: 16,
+  lg: 20,    xl: 24,   '2xl': 28, '3xl': 32,
+  full: 9999
+}
+```
+
+#### Color Palette
+
+**Dark Theme (Primary):**
+- Background: `bg.primary` (#0f172a), `bg.secondary` (#1e293b), `bg.tertiary` (#334155)
+- Text: `text.primary` (#f8fafc), `text.secondary` (#cbd5e1), `text.tertiary` (#94a3b8)
+- Brand: `brand.primary` (#3b82f6), `brand.secondary` (#8b5cf6), `brand.accent` (#06b6d4)
+- Semantic: `semantic.success` (#10b981), `warning` (#f59e0b), `error` (#ef4444)
+
+**Light Theme (Optional):**
+- Background: `bg.primary` (#ffffff), `bg.secondary` (#f8fafc), `bg.tertiary` (#f1f5f9)
+- Text: `text.primary` (#0f172a), `text.secondary` (#475569), `text.tertiary` (#64748b)
+- Brand and semantic colors remain consistent with dark theme
+
+**Podium Colors:**
+```typescript
+podium: {
+  gold:   { primary: '#fbbf24', secondary: '#f59e0b', dark: '#d97706' }
+  silver: { primary: '#e5e7eb', secondary: '#d1d5db', dark: '#9ca3af' }
+  bronze: { primary: '#f97316', secondary: '#ea580c', dark: '#c2410c' }
+}
+```
+
+#### Gradients
+
+**Podium Gradients** (matching screenshots):
+- Gold: `['#fbbf24', '#f59e0b', '#d97706']`
+- Silver: `['#f8fafc', '#e5e7eb', '#cbd5e1']`
+- Bronze: `['#f97316', '#ea580c', '#c2410c']`
+
+**Brand Gradients:**
+- Primary: `['#3b82f6', '#8b5cf6']`
+- Secondary: `['#8b5cf6', '#ec4899']`
+- Accent: `['#06b6d4', '#3b82f6']`
+
+#### Elevations & Shadows
+
+Shadows scale by depth (xs → 3xl):
+```typescript
+elevation = {
+  xs:  { shadowOffset: {0,1},  shadowOpacity: 0.05, shadowRadius: 2,  elevation: 1 }
+  sm:  { shadowOffset: {0,2},  shadowOpacity: 0.08, shadowRadius: 4,  elevation: 2 }
+  md:  { shadowOffset: {0,4},  shadowOpacity: 0.12, shadowRadius: 8,  elevation: 4 }
+  lg:  { shadowOffset: {0,8},  shadowOpacity: 0.16, shadowRadius: 12, elevation: 8 }
+  xl:  { shadowOffset: {0,12}, shadowOpacity: 0.2,  shadowRadius: 16, elevation: 12 }
+  '2xl': { shadowOffset: {0,16}, shadowOpacity: 0.24, shadowRadius: 24, elevation: 16 }
+  '3xl': { shadowOffset: {0,24}, shadowOpacity: 0.3,  shadowRadius: 32, elevation: 24 }
+}
+```
+
+**Glow Shadows** for special elements (Gold, Silver, Bronze, Primary, Success):
+```typescript
+glowShadow.gold = {
+  shadowColor: '#f59e0b',
+  shadowOffset: {0, 4},
+  shadowOpacity: 0.4,
+  shadowRadius: 12,
+  elevation: 8
+}
+```
+
+#### Glassmorphism Effects
+
+Headers and overlays use subtle glassmorphism:
+```typescript
+getGlassmorphismStyle(isDark) // Returns backdrop blur + border
+```
+
+**Usage:**
+```tsx
+<BlurView
+  intensity={blur.medium}
+  style={getGlassmorphismStyle(isDark)}
+>
+  {/* Header content */}
+</BlurView>
+```
+
+#### Inner Light Borders
+
+Selected/focused cards have subtle inner light edge:
+```typescript
+getInnerLightBorder(isDark) // Returns border width + color
+```
+
+**Applied to podium cards:**
+```tsx
+<View style={[styles.card, podiumGradient && getInnerLightBorder(isDark)]}>
+```
+
+#### Typography
+
+- Font Families: System (iOS), Roboto (Android)
+- Font Sizes: xs (11px) → 6xl (48px)
+- Font Weights: regular (400), medium (500), semibold (600), bold (700)
+- Line Heights: tight (1.2), snug (1.375), normal (1.5), relaxed (1.625)
+- Letter Spacing: tighter (-0.8) → wider (0.8)
+
+#### Animation System
+
+**Durations:**
+```typescript
+duration = {
+  instant: 0, fast: 150, normal: 250,
+  slow: 400, slower: 600, slowest: 1000
+}
+```
+
+**Easings:**
+```typescript
+easing = {
+  linear, ease, easeIn, easeOut, easeInOut,
+  spring: { damping: 15, stiffness: 150 },
+  bouncy: { damping: 8, stiffness: 100 }
+}
+```
+
+### Micro-Animations
+
+Located in `components/communities/MicroAnimations.tsx`:
+
+#### 1. Rank Bump Animation
+Celebrates rank changes with bump effect:
+```tsx
+<RankBumpAnimation rank={1} isDark={isDark} size={32} />
+```
+- Scales 1 → 1.3 → 1 with spring physics
+- Rotates -10° → 10° → 0° for attention
+- Triggers on rank prop change
+
+#### 2. Copy Success Animation
+Shows checkmark feedback when code is copied:
+```tsx
+<CopySuccessAnimation isDark={isDark} size={24} />
+```
+- Scales up with spring, fades in
+- Auto-dismisses after 2 seconds
+- Green checkmark icon
+
+#### 3. Join Pulse Animation
+Pulsing effect to draw attention to join buttons:
+```tsx
+<JoinPulseAnimation enabled={true}>
+  <Button>Join</Button>
+</JoinPulseAnimation>
+```
+- Continuous 1.0 ↔ 1.05 scale loop
+- Opacity 0.8 ↔ 1.0 breathing effect
+- Disabled when `enabled={false}`
+
+#### 4. Shimmer Loading Animation
+Elegant loading placeholders:
+```tsx
+<ShimmerAnimation
+  width={200}
+  height={80}
+  borderRadius={16}
+  isDark={isDark}
+/>
+```
+- Sliding shimmer gradient effect
+- Matches component dimensions
+- Theme-aware colors
+
+#### 5. Floating Animation
+Subtle floating effect for emphasis:
+```tsx
+<FloatingAnimation enabled={true} distance={4}>
+  <Card />
+</FloatingAnimation>
+```
+- Gentle vertical movement (-4px ↔ +4px)
+- 2-second easing loop
+- Great for hero elements
+
+#### 6. Confetti Burst
+Celebration animation for achievements:
+```tsx
+<ConfettiBurstAnimation isDark={isDark} />
+```
+- Scale 0 → 1.5 with spring
+- 360° rotation
+- Fades out over 800ms
+
+### Iconography
+
+Located in `components/communities/Iconography.tsx`:
+
+#### Podium Medals
+Filled gradient medals for top 3 ranks:
+```tsx
+<PodiumMedal
+  rank={1}           // 1, 2, or 3
+  size={48}
+  animated={true}
+  isDark={isDark}
+/>
+```
+- Renders gradient-filled medal with appropriate colors
+- Optional zoom-in animation
+- Includes elevation shadows
+
+#### Trophy Icon
+```tsx
+<TrophyIcon
+  size={24}
+  color="#f59e0b"
+  animated={true}
+  variant="filled"   // 'filled' or 'outline'
+/>
+```
+
+#### Rank Badge
+Circular badge with rank number:
+```tsx
+<RankBadge
+  rank={5}
+  size={36}
+  isPodium={false}   // Applies gradient if true and rank ≤ 3
+  isDark={isDark}
+/>
+```
+
+#### Community Icons
+Consistent icon set with outline/filled variants:
+```tsx
+<CommunityIcon
+  name="members"     // members, workouts, streak, points, leaderboard, etc.
+  size={24}
+  color="#3b82f6"
+  variant="outline"  // 'outline' or 'filled'
+/>
+```
+
+**Available icons:**
+- members, workouts, streak, points, leaderboard
+- settings, share, copy, check, close
+- add, remove, edit, search, filter, more
+
+#### Change Indicator
+Shows rank/stat changes with color-coded icons:
+```tsx
+<ChangeIndicator
+  change={12}        // Positive = green ↑, Negative = red ↓, 0 = gray —
+  size={16}
+  showValue={true}
+  isDark={isDark}
+/>
+```
+
+### Components
+
+**Glassmorphic Header:**
+```tsx
+import { GlassmorphicHeader } from '@/components/communities/GlassmorphicHeader';
+
+<GlassmorphicHeader
+  title="Leaderboard"
+  subtitle="Weekly Rankings"
+  rightComponent={<IconButton />}
+  leftComponent={<BackButton />}
+  isDark={isDark}
+/>
+```
+
+### Usage Examples
+
+**Using Design Tokens:**
+```tsx
+import {
+  spacing,
+  radius,
+  elevation,
+  darkTheme,
+  lightTheme,
+  gradients,
+  getPodiumGradient,
+  getPodiumGlowShadow,
+  getInnerLightBorder,
+  getGlassmorphismStyle,
+} from '@/theme/designTokens';
+
+const theme = isDark ? darkTheme : lightTheme;
+
+<View
+  style={{
+    padding: spacing.base,
+    borderRadius: radius.lg,
+    backgroundColor: theme.bg.secondary,
+    ...elevation.md,
+  }}
+>
+  <Text style={{ color: theme.text.primary }}>Hello</Text>
+</View>
+```
+
+**Podium Card with Gradients:**
+```tsx
+const podiumGradient = getPodiumGradient(rank);
+const podiumShadow = getPodiumGlowShadow(rank);
+
+{podiumGradient && (
+  <LinearGradient
+    colors={podiumGradient.colors}
+    start={podiumGradient.start}
+    end={podiumGradient.end}
+    style={[styles.card, podiumShadow, getInnerLightBorder(isDark)]}
+  >
+    {/* Card content */}
+  </LinearGradient>
+)}
+```
+
+**Using Animations:**
+```tsx
+import {
+  RankBumpAnimation,
+  CopySuccessAnimation,
+  JoinPulseAnimation,
+} from '@/components/communities/MicroAnimations';
+
+// Rank change celebration
+<RankBumpAnimation rank={newRank} isDark={isDark} />
+
+// Copy feedback
+{showCopySuccess && <CopySuccessAnimation isDark={isDark} />}
+
+// Pulsing join button
+<JoinPulseAnimation enabled={!isMember}>
+  <JoinButton onPress={handleJoin} />
+</JoinPulseAnimation>
+```
+
+### Theme Consistency Guidelines
+
+1. **Always use design tokens** instead of hardcoded values
+2. **Use theme variables** for colors (`theme.text.primary` not `"#f8fafc"`)
+3. **Apply appropriate elevations** based on visual hierarchy
+4. **Use podium gradients** for ranks 1-3 in leaderboards
+5. **Add inner light borders** to selected/focused states
+6. **Include micro-animations** for delightful interactions
+7. **Use consistent iconography** (CommunityIcon components)
+8. **Apply glassmorphism** to headers and overlays
+9. **Maintain 8pt spacing grid** for layouts
+10. **Use semantic colors** for success/error/warning states
+

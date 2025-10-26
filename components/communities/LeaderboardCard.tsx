@@ -19,6 +19,19 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { hapticLight } from '../../src/utils/haptics';
+import {
+  gradients,
+  elevation,
+  glowShadow,
+  spacing,
+  radius,
+  darkTheme,
+  lightTheme,
+  typography,
+  getPodiumGradient,
+  getPodiumGlowShadow,
+  getInnerLightBorder,
+} from '../../src/theme/designTokens';
 
 // Animated Text component for count-up
 const AnimatedText = Animated.createAnimatedComponent(Text);
@@ -88,18 +101,9 @@ export function LeaderboardCard({
     };
   });
 
-  const getPodiumGradient = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return ['#fbbf24', '#f59e0b'] as const; // Gold
-      case 2:
-        return ['#d1d5db', '#9ca3af'] as const; // Silver
-      case 3:
-        return ['#cd7f32', '#92400e'] as const; // Bronze
-      default:
-        return null;
-    }
-  };
+  const theme = isDark ? darkTheme : lightTheme;
+  const podiumGradientConfig = getPodiumGradient(entry.rank);
+  const podiumShadow = getPodiumGlowShadow(entry.rank);
 
   const getMetricIcon = () => {
     switch (metric) {
@@ -115,8 +119,8 @@ export function LeaderboardCard({
   };
 
   const getChangeColor = (change?: number) => {
-    if (!change) return isDark ? '#9ca3af' : '#6b7280';
-    return change > 0 ? '#10b981' : '#ef4444';
+    if (!change) return theme.text.tertiary;
+    return change > 0 ? theme.semantic.success : theme.semantic.error;
   };
 
   const getChangeIcon = (change?: number) => {
@@ -124,7 +128,6 @@ export function LeaderboardCard({
     return change > 0 ? 'trending-up' : 'trending-down';
   };
 
-  const podiumGradient = getPodiumGradient(entry.rank);
   const initials = entry.name
     .split(' ')
     .map((n) => n[0])
@@ -145,27 +148,29 @@ export function LeaderboardCard({
           onLongPress={handleLongPress}
           style={[
             styles.card,
-            { backgroundColor: isDark ? '#1f2937' : '#ffffff' },
-            podiumGradient && styles.podiumCard,
+            { backgroundColor: theme.bg.secondary },
+            podiumGradientConfig && styles.podiumCard,
+            podiumGradientConfig && podiumShadow,
+            podiumGradientConfig && getInnerLightBorder(isDark),
           ]}
         >
-          {podiumGradient && (
+          {podiumGradientConfig && (
             <LinearGradient
-              colors={podiumGradient as unknown as readonly [string, string, ...string[]]}
+              colors={podiumGradientConfig.colors as unknown as readonly [string, string, ...string[]]}
               style={styles.podiumGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+              start={podiumGradientConfig.start}
+              end={podiumGradientConfig.end}
             />
           )}
 
           {/* Rank Badge */}
           <View style={styles.rankContainer}>
-            {podiumGradient ? (
+            {podiumGradientConfig ? (
               <LinearGradient
-                colors={podiumGradient as unknown as readonly [string, string, ...string[]]}
+                colors={podiumGradientConfig.colors as unknown as readonly [string, string, ...string[]]}
                 style={styles.rankBadge}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+                start={podiumGradientConfig.start}
+                end={podiumGradientConfig.end}
               >
                 <Text style={styles.rankTextPodium}>{entry.rank}</Text>
               </LinearGradient>
@@ -173,13 +178,13 @@ export function LeaderboardCard({
               <View
                 style={[
                   styles.rankBadge,
-                  { backgroundColor: isDark ? '#374151' : '#f3f4f6' },
+                  { backgroundColor: theme.bg.tertiary },
                 ]}
               >
                 <Text
                   style={[
                     styles.rankText,
-                    { color: isDark ? '#d1d5db' : '#4b5563' },
+                    { color: theme.text.secondary },
                   ]}
                 >
                   {entry.rank}
@@ -189,19 +194,19 @@ export function LeaderboardCard({
 
             {entry.isTied && (
               <View style={styles.tiedBadge}>
-                <Ionicons name="link" size={10} color="#f59e0b" />
+                <Ionicons name="link" size={10} color={theme.podium.gold.secondary} />
               </View>
             )}
           </View>
 
           {/* Avatar */}
           <View style={styles.avatarContainer}>
-            {podiumGradient ? (
+            {podiumGradientConfig ? (
               <LinearGradient
-                colors={podiumGradient as unknown as readonly [string, string, ...string[]]}
+                colors={podiumGradientConfig.colors as unknown as readonly [string, string, ...string[]]}
                 style={styles.avatar}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+                start={podiumGradientConfig.start}
+                end={podiumGradientConfig.end}
               >
                 <Text style={styles.avatarTextPodium}>{initials}</Text>
               </LinearGradient>
@@ -249,15 +254,15 @@ export function LeaderboardCard({
             <Ionicons
               name={getMetricIcon()}
               size={20}
-              color={podiumGradient ? '#f59e0b' : '#3b82f6'}
+              color={podiumGradientConfig ? theme.podium.gold.secondary : theme.brand.primary}
             />
             <AnimatedText
               // @ts-ignore - animatedProps is not in the type definition
               animatedProps={animatedTextProps}
               style={[
                 styles.valueText,
-                { color: isDark ? '#ffffff' : '#1f2937' },
-                podiumGradient && styles.valueTextPodium,
+                { color: theme.text.primary },
+                podiumGradientConfig && styles.valueTextPodium,
               ]}
             />
           </View>
@@ -265,7 +270,7 @@ export function LeaderboardCard({
           <Ionicons
             name="chevron-forward"
             size={20}
-            color={isDark ? '#6b7280' : '#9ca3af'}
+            color={theme.text.tertiary}
           />
         </Pressable>
       </Animated.View>
@@ -300,6 +305,8 @@ function TooltipModal({
 }: TooltipModalProps) {
   if (!visible) return null;
 
+  const theme = isDark ? darkTheme : lightTheme;
+
   const getChangeText = () => {
     if (!entry.change) return 'No change';
     const direction = entry.change > 0 ? 'up' : 'down';
@@ -315,14 +322,15 @@ function TooltipModal({
           entering={FadeInDown.duration(200)}
           style={[
             styles.tooltip,
-            { backgroundColor: isDark ? '#1f2937' : '#ffffff' },
+            { backgroundColor: theme.bg.secondary },
+            elevation.xl,
           ]}
         >
           <View style={styles.tooltipHeader}>
             <Text
               style={[
                 styles.tooltipTitle,
-                { color: isDark ? '#ffffff' : '#1f2937' },
+                { color: theme.text.primary },
               ]}
             >
               {entry.name}
@@ -330,13 +338,13 @@ function TooltipModal({
             <View
               style={[
                 styles.tooltipRank,
-                { backgroundColor: isDark ? '#374151' : '#f3f4f6' },
+                { backgroundColor: theme.bg.tertiary },
               ]}
             >
               <Text
                 style={[
                   styles.tooltipRankText,
-                  { color: isDark ? '#d1d5db' : '#4b5563' },
+                  { color: theme.text.secondary },
                 ]}
               >
                 Rank #{entry.rank}
@@ -344,14 +352,14 @@ function TooltipModal({
             </View>
           </View>
 
-          <View style={styles.tooltipDivider} />
+          <View style={[styles.tooltipDivider, { backgroundColor: theme.border.primary }]} />
 
           <View style={styles.tooltipContent}>
             <View style={styles.tooltipRow}>
               <Text
                 style={[
                   styles.tooltipLabel,
-                  { color: isDark ? '#9ca3af' : '#6b7280' },
+                  { color: theme.text.tertiary },
                 ]}
               >
                 Current {metric}:
@@ -359,7 +367,7 @@ function TooltipModal({
               <Text
                 style={[
                   styles.tooltipValue,
-                  { color: isDark ? '#ffffff' : '#1f2937' },
+                  { color: theme.text.primary },
                 ]}
               >
                 {entry.value}
@@ -370,7 +378,7 @@ function TooltipModal({
               <Text
                 style={[
                   styles.tooltipLabel,
-                  { color: isDark ? '#9ca3af' : '#6b7280' },
+                  { color: theme.text.tertiary },
                 ]}
               >
                 Change:
@@ -378,7 +386,7 @@ function TooltipModal({
               <Text
                 style={[
                   styles.tooltipValue,
-                  { color: entry.change && entry.change > 0 ? '#10b981' : '#ef4444' },
+                  { color: entry.change && entry.change > 0 ? theme.semantic.success : theme.semantic.error },
                 ]}
               >
                 {getChangeText()}
@@ -386,12 +394,12 @@ function TooltipModal({
             </View>
 
             {entry.isTied && (
-              <View style={styles.tiedNotice}>
-                <Ionicons name="link" size={16} color="#f59e0b" />
+              <View style={[styles.tiedNotice, { borderTopColor: theme.border.primary }]}>
+                <Ionicons name="link" size={16} color={theme.podium.gold.secondary} />
                 <Text
                   style={[
                     styles.tiedText,
-                    { color: isDark ? '#d1d5db' : '#4b5563' },
+                    { color: theme.text.secondary },
                   ]}
                 >
                   Tied with other members
@@ -402,9 +410,9 @@ function TooltipModal({
 
           <Pressable
             onPress={onClose}
-            style={styles.tooltipCloseButton}
+            style={[styles.tooltipCloseButton, { backgroundColor: theme.brand.primary }]}
           >
-            <Text style={styles.tooltipCloseText}>Got it</Text>
+            <Text style={[styles.tooltipCloseText, { color: theme.text.inverse }]}>Got it</Text>
           </Pressable>
         </Animated.View>
       </Pressable>
@@ -416,22 +424,16 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
+    paddingHorizontal: spacing.base,
     paddingVertical: 14,
-    marginBottom: 8,
-    borderRadius: 16,
-    gap: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    marginBottom: spacing.sm,
+    borderRadius: radius.base,
+    gap: spacing.md,
+    ...elevation.sm,
     overflow: 'hidden',
   },
   podiumCard: {
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 4,
+    ...elevation.lg,
   },
   podiumGradient: {
     position: 'absolute',
@@ -531,40 +533,34 @@ const styles = StyleSheet.create({
   tooltip: {
     width: '85%',
     maxWidth: 400,
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 12,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
   },
   tooltipHeader: {
-    marginBottom: 16,
+    marginBottom: spacing.base,
   },
   tooltipTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: typography.fontSize.xl,
+    fontWeight: typography.fontWeight.bold,
+    marginBottom: spacing.sm,
   },
   tooltipRank: {
     alignSelf: 'flex-start',
-    paddingHorizontal: 12,
+    paddingHorizontal: spacing.md,
     paddingVertical: 6,
-    borderRadius: 12,
+    borderRadius: radius.md,
   },
   tooltipRankText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: typography.fontSize.sm,
+    fontWeight: typography.fontWeight.semibold,
   },
   tooltipDivider: {
     height: 1,
-    backgroundColor: 'rgba(156, 163, 175, 0.2)',
-    marginBottom: 16,
+    marginBottom: spacing.base,
   },
   tooltipContent: {
-    gap: 12,
-    marginBottom: 20,
+    gap: spacing.md,
+    marginBottom: spacing.lg,
   },
   tooltipRow: {
     flexDirection: 'row',
@@ -572,33 +568,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tooltipLabel: {
-    fontSize: 15,
+    fontSize: typography.fontSize.base,
   },
   tooltipValue: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: typography.fontSize.base,
+    fontWeight: typography.fontWeight.semibold,
   },
   tiedNotice: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingTop: 8,
+    gap: spacing.sm,
+    paddingTop: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(156, 163, 175, 0.2)',
   },
   tiedText: {
-    fontSize: 14,
+    fontSize: typography.fontSize.sm,
     fontStyle: 'italic',
   },
   tooltipCloseButton: {
-    backgroundColor: '#3b82f6',
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: spacing.md,
+    borderRadius: radius.md,
     alignItems: 'center',
   },
   tooltipCloseText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: typography.fontSize.md,
+    fontWeight: typography.fontWeight.semibold,
   },
 });
