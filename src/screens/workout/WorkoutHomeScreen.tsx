@@ -98,11 +98,17 @@ export default function WorkoutHomeScreen() {
                   <Ionicons name="flame" size={28} color="#f97316" />
                 </View>
                 
-                <View>
-                  <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <View className="flex-shrink">
+                  <Text
+                    className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}
+                    numberOfLines={2}
+                  >
                     Active{'\n'}Workout
                   </Text>
-                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <Text
+                    className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}
+                    numberOfLines={1}
+                  >
                     {activeProgram ? activeProgram.name : 'Select a program'}
                   </Text>
                   {activeProgram ? (
@@ -153,11 +159,17 @@ export default function WorkoutHomeScreen() {
                   <Ionicons name="heart-circle-outline" size={28} color="#3b82f6" />
                 </View>
                 
-                <View>
-                  <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <View className="flex-shrink">
+                  <Text
+                    className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}
+                    numberOfLines={2}
+                  >
                     My Programs
                   </Text>
-                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <Text
+                    className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}
+                    numberOfLines={1}
+                  >
                     Workout splits
                   </Text>
                   <View className="flex-row items-center">
@@ -201,11 +213,17 @@ export default function WorkoutHomeScreen() {
                   <Ionicons name="trending-up" size={28} color="#22c55e" />
                 </View>
                 
-                <View>
-                  <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <View className="flex-shrink">
+                  <Text
+                    className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}
+                    numberOfLines={2}
+                  >
                     History
                   </Text>
-                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <Text
+                    className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}
+                    numberOfLines={1}
+                  >
                     Track your progress
                   </Text>
                   <View className="flex-row items-center">
@@ -247,11 +265,17 @@ export default function WorkoutHomeScreen() {
                   <Ionicons name="flame" size={28} color="#f97316" />
                 </View>
                 
-                <View>
-                  <Text className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}>
+                <View className="flex-shrink">
+                  <Text
+                    className={cn('text-xl font-bold mb-2', isDark ? 'text-white' : 'text-black')}
+                    numberOfLines={2}
+                  >
                     Stats
                   </Text>
-                  <Text className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}>
+                  <Text
+                    className={cn('text-xs mb-2', isDark ? 'text-gray-400' : 'text-gray-600')}
+                    numberOfLines={1}
+                  >
                     Dashboard & insights
                   </Text>
                   <View className="flex-row items-center">
