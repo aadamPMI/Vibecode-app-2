@@ -16,9 +16,8 @@ export default function ReadyScreen({ navigation }: any) {
   const { completeOnboarding } = useAuthStore();
 
   const handleStart = () => {
-    completeOnboarding();
-    clearOnboardingData();
-    // Navigation will be handled automatically by auth state change
+    // Navigate to email signup instead of completing onboarding
+    navigation.navigate("EmailSignUp");
   };
 
   return (
@@ -74,7 +73,7 @@ export default function ReadyScreen({ navigation }: any) {
 
           <Animated.View entering={FadeInDown.delay(1000)}>
             <OnboardingButton
-              title="Start My Plan"
+              title="Continue"
               onPress={handleStart}
             />
           </Animated.View>

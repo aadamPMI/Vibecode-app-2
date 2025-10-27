@@ -80,11 +80,11 @@ export default function EmailSignUpScreen({ navigation }: any) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         Alert.alert(
           "Success! 🎉",
-          "Account created successfully! Check your email for verification.",
+          "Account created successfully!",
           [
             {
               text: "Continue",
-              onPress: () => navigation.navigate("IntroPromo"),
+              onPress: () => navigation.navigate("Payment"),
             },
           ]
         );
@@ -100,7 +100,7 @@ export default function EmailSignUpScreen({ navigation }: any) {
           [
             {
               text: "Continue",
-              onPress: () => navigation.navigate("IntroPromo"),
+              onPress: () => navigation.navigate("Payment"),
             },
           ]
         );
@@ -383,7 +383,7 @@ export default function EmailSignUpScreen({ navigation }: any) {
                 <Pressable
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    navigation.navigate("IntroPromo");
+                    navigation.navigate("Payment");
                   }}
                   className="py-3"
                 >

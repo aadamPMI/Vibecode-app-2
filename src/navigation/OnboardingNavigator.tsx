@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import WelcomeScreen from "../screens/onboarding/WelcomeScreen";
 import EmailSignUpScreen from "../screens/onboarding/EmailSignUpScreen";
+import PaymentScreen from "../screens/onboarding/PaymentScreen";
 import IntroPromoScreen from "../screens/onboarding/IntroPromoScreen";
 import GenderScreen from "../screens/onboarding/GenderScreen";
 import WorkoutFrequencyScreen from "../screens/onboarding/WorkoutFrequencyScreen";
@@ -21,6 +22,7 @@ import ReadyScreen from "../screens/onboarding/ReadyScreen";
 export type OnboardingStackParamList = {
   Welcome: undefined;
   EmailSignUp: undefined;
+  Payment: undefined;
   IntroPromo: undefined;
   Gender: undefined;
   WorkoutFrequency: undefined;
@@ -52,6 +54,7 @@ export default function OnboardingNavigator() {
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="EmailSignUp" component={EmailSignUpScreen} />
+      <Stack.Screen name="Payment" component={PaymentScreen} />
       <Stack.Screen name="IntroPromo" component={IntroPromoScreen} />
       <Stack.Screen name="Gender" component={GenderScreen} />
       <Stack.Screen name="WorkoutFrequency" component={WorkoutFrequencyScreen} />
