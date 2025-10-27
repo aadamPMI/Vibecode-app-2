@@ -109,7 +109,7 @@ export default function WelcomeScreen({ navigation }: any) {
         <Animated.View entering={FadeInDown.delay(1000)}>
           <OnboardingButton
             title="Get Started"
-            onPress={() => navigation.navigate("IntroPromo")}
+            onPress={() => navigation.navigate("EmailSignUp")}
           />
           <Text
             className={cn(
