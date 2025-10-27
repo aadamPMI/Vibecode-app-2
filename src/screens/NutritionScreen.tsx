@@ -308,7 +308,7 @@ export default function NutritionScreen() {
                 isDark ? "text-white" : "text-gray-900"
               )}
             >
-              POTTY AI
+              WARSI
             </Text>
             <Text
               className={cn(
